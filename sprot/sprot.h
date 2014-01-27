@@ -21,7 +21,8 @@
 #define __SHORT_FORM_OF_FILE__ __SHORT_FORM_OF_FILE_NIX__
 #endif
 
-#define THROW(exception_type, message) { throw exception_type(__FUNCTION__, message, __SHORT_FORM_OF_FILE__, __LINE__); }
+#define THROW(exception_type) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__); }
+#define THROWM(exception_type, message) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, message); }
 
 namespace sprot
 {
@@ -33,11 +34,27 @@ namespace sprot
         virtual size_t write(const void* buf, size_t buf_size) = 0;
     };
 
+    class Protocol: public Transport_Interface
+    {
+        public:
+
+            size_t read(void* buf, size_t buf_size);
+            size_t write(const void* buf, size_t buf_size);
+
+            //Basically waiting means working in server mode waiting to receive a specific frame - 
+            //mode switch frame and exiting in case the frame is received or timeout reached.
+            void wait_send_mode(size_t timeout);
+            void wait_recv_mode(size_t timeout);
+    };
+};
+
+namespace sprot { namespace exceptions
+{
     class Exception
     {
-    public:
+        public:
 
-        Exception(const char* facility, const char* message, const char* file = "", int line = 0):
+            Exception(const char* facility, const char* file = "", int line = 0, const char* message = ""):
             facility_(facility),
             message_(message),
             file_(file),
@@ -52,11 +69,20 @@ namespace sprot
             std::string message_;
             std::string file_;
             int line_;
-            std::string function_;
 
 
         private:
 
             Exception();
     };
-};
+
+    class Incorrect_Mode: public Exception
+    {
+        public:
+
+            Incorrect_Mode(const char* facility, const char* file = "", int line = 0, const char* message = "Tried write in recv mode or read in send mode."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+}};
