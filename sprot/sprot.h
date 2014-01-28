@@ -1,4 +1,5 @@
 #pragma once
+#include <limits.h>
 #include <string>
 #include <string.h>
 
@@ -28,23 +29,65 @@ namespace sprot
 {
     class Transport_Interface
     {
-    public:
+        public:
 
-        virtual size_t read(void* buf, size_t buf_size) = 0;
-        virtual size_t write(const void* buf, size_t buf_size) = 0;
+            static const size_t infinite_wait = static_cast<size_t>(-1);
+
+            virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
+            virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
     };
 
     class Protocol: public Transport_Interface
     {
         public:
 
-            size_t read(void* buf, size_t buf_size);
-            size_t write(const void* buf, size_t buf_size);
+            //Set to manual, sprot will throw exceptions
+            //on trying to read/write in an inappropriate mode.
+            //Auto is default which will switch modes automatically,
+            //based on what request is executed - read or write.
+            struct Switching
+            {
+                enum Type
+                {
+                    Auto = 0x029A,
+                    Manual
+                };
+            };
+
+            struct Frame
+            {
+                enum Type
+                {
+                    ACK = 0x0a,
+                    NACK,
+                    SEQBEGIN,
+                    SEQEND,
+                    SETSEND,
+                    SETRECV,
+                    DATA,
+                    UNDEF //Unknown frame type.
+                };
+            };
+
+            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto);
+
+            size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
+            size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
             //Basically waiting means working in server mode waiting to receive a specific frame - 
             //mode switch frame and exiting in case the frame is received or timeout reached.
-            void wait_send_mode(size_t timeout);
-            void wait_recv_mode(size_t timeout);
+            void wait_send_mode(size_t timeout = infinite_wait);
+            void wait_recv_mode(size_t timeout = infinite_wait);
+
+
+        private:
+
+            Transport_Interface* transport_;
+            Switching::Type switching_;
+            bool is_sequence_;
+
+            bool crc_check(const char* buf, size_t size);
+            void send_control_frame(Frame::Type frame);
     };
 };
 
