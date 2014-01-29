@@ -2,6 +2,13 @@
 #include <limits.h>
 #include <string>
 #include <string.h>
+#include <chrono>
+#include <thread>
+#include <mutex>
+
+#ifdef _DEBUG
+#define private public
+#endif
 
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
@@ -86,7 +93,7 @@ namespace sprot
             Switching::Type switching_;
             bool is_sequence_;
 
-            bool crc_check(const char* buf, size_t size);
+            static bool crc_check(const char* buf, size_t size);
             void send_control_frame(Frame::Type frame);
     };
 };
