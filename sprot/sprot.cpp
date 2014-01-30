@@ -3,10 +3,10 @@
 #include "stdafx.h"
 #include "sprot.h"
 
+
 namespace sprot
 {
-
-    bool Protocol::crc_check(const char* buf, size_t length)
+    unsigned char util::crc7(const unsigned char* buf, size_t length)
     {
         //Reworked sample code from http://www.pololu.com/docs/0J44/6.7.6
         static unsigned char crc_table[256] = { 0 };
@@ -36,29 +36,48 @@ namespace sprot
         static bool one_time_function_call = build_crc_table();
         unsigned char crc = 0;
 
-        if (length > 0)
-        {
-            size_t size = length - 1;
-            for (size_t i = 0; i < size; ++i)
-                crc = crc_table[crc ^ static_cast<unsigned char>(buf[i])];
+        for (size_t i = 0; i < length; ++i)
+            crc = crc_table[crc ^ buf[i]];
 
-            return (crc == buf[size]);
-        }
+        return crc;
+    }
 
-        return false;
+    bool Protocol::crc_check(const unsigned char* buf, size_t length)
+    {
+        if (length < 1)
+            return false;
+
+        return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
 namespace testing
 {
-    void crc_test()
+    bool crc_test()
     {
-        char buf[2] = { 0x0c, 106 };
-        printf("crc check = %d\n", sprot::Protocol::crc_check(buf, 2));
+        {
+            unsigned char buf[2] = { 0x0c, 0x6a };
+            if (!sprot::Protocol::crc_check(buf, 2))
+                return false;
+        }
+
+        {
+            unsigned char buf[2] = { 0x0a, 0xcc };
+            if (sprot::Protocol::crc_check(buf, 2))
+                return false;
+        }
+
+        {
+            unsigned char buf[2] = { 0x0f, 0x38 };
+            if (!sprot::Protocol::crc_check(buf, 2))
+                return false;
+        }
     }
 
     void run_all_tests()
     {
-        crc_test();
+        if (!crc_test())
+            printf("crc_test failed.\n");
+        printf("tests finished.\n");
     }
 }};
 

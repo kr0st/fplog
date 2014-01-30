@@ -93,10 +93,14 @@ namespace sprot
             Switching::Type switching_;
             bool is_sequence_;
 
-            static bool crc_check(const char* buf, size_t size);
+            static bool crc_check(const unsigned char* buf, size_t length);
             void send_control_frame(Frame::Type frame);
     };
-};
+
+namespace util
+{
+    unsigned char crc7(const unsigned char* buf, size_t length);
+}};
 
 namespace sprot { namespace exceptions
 {
