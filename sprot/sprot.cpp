@@ -50,6 +50,17 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
+    void Protocol::send_control_frame(Frame::Type frame)
+    {
+        unsigned char buf[2];
+        
+        buf[0] = frame;
+        buf[1] = util::crc7(buf, 1);
+
+        if (transport_->write(buf, sizeof(buf)) != sizeof(buf))
+            THROW(exceptions::Write_Failed);
+    }
+
 namespace testing
 {
     bool crc_test()
@@ -71,6 +82,8 @@ namespace testing
             if (!sprot::Protocol::crc_check(buf, 2))
                 return false;
         }
+
+        return true;
     }
 
     void run_all_tests()

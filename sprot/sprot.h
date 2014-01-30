@@ -130,7 +130,7 @@ namespace sprot { namespace exceptions
             Exception();
     };
 
-    class Incorrect_Mode: public Exception
+    class Incorrect_Mode : public Exception
     {
         public:
 
@@ -139,4 +139,15 @@ namespace sprot { namespace exceptions
             {
             }
     };
-}};
+
+    class Write_Failed : public Exception
+    {
+        public:
+
+            Write_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Write operation failed."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+}
+};
