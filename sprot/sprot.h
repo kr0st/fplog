@@ -61,6 +61,16 @@ namespace sprot
                 };
             };
 
+            struct Mode
+            {
+                enum Type
+                {
+                    Client = 0xA920,
+                    Server,
+                    Undefined
+                };
+            };
+
             struct Frame
             {
                 enum Type
@@ -91,10 +101,15 @@ namespace sprot
 
             Transport_Interface* transport_;
             Switching::Type switching_;
+            Mode::Type current_mode_;
             bool is_sequence_;
 
             static bool crc_check(const unsigned char* buf, size_t length);
             void send_control_frame(Frame::Type frame);
+
+            //Returns true when more frames are needed before returning data to upper layer,
+            //false means whole data portion was received, read should stop and return data to upper layer.
+            bool on_frame(const unsigned char* buf, size_t length);
     };
 
 namespace util
@@ -130,7 +145,7 @@ namespace sprot { namespace exceptions
             Exception();
     };
 
-    class Incorrect_Mode : public Exception
+    class Incorrect_Mode: public Exception
     {
         public:
 
@@ -140,11 +155,31 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Write_Failed : public Exception
+    class Write_Failed: public Exception
     {
         public:
 
             Write_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Write operation failed."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
+    class Incorrect_Parameter: public Exception
+    {
+        public:
+
+            Incorrect_Parameter(const char* facility, const char* file = "", int line = 0, const char* message = "Parameter supplied to function has incorrect value."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
+    class Not_Implemented: public Exception
+    {
+        public:
+
+            Not_Implemented(const char* facility, const char* file = "", int line = 0, const char* message = "Feature not implemented yet."):
             Exception(facility, file, line, message)
             {
             }

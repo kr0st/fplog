@@ -61,6 +61,55 @@ namespace sprot
             THROW(exceptions::Write_Failed);
     }
 
+    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching):
+    transport_(transport),
+    switching_(switching),
+    current_mode_(Mode::Undefined),
+    is_sequence_(false)
+    {
+        if (!transport_)
+            THROW(exceptions::Incorrect_Parameter);
+    }
+
+    size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
+    {
+        if (!buf)
+            THROW(exceptions::Incorrect_Parameter);
+
+        if (timeout != Protocol::infinite_wait)
+            THROW(exceptions::Not_Implemented);
+
+        if (current_mode_ == Mode::Undefined)
+            current_mode_ = Mode::Server;
+
+        if (current_mode_ == Mode::Client)
+        {
+            if (switching_ == Switching::Auto)
+                ; //TODO: Here we should launch mode switch
+            else
+                THROW(exceptions::Incorrect_Mode);
+        }
+
+        bool looping = true;
+        while(looping)
+        {
+            size_t recv_sz = transport_->read(buf, buf_size);
+            if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
+                looping = on_frame(static_cast<unsigned char*>(buf), recv_sz);
+        };
+    }
+    
+    bool Protocol::on_frame(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
+    {
+        THROW(exceptions::Not_Implemented);
+    }
+
+
 namespace testing
 {
     bool crc_test()
