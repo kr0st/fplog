@@ -97,11 +97,66 @@ namespace sprot
             if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
                 looping = on_frame(static_cast<unsigned char*>(buf), recv_sz);
         };
+
+        return 0;
     }
     
     bool Protocol::on_frame(const unsigned char* buf, size_t length)
     {
+        if (length == 0)
+            return true;
+
+        if (!buf)
+            THROW(exceptions::Incorrect_Parameter);
+
+        switch (buf[0])
+        {
+            case Frame::ACK: return on_ack(buf, length);
+            case Frame::NACK: return on_nack(buf, length);
+            case Frame::SEQBEGIN: return on_seqbegin(buf, length);
+            case Frame::SEQEND: return on_seqend(buf, length);
+            case Frame::SETSEND: return on_setsend(buf, length);
+            case Frame::SETRECV: return on_setrecv(buf, length);
+            case Frame::DATA: return on_data(buf, length);
+        }
+
         return true;
+    }
+
+    bool Protocol::on_ack(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    bool Protocol::on_nack(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    bool Protocol::on_seqbegin(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    bool Protocol::on_seqend(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    bool Protocol::on_setsend(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+
+    bool Protocol::on_data(const unsigned char* buf, size_t length)
+    {
+        return true;
+    }
+    
+    bool Protocol::on_setrecv(const unsigned char* buf, size_t length)
+    {
+        printf("on_setrecv called!\n");
+        return false;
     }
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
@@ -112,6 +167,34 @@ namespace sprot
 
 namespace testing
 {
+    class Dummy_Transport: public Transport_Interface
+    {
+        public:
+
+            size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                unsigned char setrecv[2] = { 0x0f, 0x38 };
+                memcpy(buf, setrecv, sizeof(setrecv));
+                return sizeof(setrecv);
+            }
+
+            size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                return 0;
+            }
+    };
+
+    bool proto_test()
+    {
+        Dummy_Transport transport;
+        Protocol proto(&transport);
+        
+        char buf[256] = {0};
+        proto.read(buf, sizeof(buf));
+
+        return true;
+    }
+
     bool crc_test()
     {
         {
@@ -139,6 +222,10 @@ namespace testing
     {
         if (!crc_test())
             printf("crc_test failed.\n");
+        
+        if (!proto_test())
+            printf("proto_test failed.\n");
+        
         printf("tests finished.\n");
     }
 }};
