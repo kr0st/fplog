@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <vector>
 
 #ifdef _DEBUG
 #define private public
@@ -86,7 +87,7 @@ namespace sprot
                 };
             };
 
-            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto);
+            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024 * 1024);
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
@@ -103,26 +104,29 @@ namespace sprot
             Switching::Type switching_;
             Mode::Type current_mode_;
             bool is_sequence_;
+            std::vector<unsigned char> buf_;
+            size_t recv_buf_reserve_;
 
             static bool crc_check(const unsigned char* buf, size_t length);
             void send_control_frame(Frame::Type frame);
 
             //Returns true when more frames are needed before returning data to upper layer,
             //false means whole data portion was received, read should stop and return data to upper layer.
-            bool on_frame(const unsigned char* buf, size_t length);
+            bool on_frame(unsigned char* buf, size_t recv_length, size_t max_capacity);
             
-            bool on_seqbegin(const unsigned char* buf, size_t length);
-            bool on_seqend(const unsigned char* buf, size_t length);
+            bool on_seqbegin();
+            bool on_seqend(unsigned char* buf, size_t max_capacity);
 
-            bool on_setsend(const unsigned char* buf, size_t length);
-            bool on_setrecv(const unsigned char* buf, size_t length);
+            bool on_setsend();
+            bool on_setrecv();
 
-            bool on_data(const unsigned char* buf, size_t length);
+            bool on_data(unsigned char* buf, size_t length);
 
             void send_frame(Frame::Type type, const unsigned char* buf = 0, size_t length = 0);
             void send_data(const unsigned char* data, size_t length);
 
-            void complete_read();
+            void complete_read(unsigned char* buf, size_t max_capacity);
+            void reset();
     };
 
 namespace util
@@ -193,6 +197,16 @@ namespace sprot { namespace exceptions
         public:
 
             Not_Implemented(const char* facility, const char* file = "", int line = 0, const char* message = "Feature not implemented yet."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
+    class Buffer_Overflow: public Exception
+    {
+        public:
+
+            Buffer_Overflow(const char* facility, const char* file = "", int line = 0, const char* message = "Buffer too small."):
             Exception(facility, file, line, message)
             {
             }

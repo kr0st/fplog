@@ -61,11 +61,12 @@ namespace sprot
             THROW(exceptions::Write_Failed);
     }
 
-    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching):
+    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve):
     transport_(transport),
     switching_(switching),
     current_mode_(Mode::Undefined),
-    is_sequence_(false)
+    is_sequence_(false),
+    recv_buf_reserve_(recv_buf_reserve)
     {
         if (!transport_)
             THROW(exceptions::Incorrect_Parameter);
@@ -95,17 +96,20 @@ namespace sprot
         {
             size_t recv_sz = transport_->read(buf, buf_size);
             if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
-                looping = on_frame(static_cast<unsigned char*>(buf), recv_sz);
+                looping = on_frame(static_cast<unsigned char*>(buf), recv_sz, buf_size);
             else
                 send_frame(Frame::NACK);
         };
 
-        return 0;
+        size_t read_data = buf_.size();
+        reset();
+
+        return read_data;
     }
     
-    bool Protocol::on_frame(const unsigned char* buf, size_t length)
+    bool Protocol::on_frame(unsigned char* buf, size_t recv_length, size_t max_capacity)
     {
-        if (length == 0)
+        if (recv_length == 0)
             return true;
 
         if (!buf)
@@ -115,46 +119,65 @@ namespace sprot
         {
             case Frame::ACK: break;
             case Frame::NACK: break;
-            case Frame::SEQBEGIN: return on_seqbegin(buf, length);
-            case Frame::SEQEND: return on_seqend(buf, length);
-            case Frame::SETSEND: return on_setsend(buf, length);
-            case Frame::SETRECV: return on_setrecv(buf, length);
-            case Frame::DATA: return on_data(buf, length);
+            case Frame::SEQBEGIN: return on_seqbegin();
+            case Frame::SEQEND: return on_seqend(buf, max_capacity);
+            case Frame::SETSEND: return on_setsend();
+            case Frame::SETRECV: return on_setrecv();
+            case Frame::DATA: return on_data(buf, recv_length);
         }
 
         send_frame(Frame::ACK);
         return true;
     }
 
-    bool Protocol::on_seqbegin(const unsigned char* buf, size_t length)
+    bool Protocol::on_seqbegin()
     {
         is_sequence_ = true;
         send_frame(Frame::ACK);
         return true;
     }
 
-    bool Protocol::on_seqend(const unsigned char* buf, size_t length)
+    bool Protocol::on_seqend(unsigned char* buf, size_t max_capacity)
     {
         is_sequence_ = false;
-        complete_read();
         send_frame(Frame::ACK);
+        complete_read(buf, max_capacity);
         return false;
     }
 
-    bool Protocol::on_setsend(const unsigned char* buf, size_t length)
+    void Protocol::reset()
     {
-        return true;
+        current_mode_ = Mode::Undefined;
+        is_sequence_ = false;
+        
+        std::vector<unsigned char> empty;
+        buf_.swap(empty);
+        buf_.reserve(recv_buf_reserve_);
     }
 
-    bool Protocol::on_data(const unsigned char* buf, size_t length)
+    bool Protocol::on_setsend()
     {
-        return true;
-    }
-    
-    bool Protocol::on_setrecv(const unsigned char* buf, size_t length)
-    {
-        printf("on_setrecv called!\n");
+        reset();
+        current_mode_ = Mode::Client;
         return false;
+    }
+
+    bool Protocol::on_data(unsigned char* buf, size_t length)
+    {
+        if (is_sequence_)
+            return true;
+        else
+        {
+            complete_read(buf, length);
+            return false;
+        }
+    }
+
+    bool Protocol::on_setrecv()
+    {
+        reset();
+        current_mode_ = Mode::Server;
+        return true;
     }
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
@@ -162,8 +185,11 @@ namespace sprot
         THROW(exceptions::Not_Implemented);
     }
 
-    void Protocol::complete_read()
+    void Protocol::complete_read(unsigned char* buf, size_t max_capacity)
     {
+        if (max_capacity < buf_.size())
+            THROW(exceptions::Buffer_Overflow);
+        memcpy(buf, &*buf_.begin(), buf_.size());
     }
 
     void Protocol::send_data(const unsigned char* data, size_t length)
