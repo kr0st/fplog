@@ -96,6 +96,8 @@ namespace sprot
             size_t recv_sz = transport_->read(buf, buf_size);
             if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
                 looping = on_frame(static_cast<unsigned char*>(buf), recv_sz);
+            else
+                send_frame(Frame::NACK);
         };
 
         return 0;
@@ -111,8 +113,8 @@ namespace sprot
 
         switch (buf[0])
         {
-            case Frame::ACK: return on_ack(buf, length);
-            case Frame::NACK: return on_nack(buf, length);
+            case Frame::ACK: break;
+            case Frame::NACK: break;
             case Frame::SEQBEGIN: return on_seqbegin(buf, length);
             case Frame::SEQEND: return on_seqend(buf, length);
             case Frame::SETSEND: return on_setsend(buf, length);
@@ -120,27 +122,23 @@ namespace sprot
             case Frame::DATA: return on_data(buf, length);
         }
 
-        return true;
-    }
-
-    bool Protocol::on_ack(const unsigned char* buf, size_t length)
-    {
-        return true;
-    }
-
-    bool Protocol::on_nack(const unsigned char* buf, size_t length)
-    {
+        send_frame(Frame::ACK);
         return true;
     }
 
     bool Protocol::on_seqbegin(const unsigned char* buf, size_t length)
     {
+        is_sequence_ = true;
+        send_frame(Frame::ACK);
         return true;
     }
 
     bool Protocol::on_seqend(const unsigned char* buf, size_t length)
     {
-        return true;
+        is_sequence_ = false;
+        complete_read();
+        send_frame(Frame::ACK);
+        return false;
     }
 
     bool Protocol::on_setsend(const unsigned char* buf, size_t length)
@@ -164,6 +162,31 @@ namespace sprot
         THROW(exceptions::Not_Implemented);
     }
 
+    void Protocol::complete_read()
+    {
+    }
+
+    void Protocol::send_data(const unsigned char* data, size_t length)
+    {
+        THROW(exceptions::Not_Implemented);
+    }
+
+    void Protocol::send_frame(Frame::Type type, const unsigned char* buf, size_t length)
+    {
+        if (type == Frame::DATA)
+        {
+            if (!buf || (length == 0))
+                THROW(exceptions::Incorrect_Parameter);
+
+            send_data(buf, length);
+        }
+
+        unsigned char frame[2];
+        frame[0] = type;
+        frame[1] = util::crc7(frame, 1);
+
+        transport_->write(frame, sizeof(frame));
+    }
 
 namespace testing
 {

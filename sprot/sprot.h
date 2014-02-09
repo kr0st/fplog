@@ -111,9 +111,6 @@ namespace sprot
             //false means whole data portion was received, read should stop and return data to upper layer.
             bool on_frame(const unsigned char* buf, size_t length);
             
-            bool on_ack(const unsigned char* buf, size_t length);
-            bool on_nack(const unsigned char* buf, size_t length);
-
             bool on_seqbegin(const unsigned char* buf, size_t length);
             bool on_seqend(const unsigned char* buf, size_t length);
 
@@ -121,6 +118,11 @@ namespace sprot
             bool on_setrecv(const unsigned char* buf, size_t length);
 
             bool on_data(const unsigned char* buf, size_t length);
+
+            void send_frame(Frame::Type type, const unsigned char* buf = 0, size_t length = 0);
+            void send_data(const unsigned char* data, size_t length);
+
+            void complete_read();
     };
 
 namespace util
