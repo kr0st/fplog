@@ -1,4 +1,5 @@
 #pragma once
+
 #include <limits.h>
 #include <string>
 #include <string.h>
@@ -85,6 +86,15 @@ namespace sprot
                     DATA,
                     UNDEF //Unknown frame type.
                 };
+
+                Type type = UNDEF;
+            };
+
+            struct Data_Frame: public Frame
+            {
+                unsigned char* data = 0;
+                size_t data_size = 0;
+                unsigned char sequence_num = 0;
             };
 
             Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024 * 1024);
@@ -106,6 +116,7 @@ namespace sprot
             bool is_sequence_;
             std::vector<unsigned char> buf_;
             size_t recv_buf_reserve_;
+            unsigned char sequence_num_;
 
             static bool crc_check(const unsigned char* buf, size_t length);
             void send_control_frame(Frame::Type frame);
@@ -120,13 +131,15 @@ namespace sprot
             bool on_setsend();
             bool on_setrecv();
 
-            bool on_data(unsigned char* buf, size_t length);
+            bool on_data(Data_Frame& frame);
 
             void send_frame(Frame::Type type, const unsigned char* buf = 0, size_t length = 0);
             void send_data(const unsigned char* data, size_t length);
 
             void complete_read(unsigned char* buf, size_t max_capacity);
             void reset();
+
+            Data_Frame make_data_frame(unsigned char* buf, size_t length);
     };
 
 namespace util
@@ -207,6 +220,16 @@ namespace sprot { namespace exceptions
         public:
 
             Buffer_Overflow(const char* facility, const char* file = "", int line = 0, const char* message = "Buffer too small."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
+    class Invalid_Frame: public Exception
+    {
+        public:
+
+            Invalid_Frame(const char* facility, const char* file = "", int line = 0, const char* message = "Received an invalid frame."):
             Exception(facility, file, line, message)
             {
             }

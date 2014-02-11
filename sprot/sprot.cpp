@@ -66,7 +66,8 @@ namespace sprot
     switching_(switching),
     current_mode_(Mode::Undefined),
     is_sequence_(false),
-    recv_buf_reserve_(recv_buf_reserve)
+    recv_buf_reserve_(recv_buf_reserve),
+    sequence_num_(0)
     {
         if (!transport_)
             THROW(exceptions::Incorrect_Parameter);
@@ -123,7 +124,7 @@ namespace sprot
             case Frame::SEQEND: return on_seqend(buf, max_capacity);
             case Frame::SETSEND: return on_setsend();
             case Frame::SETRECV: return on_setrecv();
-            case Frame::DATA: return on_data(buf, recv_length);
+            case Frame::DATA: return on_data(make_data_frame(buf, recv_length));
         }
 
         send_frame(Frame::ACK);
@@ -149,6 +150,7 @@ namespace sprot
     {
         current_mode_ = Mode::Undefined;
         is_sequence_ = false;
+        sequence_num_ = 0;
         
         std::vector<unsigned char> empty;
         buf_.swap(empty);
@@ -157,24 +159,45 @@ namespace sprot
 
     bool Protocol::on_setsend()
     {
+        send_frame(Frame::ACK);
         reset();
         current_mode_ = Mode::Client;
         return false;
     }
 
-    bool Protocol::on_data(unsigned char* buf, size_t length)
+    bool Protocol::on_data(Data_Frame& frame)
     {
-        if (is_sequence_)
+        //Received the same frame twice, just reply ACK & do nothing
+        if (sequence_num_ == frame.sequence_num)
+        {
+            send_frame(Frame::ACK);
             return true;
+        }
+
+        if ((unsigned char)(sequence_num_ + 1) != frame.sequence_num)
+        {
+            send_frame(Frame::NACK);
+            return true;
+        }
+
+        sequence_num_ = frame.sequence_num;
+        send_frame(Frame::ACK);
+
+        if (is_sequence_)
+        {
+            buf_.insert(buf_.end(), frame.data, frame.data + frame.data_size);
+            return true;
+        }
         else
         {
-            complete_read(buf, length);
+            complete_read(frame.data, frame.data_size);
             return false;
         }
     }
 
     bool Protocol::on_setrecv()
     {
+        send_frame(Frame::ACK);
         reset();
         current_mode_ = Mode::Server;
         return true;
@@ -189,7 +212,9 @@ namespace sprot
     {
         if (max_capacity < buf_.size())
             THROW(exceptions::Buffer_Overflow);
-        memcpy(buf, &*buf_.begin(), buf_.size());
+
+        if (!buf_.empty())
+            memcpy(buf, &*buf_.begin(), buf_.size());
     }
 
     void Protocol::send_data(const unsigned char* data, size_t length)
@@ -214,6 +239,22 @@ namespace sprot
         transport_->write(frame, sizeof(frame));
     }
 
+    Protocol::Data_Frame Protocol::make_data_frame(unsigned char* buf, size_t length)
+    {
+        if (length < 3)
+            THROW(exceptions::Invalid_Frame);
+
+        length -= 3;
+
+        Data_Frame frame;
+        frame.type = static_cast<Frame::Type>(buf[0]);
+        frame.data = buf + 2;
+        frame.data_size = length;
+        frame.sequence_num = buf[1];
+
+        return frame;
+    }
+
 namespace testing
 {
     class Dummy_Transport: public Transport_Interface
@@ -222,14 +263,69 @@ namespace testing
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
-                unsigned char setrecv[2] = { 0x0f, 0x38 };
-                memcpy(buf, setrecv, sizeof(setrecv));
-                return sizeof(setrecv);
+                static unsigned char seq = 0;
+
+                unsigned char data[6] = {0};
+
+                if (seq == 0)
+                {
+                    seq++;
+
+                    data[0] = 0x0c;
+                    data[1] = 0x6a;
+
+                    memcpy(buf, data, 2);
+                    return 2;
+                }
+
+                if (seq == 1)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+                    data[1] = 1;
+
+                    data[2] = 0xde;
+                    data[3] = 0xad;
+                    data[4] = util::crc7(data, 4);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 5;
+                }
+
+                if (seq == 2)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+                    data[1] = 2;
+
+                    data[2] = 0xbe;
+                    data[3] = 0xee;
+                    data[4] = 0xef;
+                    data[5] = util::crc7(data, 5);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 6;
+                }
+
+                if (seq == 3)
+                {
+                    seq++;
+
+                    data[0] = 0x0d;
+                    data[1] = 0x2b;
+
+                    memcpy(buf, data, 2);
+                    return 2;
+                }
+
+                return 0;
             }
 
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
-                return 0;
+                return buf_size;
             }
     };
 
@@ -239,7 +335,19 @@ namespace testing
         Protocol proto(&transport);
         
         char buf[256] = {0};
-        proto.read(buf, sizeof(buf));
+        char ethalon[256] = {0xde, 0xad, 0xbe, 0xee, 0xef};
+
+        if (proto.read(buf, sizeof(buf)) != 5)
+        {
+            printf("proto.read() returned incorrect size.\n");
+            return false;
+        }
+
+        if (memcmp(buf, ethalon, 5) != 0)
+        {
+            printf("proto.read() got incorrect data.\n");
+            return false;
+        }
 
         return true;
     }
@@ -285,4 +393,3 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	return 0;
 }
-
