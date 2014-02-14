@@ -112,8 +112,8 @@ namespace sprot
 
             //Basically waiting means working in server mode waiting to receive a specific frame - 
             //mode switch frame and exiting in case the frame is received or timeout reached.
-            void wait_send_mode(size_t timeout = infinite_wait);
-            void wait_recv_mode(size_t timeout = infinite_wait);
+            bool wait_send_mode(size_t timeout = infinite_wait);
+            bool wait_recv_mode(size_t timeout = infinite_wait);
 
 
         private:

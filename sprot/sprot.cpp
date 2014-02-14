@@ -153,7 +153,6 @@ namespace sprot
 
     void Protocol::reset()
     {
-        current_mode_ = Mode::Undefined;
         is_sequence_ = false;
         sequence_num_ = 0;
         
@@ -257,6 +256,30 @@ namespace sprot
         return frame;
     }
 
+    bool Protocol::wait_send_mode(size_t timeout)
+    {
+        if (current_mode_ == Mode::Client)
+            return true;
+        
+        current_mode_ = Mode::Undefined;
+        unsigned char buf[50];
+        read(buf, sizeof(buf), timeout);
+
+        return (current_mode_ == Mode::Client);
+    }
+    
+    bool Protocol::wait_recv_mode(size_t timeout)
+    {
+        if (current_mode_ == Mode::Server)
+            return true;
+        
+        current_mode_ = Mode::Undefined;
+        unsigned char buf[50];
+        read(buf, sizeof(buf), timeout);
+
+        return (current_mode_ == Mode::Server);
+    }
+
 namespace testing
 {
     class Dummy_Transport: public Transport_Interface
@@ -350,6 +373,18 @@ namespace testing
                     return 6;
                 }
 
+                //Sending switch to client mode command
+                if (seq == 5)
+                {
+                    seq++;
+
+                    data[0] = 0x0e;
+                    data[1] = 0x79;
+
+                    memcpy(buf, data, sizeof(data));
+                    return 2;
+                }
+
                 return 0;
             }
 
@@ -389,6 +424,12 @@ namespace testing
         if (memcmp(buf, ethalon2, 3) != 0)
         {
             printf("proto.read() got incorrect data.\n");
+            return false;
+        }
+
+        if (!proto.wait_send_mode())
+        {
+            printf("proto.wait_send_mode() failed.\n");
             return false;
         }
 
