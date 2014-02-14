@@ -92,9 +92,17 @@ namespace sprot
 
             struct Data_Frame: public Frame
             {
-                unsigned char* data = 0;
+                const unsigned char* data = 0;
                 size_t data_size = 0;
                 unsigned char sequence_num = 0;
+
+                Data_Frame(const unsigned char* buf, size_t size, unsigned char sequence):
+                data(buf),
+                data_size(size),
+                sequence_num(sequence)
+                {
+                    type = Frame::DATA;
+                }
             };
 
             Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024 * 1024);
@@ -115,6 +123,10 @@ namespace sprot
             Mode::Type current_mode_;
             bool is_sequence_;
             std::vector<unsigned char> buf_;
+            
+            unsigned char* out_buf_;
+            size_t out_buf_sz_;
+
             size_t recv_buf_reserve_;
             unsigned char sequence_num_;
 
@@ -123,10 +135,10 @@ namespace sprot
 
             //Returns true when more frames are needed before returning data to upper layer,
             //false means whole data portion was received, read should stop and return data to upper layer.
-            bool on_frame(unsigned char* buf, size_t recv_length, size_t max_capacity);
+            bool on_frame(const unsigned char* buf, size_t recv_length, size_t max_capacity);
             
             bool on_seqbegin();
-            bool on_seqend(unsigned char* buf, size_t max_capacity);
+            bool on_seqend();
 
             bool on_setsend();
             bool on_setrecv();
@@ -136,10 +148,10 @@ namespace sprot
             void send_frame(Frame::Type type, const unsigned char* buf = 0, size_t length = 0);
             void send_data(const unsigned char* data, size_t length);
 
-            void complete_read(unsigned char* buf, size_t max_capacity);
+            void complete_read();
             void reset();
 
-            Data_Frame make_data_frame(unsigned char* buf, size_t length);
+            Data_Frame make_data_frame(const unsigned char* buf, size_t length);
     };
 
 namespace util

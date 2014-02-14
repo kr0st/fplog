@@ -67,7 +67,9 @@ namespace sprot
     current_mode_(Mode::Undefined),
     is_sequence_(false),
     recv_buf_reserve_(recv_buf_reserve),
-    sequence_num_(0)
+    sequence_num_(0),
+    out_buf_(0),
+    out_buf_sz_(0)
     {
         if (!transport_)
             THROW(exceptions::Incorrect_Parameter);
@@ -92,6 +94,9 @@ namespace sprot
                 THROW(exceptions::Incorrect_Mode);
         }
 
+        out_buf_ = static_cast<unsigned char*>(buf);
+        out_buf_sz_ = buf_size;
+
         bool looping = true;
         while(looping)
         {
@@ -108,7 +113,7 @@ namespace sprot
         return read_data;
     }
     
-    bool Protocol::on_frame(unsigned char* buf, size_t recv_length, size_t max_capacity)
+    bool Protocol::on_frame(const unsigned char* buf, size_t recv_length, size_t max_capacity)
     {
         if (recv_length == 0)
             return true;
@@ -121,7 +126,7 @@ namespace sprot
             case Frame::ACK: break;
             case Frame::NACK: break;
             case Frame::SEQBEGIN: return on_seqbegin();
-            case Frame::SEQEND: return on_seqend(buf, max_capacity);
+            case Frame::SEQEND: return on_seqend();
             case Frame::SETSEND: return on_setsend();
             case Frame::SETRECV: return on_setrecv();
             case Frame::DATA: return on_data(make_data_frame(buf, recv_length));
@@ -138,11 +143,11 @@ namespace sprot
         return true;
     }
 
-    bool Protocol::on_seqend(unsigned char* buf, size_t max_capacity)
+    bool Protocol::on_seqend()
     {
         is_sequence_ = false;
         send_frame(Frame::ACK);
-        complete_read(buf, max_capacity);
+        complete_read();
         return false;
     }
 
@@ -155,6 +160,9 @@ namespace sprot
         std::vector<unsigned char> empty;
         buf_.swap(empty);
         buf_.reserve(recv_buf_reserve_);
+
+        out_buf_ = 0;
+        out_buf_sz_ = 0;
     }
 
     bool Protocol::on_setsend()
@@ -183,14 +191,13 @@ namespace sprot
         sequence_num_ = frame.sequence_num;
         send_frame(Frame::ACK);
 
+        buf_.insert(buf_.end(), frame.data, frame.data + frame.data_size);
+
         if (is_sequence_)
-        {
-            buf_.insert(buf_.end(), frame.data, frame.data + frame.data_size);
             return true;
-        }
         else
         {
-            complete_read(frame.data, frame.data_size);
+            complete_read();
             return false;
         }
     }
@@ -208,13 +215,13 @@ namespace sprot
         THROW(exceptions::Not_Implemented);
     }
 
-    void Protocol::complete_read(unsigned char* buf, size_t max_capacity)
+    void Protocol::complete_read()
     {
-        if (max_capacity < buf_.size())
+        if (out_buf_sz_ < buf_.size())
             THROW(exceptions::Buffer_Overflow);
 
         if (!buf_.empty())
-            memcpy(buf, &*buf_.begin(), buf_.size());
+            memcpy(out_buf_, &*buf_.begin(), buf_.size());
     }
 
     void Protocol::send_data(const unsigned char* data, size_t length)
@@ -239,18 +246,13 @@ namespace sprot
         transport_->write(frame, sizeof(frame));
     }
 
-    Protocol::Data_Frame Protocol::make_data_frame(unsigned char* buf, size_t length)
+    Protocol::Data_Frame Protocol::make_data_frame(const unsigned char* buf, size_t length)
     {
         if (length < 3)
             THROW(exceptions::Invalid_Frame);
 
         length -= 3;
-
-        Data_Frame frame;
-        frame.type = static_cast<Frame::Type>(buf[0]);
-        frame.data = buf + 2;
-        frame.data_size = length;
-        frame.sequence_num = buf[1];
+        Data_Frame frame(buf + 2, length, buf[1]);
 
         return frame;
     }
@@ -267,6 +269,7 @@ namespace testing
 
                 unsigned char data[6] = {0};
 
+                //First sending sequence start frame
                 if (seq == 0)
                 {
                     seq++;
@@ -278,11 +281,14 @@ namespace testing
                     return 2;
                 }
 
+                //Then sending the first data frame.
                 if (seq == 1)
                 {
                     seq++;
 
                     data[0] = 0x10;
+
+                    //Take note that frame sequence numbers start with 1.
                     data[1] = 1;
 
                     data[2] = 0xde;
@@ -293,6 +299,7 @@ namespace testing
                     return 5;
                 }
 
+                //Second data frame
                 if (seq == 2)
                 {
                     seq++;
@@ -309,6 +316,7 @@ namespace testing
                     return 6;
                 }
 
+                //Finally sending sequence end
                 if (seq == 3)
                 {
                     seq++;
@@ -318,6 +326,28 @@ namespace testing
 
                     memcpy(buf, data, 2);
                     return 2;
+                }
+
+                //Sending an ordinary data frame
+                if (seq == 4)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+
+                    //Each read (when it's completed) resets sequence number counter.
+                    //Same story with write - basically sequence numbers are needed
+                    //only inside one read-write session to make sure there are no
+                    //double reads of the same data frame.
+                    data[1] = 1;
+
+                    data[2] = 0x45;
+                    data[3] = 0xe9;
+                    data[4] = 0xa6;
+                    data[5] = util::crc7(data, 5);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 6;
                 }
 
                 return 0;
@@ -336,6 +366,7 @@ namespace testing
         
         char buf[256] = {0};
         char ethalon[256] = {0xde, 0xad, 0xbe, 0xee, 0xef};
+        char ethalon2[256] = {0x45, 0xe9, 0xa6};
 
         if (proto.read(buf, sizeof(buf)) != 5)
         {
@@ -344,6 +375,18 @@ namespace testing
         }
 
         if (memcmp(buf, ethalon, 5) != 0)
+        {
+            printf("proto.read() got incorrect data.\n");
+            return false;
+        }
+
+        if (proto.read(buf, sizeof(buf)) != 3)
+        {
+            printf("proto.read() returned incorrect size.\n");
+            return false;
+        }
+
+        if (memcmp(buf, ethalon2, 3) != 0)
         {
             printf("proto.read() got incorrect data.\n");
             return false;
