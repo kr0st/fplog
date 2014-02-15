@@ -152,6 +152,9 @@ namespace sprot
             void reset();
 
             Data_Frame make_data_frame(const unsigned char* buf, size_t length);
+
+            size_t read_impl(void* buf, size_t buf_size, size_t timeout = infinite_wait, bool no_mode_check = false);
+            size_t write_impl(const void* buf, size_t buf_size, size_t timeout = infinite_wait, bool no_mode_check = false);
     };
 
 namespace util

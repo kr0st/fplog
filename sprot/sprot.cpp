@@ -75,7 +75,7 @@ namespace sprot
             THROW(exceptions::Incorrect_Parameter);
     }
 
-    size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
+    size_t Protocol::read_impl(void* buf, size_t buf_size, size_t timeout, bool no_mode_check)
     {
         if (!buf)
             THROW(exceptions::Incorrect_Parameter);
@@ -83,15 +83,21 @@ namespace sprot
         if (timeout != Protocol::infinite_wait)
             THROW(exceptions::Not_Implemented);
 
-        if (current_mode_ == Mode::Undefined)
-            current_mode_ = Mode::Server;
-
-        if (current_mode_ == Mode::Client)
+        if (!no_mode_check)
         {
-            if (switching_ == Switching::Auto)
-                ; //TODO: Here we should launch mode switch
-            else
-                THROW(exceptions::Incorrect_Mode);
+            if (current_mode_ == Mode::Undefined)
+                current_mode_ = Mode::Server;
+
+            if (current_mode_ == Mode::Client)
+            {
+                if (switching_ == Switching::Auto)
+                {
+                    if (!wait_recv_mode(timeout))
+                        THROW(exceptions::Incorrect_Mode);
+                }
+                else
+                    THROW(exceptions::Incorrect_Mode);
+            }
         }
 
         out_buf_ = static_cast<unsigned char*>(buf);
@@ -111,6 +117,16 @@ namespace sprot
         reset();
 
         return read_data;
+    }
+    
+    size_t Protocol::write_impl(const void* buf, size_t buf_size, size_t timeout, bool no_mode_check)
+    {
+        THROW(exceptions::Not_Implemented);
+    }
+
+    size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
+    {
+        return read_impl(buf, buf_size, timeout);
     }
     
     bool Protocol::on_frame(const unsigned char* buf, size_t recv_length, size_t max_capacity)
@@ -168,6 +184,10 @@ namespace sprot
     {
         send_frame(Frame::ACK);
         reset();
+
+        if (current_mode_ == Mode::Client)
+            return true;
+        
         current_mode_ = Mode::Client;
         return false;
     }
@@ -205,13 +225,17 @@ namespace sprot
     {
         send_frame(Frame::ACK);
         reset();
+
+        if (current_mode_ == Mode::Server)
+            return true;
+        
         current_mode_ = Mode::Server;
-        return true;
+        return false;
     }
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
-        THROW(exceptions::Not_Implemented);
+        return write_impl(buf, buf_size, timeout);
     }
 
     void Protocol::complete_read()
@@ -263,7 +287,7 @@ namespace sprot
         
         current_mode_ = Mode::Undefined;
         unsigned char buf[50];
-        read(buf, sizeof(buf), timeout);
+        read_impl(buf, sizeof(buf), timeout, true);
 
         return (current_mode_ == Mode::Client);
     }
@@ -275,7 +299,7 @@ namespace sprot
         
         current_mode_ = Mode::Undefined;
         unsigned char buf[50];
-        read(buf, sizeof(buf), timeout);
+        read_impl(buf, sizeof(buf), timeout, true);
 
         return (current_mode_ == Mode::Server);
     }
@@ -385,6 +409,18 @@ namespace testing
                     return 2;
                 }
 
+                //Sending switch to server mode command
+                if (seq == 6)
+                {
+                    seq++;
+
+                    data[0] = 0x0f;
+                    data[1] = 0x38;
+
+                    memcpy(buf, data, sizeof(data));
+                    return 2;
+                }
+
                 return 0;
             }
 
@@ -430,6 +466,12 @@ namespace testing
         if (!proto.wait_send_mode())
         {
             printf("proto.wait_send_mode() failed.\n");
+            return false;
+        }
+
+        if (!proto.wait_recv_mode())
+        {
+            printf("proto.wait_recv_mode() failed.\n");
             return false;
         }
 
