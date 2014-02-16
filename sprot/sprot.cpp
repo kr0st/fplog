@@ -2,7 +2,9 @@
 //
 #include "stdafx.h"
 #include "sprot.h"
+#include <windows.h>
 
+using namespace std::chrono;
 
 namespace sprot
 {
@@ -80,9 +82,6 @@ namespace sprot
         if (!buf)
             THROW(exceptions::Incorrect_Parameter);
 
-        if (timeout != Protocol::infinite_wait)
-            THROW(exceptions::Not_Implemented);
-
         if (!no_mode_check)
         {
             if (current_mode_ == Mode::Undefined)
@@ -102,12 +101,20 @@ namespace sprot
 
         out_buf_ = static_cast<unsigned char*>(buf);
         out_buf_sz_ = buf_size;
+        
+        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
         bool looping = true;
         while(looping)
         {
-            size_t recv_sz = transport_->read(buf, buf_size);
-            if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
+            size_t recv_sz = transport_->read(buf, buf_size, timeout);
+
+            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+            if (timer_stop - timer_start >= converted_timeout)
+                THROW(exceptions::Timeout);
+            
+                if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
                 looping = on_frame(static_cast<unsigned char*>(buf), recv_sz, buf_size);
             else
                 send_frame(Frame::NACK);

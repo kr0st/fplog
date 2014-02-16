@@ -115,6 +115,8 @@ namespace sprot
             bool wait_send_mode(size_t timeout = infinite_wait);
             bool wait_recv_mode(size_t timeout = infinite_wait);
 
+            static const unsigned default_send_timeout = 100; //ms
+
 
         private:
 
@@ -245,6 +247,16 @@ namespace sprot { namespace exceptions
         public:
 
             Invalid_Frame(const char* facility, const char* file = "", int line = 0, const char* message = "Received an invalid frame."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
+    class Timeout: public Exception
+    {
+        public:
+
+            Timeout(const char* facility, const char* file = "", int line = 0, const char* message = "Timeout while reading or writing."):
             Exception(facility, file, line, message)
             {
             }
