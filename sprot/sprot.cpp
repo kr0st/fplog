@@ -107,14 +107,13 @@ namespace sprot
         bool looping = true;
         while(looping)
         {
-            size_t recv_sz = transport_->read(buf, buf_size, timeout);
-
             time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
             system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
             if (timer_stop - timer_start >= converted_timeout)
                 THROW(exceptions::Timeout);
-            
-                if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
+
+            size_t recv_sz = transport_->read(buf, buf_size, timeout);            
+            if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
                 looping = on_frame(static_cast<unsigned char*>(buf), recv_sz, buf_size);
             else
                 send_frame(Frame::NACK);
