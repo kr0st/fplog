@@ -133,7 +133,6 @@ namespace sprot
             unsigned char sequence_num_;
 
             static bool crc_check(const unsigned char* buf, size_t length);
-            void send_control_frame(Frame::Type frame);
 
             //Returns true when more frames are needed before returning data to upper layer,
             //false means whole data portion was received, read should stop and return data to upper layer.
@@ -147,8 +146,8 @@ namespace sprot
 
             bool on_data(Data_Frame& frame);
 
-            void send_frame(Frame::Type type, const unsigned char* buf = 0, size_t length = 0);
-            void send_data(const unsigned char* data, size_t length);
+            size_t send_frame(Frame::Type type, size_t timeout = infinite_wait, const unsigned char* buf = 0, size_t length = 0);
+            size_t send_data(const unsigned char* data, size_t length, size_t timeout = infinite_wait);
 
             void complete_read();
             void reset();

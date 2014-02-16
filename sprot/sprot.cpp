@@ -52,17 +52,6 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
-    void Protocol::send_control_frame(Frame::Type frame)
-    {
-        unsigned char buf[2];
-        
-        buf[0] = frame;
-        buf[1] = util::crc7(buf, 1);
-
-        if (transport_->write(buf, sizeof(buf)) != sizeof(buf))
-            THROW(exceptions::Write_Failed);
-    }
-
     Protocol::Protocol(Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve):
     transport_(transport),
     switching_(switching),
@@ -127,11 +116,52 @@ namespace sprot
     
     size_t Protocol::write_impl(const void* buf, size_t buf_size, size_t timeout, bool no_mode_check)
     {
-        THROW(exceptions::Not_Implemented);
+        if (!buf)
+            THROW(exceptions::Incorrect_Parameter);
+
+        if (!no_mode_check)
+        {
+            if (current_mode_ == Mode::Undefined)
+                current_mode_ = Mode::Client;
+
+            if (current_mode_ == Mode::Server)
+            {
+                if (switching_ == Switching::Auto)
+                {
+                    if (!wait_send_mode(timeout))
+                        THROW(exceptions::Incorrect_Mode);
+                }
+                else
+                    THROW(exceptions::Incorrect_Mode);
+            }
+        }
+
+        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
+        size_t op_timeout = 200; //ms
+
+        int fail_count = 5;
+        while(fail_count > 0)
+        {
+            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+            if (timer_stop - timer_start >= converted_timeout)
+                THROW(exceptions::Timeout);
+            
+            fail_count--;
+        }
+
+        if (fail_count == 0)
+            THROW(exceptions::Write_Failed);
+
+        size_t written = buf_.size();
+        reset();
+
+        return written;
     }
 
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
+        reset();
         return read_impl(buf, buf_size, timeout);
     }
     
@@ -241,6 +271,7 @@ namespace sprot
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
+        reset();
         return write_impl(buf, buf_size, timeout);
     }
 
@@ -253,26 +284,41 @@ namespace sprot
             memcpy(out_buf_, &*buf_.begin(), buf_.size());
     }
 
-    void Protocol::send_data(const unsigned char* data, size_t length)
+    size_t Protocol::send_data(const unsigned char* data, size_t length, size_t timeout)
     {
-        THROW(exceptions::Not_Implemented);
+        size_t frame_sz = length + 3;
+        unsigned char* frame = new unsigned char [frame_sz]; //3 bytes overhead for data frame - type, seq #, crc
+
+        frame[0] = Frame::DATA;
+        frame[1] = sequence_num_;
+
+        memcpy(&frame[2], data, length);
+        frame[frame_sz - 1] = util::crc7(frame, 1);
+
+        if (transport_->write(frame, frame_sz, timeout) != frame_sz)
+            THROW(exceptions::Write_Failed);
+
+        return frame_sz;
     }
 
-    void Protocol::send_frame(Frame::Type type, const unsigned char* buf, size_t length)
+    size_t Protocol::send_frame(Frame::Type type, size_t timeout, const unsigned char* buf, size_t length)
     {
         if (type == Frame::DATA)
         {
             if (!buf || (length == 0))
                 THROW(exceptions::Incorrect_Parameter);
 
-            send_data(buf, length);
+            return send_data(buf, length, timeout);
         }
 
         unsigned char frame[2];
         frame[0] = type;
         frame[1] = util::crc7(frame, 1);
 
-        transport_->write(frame, sizeof(frame));
+        if (transport_->write(frame, sizeof(frame), timeout) != sizeof(frame))
+            THROW(exceptions::Write_Failed);
+
+        return 1; //Control frame has 1 byte actual payload
     }
 
     Protocol::Data_Frame Protocol::make_data_frame(const unsigned char* buf, size_t length)
@@ -280,7 +326,7 @@ namespace sprot
         if (length < 3)
             THROW(exceptions::Invalid_Frame);
 
-        length -= 3;
+        length -= 3; //3 bytes of overhead - type, sequence # and crc
         Data_Frame frame(buf + 2, length, buf[1]);
 
         return frame;
