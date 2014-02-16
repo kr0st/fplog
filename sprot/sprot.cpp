@@ -52,7 +52,7 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
-    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve):
+    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve, size_t MTU):
     transport_(transport),
     switching_(switching),
     current_mode_(Mode::Undefined),
@@ -60,7 +60,8 @@ namespace sprot
     recv_buf_reserve_(recv_buf_reserve),
     sequence_num_(0),
     out_buf_(0),
-    out_buf_sz_(0)
+    out_buf_sz_(0),
+    MTU_(MTU - 3) //3 bytes of overhead for data frame
     {
         if (!transport_)
             THROW(exceptions::Incorrect_Parameter);
@@ -139,24 +140,103 @@ namespace sprot
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
         size_t op_timeout = 200; //ms
 
-        int fail_count = 5;
-        while(fail_count > 0)
+        bool seq_begin_sent = false;
+        long data_left = buf_size;
+        size_t data_frame_counter = 0;
+        
+        Frame control_frame;
+        Data_Frame data_frame;
+        Frame* current_frame = &data_frame;
+
+        do 
         {
-            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
-            if (timer_stop - timer_start >= converted_timeout)
-                THROW(exceptions::Timeout);
+            int fail_count = 5;
+
+            if ((data_left > MTU_) && !seq_begin_sent)
+            {
+                //Sending begin sequence
+                current_frame = &control_frame;
+                control_frame.type = Frame::SEQBEGIN;
+            }
+
+            if ((data_left <= 0) && !seq_begin_sent)
+                current_frame = 0;
+
+            if ((data_left <= 0) && seq_begin_sent)
+            {
+                //Sending end sequence
+                current_frame = &control_frame;
+                control_frame.type = Frame::SEQEND;
+            }
+
+            if (current_frame == &data_frame)
+            {
+                //Need to send data frame
+                data_frame.data = static_cast<const unsigned char*>(buf) + data_frame_counter * MTU_;
+                data_frame.data_size = data_left > MTU_ ? MTU_ : data_left;
+            }
+
+            if (current_frame == 0)
+                break;
+
+            while (fail_count > 0)
+            {
+                time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+                system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+                if (timer_stop - timer_start >= converted_timeout)
+                    THROW(exceptions::Timeout);
             
-            fail_count--;
-        }
+                try
+                {
+                    unsigned char temp_buf[256];
 
-        if (fail_count == 0)
-            THROW(exceptions::Write_Failed);
+                    if (current_frame == &data_frame)
+                    {
+                        size_t bytes_sent = send_frame(Frame::DATA, op_timeout, data_frame.data, data_frame.data_size);
+                        if (transport_->read(temp_buf, sizeof(temp_buf), op_timeout) == 2) //Control frame size is always 2 bytes
+                        {
+                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 1))
+                            {
+                                data_left -= bytes_sent;
+                                data_frame_counter++;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        send_frame(current_frame->type, op_timeout);
+                        if (transport_->read(temp_buf, sizeof(temp_buf), op_timeout) == 2) //Control frame size is always 2 bytes
+                        {
+                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 1))
+                            {
+                                if (current_frame->type == Frame::SEQBEGIN)
+                                    seq_begin_sent = true;
+                                if (current_frame->type == Frame::SEQEND)
+                                    current_frame = 0; //Time to exit, data sent
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (exceptions::Timeout)
+                {
+                }
+                catch (exceptions::Write_Failed)
+                {
+                }
 
-        size_t written = buf_.size();
+                fail_count--;
+            }
+
+            if (fail_count == 0)
+                THROW(exceptions::Write_Failed);
+
+        } while (current_frame != 0);
+
         reset();
 
-        return written;
+        return buf_size;
     }
 
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
