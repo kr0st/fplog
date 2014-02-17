@@ -152,7 +152,7 @@ namespace sprot
         {
             int fail_count = 5;
 
-            if ((data_left > MTU_) && !seq_begin_sent)
+            if ((data_left > static_cast<long>(MTU_)) && !seq_begin_sent)
             {
                 //Sending begin sequence
                 current_frame = &control_frame;
@@ -173,7 +173,7 @@ namespace sprot
             {
                 //Need to send data frame
                 data_frame.data = static_cast<const unsigned char*>(buf) + data_frame_counter * MTU_;
-                data_frame.data_size = data_left > MTU_ ? MTU_ : data_left;
+                data_frame.data_size = data_left > static_cast<long>(MTU_) ? MTU_ : data_left;
             }
 
             if (current_frame == 0)
@@ -195,9 +195,9 @@ namespace sprot
                         size_t bytes_sent = send_frame(Frame::DATA, op_timeout, data_frame.data, data_frame.data_size);
                         if (transport_->read(temp_buf, sizeof(temp_buf), op_timeout) == 2) //Control frame size is always 2 bytes
                         {
-                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 1))
+                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 2))
                             {
-                                data_left -= bytes_sent;
+                                data_left -= (bytes_sent - 3);
                                 data_frame_counter++;
                                 break;
                             }
@@ -373,7 +373,7 @@ namespace sprot
         frame[1] = sequence_num_;
 
         memcpy(&frame[2], data, length);
-        frame[frame_sz - 1] = util::crc7(frame, 1);
+        frame[frame_sz - 1] = util::crc7(frame, frame_sz - 1);
 
         if (transport_->write(frame, frame_sz, timeout) != frame_sz)
             THROW(exceptions::Write_Failed);
@@ -438,6 +438,41 @@ namespace sprot
 
 namespace testing
 {
+    unsigned char* random_data_small = 0;
+    unsigned char* random_data_big = 0;
+
+    class Write_Test_Transport: public Transport_Interface
+    {
+        public:
+
+            size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                unsigned char frame[2];
+                frame[0] = 0x0a;
+                frame[1] = 0x5f;
+                memcpy(buf, frame, sizeof(frame));
+                return sizeof(frame);
+            }
+
+            size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                static unsigned counter = 0;
+
+                if (counter == 0) //Received data frame of size < MTU-3
+                {
+                    if ((buf_size == (213 + 3)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_small, 213) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+                }
+
+                return buf_size;
+            }
+    };
+
     class Dummy_Transport: public Transport_Interface
     {
         public:
@@ -564,6 +599,15 @@ namespace testing
 
     bool proto_test()
     {
+        random_data_small = new unsigned char[213]; //Less than default MTU
+        random_data_big = new unsigned char[(1024 * 1024 - 3) * 3 + 123]; //3 MTUs + 123 bytes = seq begin frame, 4 data frames, seq end frame
+
+        for (int i = 0; i < 213; ++i)
+            random_data_small[i] = (unsigned char) rand();
+
+        for (int i = 0; i < (1024 * 1024 - 3) * 3 + 123; ++i)
+            random_data_big[i] = (unsigned char) rand();
+
         Dummy_Transport transport;
         Protocol proto(&transport);
         
@@ -604,6 +648,24 @@ namespace testing
         if (!proto.wait_recv_mode())
         {
             printf("proto.wait_recv_mode() failed.\n");
+            return false;
+        }
+
+        Write_Test_Transport write_test_transport;
+        Protocol write_test_protocol(&write_test_transport);
+
+        try
+        {
+            write_test_protocol.write(random_data_small, 213);
+        }
+        catch(exceptions::Write_Failed)
+        {
+            printf("write_test_protocol.write() failed.\n");
+            return false;
+        }
+        catch(exceptions::Timeout)
+        {
+            printf("write_test_protocol.write() failed with timeout.\n");
             return false;
         }
 
