@@ -159,6 +159,9 @@ namespace sprot
                 control_frame.type = Frame::SEQBEGIN;
             }
 
+            if ((data_left > static_cast<long>(MTU_)) && seq_begin_sent)
+                current_frame = &data_frame;
+
             if ((data_left <= 0) && !seq_begin_sent)
                 current_frame = 0;
 
@@ -208,7 +211,7 @@ namespace sprot
                         send_frame(current_frame->type, op_timeout);
                         if (transport_->read(temp_buf, sizeof(temp_buf), op_timeout) == 2) //Control frame size is always 2 bytes
                         {
-                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 1))
+                            if ((temp_buf[0] == Frame::ACK) && crc_check(temp_buf, 2))
                             {
                                 if (current_frame->type == Frame::SEQBEGIN)
                                     seq_begin_sent = true;
@@ -441,6 +444,10 @@ namespace testing
     unsigned char* random_data_small = 0;
     unsigned char* random_data_big = 0;
 
+    const size_t default_mtu = 1024 * 1024;
+    const size_t small_data_size = 213; //Less than default MTU
+    const size_t big_data_size = (1024 * 1024 - 3) * 3 + 123; //3 MTUs + 123 bytes = seq begin frame, 4 data frames, seq end frame
+
     class Write_Test_Transport: public Transport_Interface
     {
         public:
@@ -460,11 +467,52 @@ namespace testing
 
                 if (counter == 0) //Received data frame of size < MTU-3
                 {
-                    if ((buf_size == (213 + 3)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    counter++;
+                    if ((buf_size == (small_data_size + 3)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
-                        if (memcmp((unsigned char*)buf + 2, random_data_small, 213) != 0)
+                        if (memcmp((unsigned char*)buf + 2, random_data_small, small_data_size) != 0)
                             THROW(exceptions::Write_Failed);
                     }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    return buf_size;
+                }
+
+                if (counter == 1) //Seq begin
+                {
+                    counter++;
+                    if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0c) && (((unsigned char*)buf)[1] == 0x6a))
+                        return buf_size;
+                    else
+                        THROW(exceptions::Write_Failed);
+                }
+
+                static size_t composite_frame_size = 0;
+
+                if ((counter > 1) && (counter < 6)) //Bigger data frame parts 1, 2, 3 and 4
+                {
+                    counter++;
+                    if (((buf_size == default_mtu) || (counter == 6)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_big + (counter - 3) * (default_mtu - 3), buf_size - 3) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    composite_frame_size += (buf_size - 3);
+                    return buf_size;
+                }
+
+                if ((counter == 6) && (composite_frame_size != big_data_size))
+                    THROW(exceptions::Write_Failed);
+
+                if (counter == 6)
+                {
+                    counter++;
+                    if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0d) && (((unsigned char*)buf)[1] == 0x2b))
+                        return buf_size;
                     else
                         THROW(exceptions::Write_Failed);
                 }
@@ -599,13 +647,13 @@ namespace testing
 
     bool proto_test()
     {
-        random_data_small = new unsigned char[213]; //Less than default MTU
-        random_data_big = new unsigned char[(1024 * 1024 - 3) * 3 + 123]; //3 MTUs + 123 bytes = seq begin frame, 4 data frames, seq end frame
+        random_data_small = new unsigned char[small_data_size];
+        random_data_big = new unsigned char[big_data_size];
 
-        for (int i = 0; i < 213; ++i)
+        for (int i = 0; i < small_data_size; ++i)
             random_data_small[i] = (unsigned char) rand();
 
-        for (int i = 0; i < (1024 * 1024 - 3) * 3 + 123; ++i)
+        for (int i = 0; i < big_data_size; ++i)
             random_data_big[i] = (unsigned char) rand();
 
         Dummy_Transport transport;
@@ -656,7 +704,8 @@ namespace testing
 
         try
         {
-            write_test_protocol.write(random_data_small, 213);
+            write_test_protocol.write(random_data_small, small_data_size);
+            write_test_protocol.write(random_data_big, big_data_size);
         }
         catch(exceptions::Write_Failed)
         {
