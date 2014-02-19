@@ -452,6 +452,133 @@ namespace testing
     const size_t small_data_size = 213; //Less than default MTU
     const size_t big_data_size = (1024 * 1024 - 3) * 3 + 123; //3 MTUs + 123 bytes = seq begin frame, 4 data frames, seq end frame
 
+    //Emulating sending given frames and receiving given replies:
+    //seqbegin - ack
+    //dataframe #1 - ack
+    //dataframe #2 - nack, nack, ack
+    //dataframe #3 - nack, ack
+    //dataframe #4 - ack
+    //seqend - nack, nack, nack, ack
+    class Write_Retransmit_Test_Transport: public Transport_Interface
+    {
+        public:
+
+            size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                static unsigned call_count = 0;
+                unsigned char frame[2];
+
+                if ((call_count == 0) || (call_count == 1) || (call_count == 4) || (call_count == 6) || (call_count == 7) || (call_count == 11))
+                {
+                    frame[0] = 0x0a;
+                    frame[1] = 0x5f;
+                }
+                else
+                {
+                    frame[0] = 0x0b;
+                    frame[1] = 0x1e;
+                }
+                
+                memcpy(buf, frame, sizeof(frame));
+                call_count++;
+                return sizeof(frame);
+            }
+
+            size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
+            {
+                static unsigned counter = 0;
+
+                if (counter == 0) //Seq begin
+                {
+                    counter++;
+                    if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0c) && (((unsigned char*)buf)[1] == 0x6a))
+                        return buf_size;
+                    else
+                        THROW(exceptions::Write_Failed);
+                }
+
+                static size_t composite_frame_size = 0;
+
+                if (counter == 1)
+                {
+                    counter++;
+                    if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 1) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_big + 0 * (default_mtu - 3), buf_size - 3) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    composite_frame_size += (buf_size - 3);
+                    return buf_size;
+                }
+
+                if ((counter > 1) && (counter < 5))
+                {
+                    counter++;
+                    if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 2) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_big + 1 * (default_mtu - 3), buf_size - 3) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    if ((counter == 5))
+                        composite_frame_size += (buf_size - 3);
+                    
+                    return buf_size;
+                }
+
+                if ((counter > 4) && (counter < 7))
+                {
+                    counter++;
+                    if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 3) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_big + 2 * (default_mtu - 3), buf_size - 3) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    if ((counter == 7))
+                        composite_frame_size += (buf_size - 3);
+                    
+                    return buf_size;
+                }
+
+                if (counter == 7)
+                {
+                    counter++;
+                    if ((((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 4) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    {
+                        if (memcmp((unsigned char*)buf + 2, random_data_big + 3 * (default_mtu - 3), buf_size - 3) != 0)
+                            THROW(exceptions::Write_Failed);
+                    }
+                    else
+                        THROW(exceptions::Write_Failed);
+
+                    composite_frame_size += (buf_size - 3);
+                    return buf_size;
+                }
+
+                if ((counter == 8) && (composite_frame_size != big_data_size))
+                    THROW(exceptions::Write_Failed);
+
+                if ((counter > 7) && (counter < 12))
+                {
+                    counter++;
+                    if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0d) && (((unsigned char*)buf)[1] == 0x2b))
+                        return buf_size;
+                    else
+                        THROW(exceptions::Write_Failed);
+                }
+
+                return buf_size;
+            }
+    };
+
     class Write_Test_Transport: public Transport_Interface
     {
         public:
@@ -710,6 +837,24 @@ namespace testing
         {
             write_test_protocol.write(random_data_small, small_data_size);
             write_test_protocol.write(random_data_big, big_data_size);
+        }
+        catch(exceptions::Write_Failed)
+        {
+            printf("write_test_protocol.write() failed.\n");
+            return false;
+        }
+        catch(exceptions::Timeout)
+        {
+            printf("write_test_protocol.write() failed with timeout.\n");
+            return false;
+        }
+
+        Write_Retransmit_Test_Transport write_retransmit_test_transport;
+        Protocol write_retransmit_test_protocol(&write_retransmit_test_transport);
+
+        try
+        {
+            write_retransmit_test_protocol.write(random_data_big, big_data_size);
         }
         catch(exceptions::Write_Failed)
         {
