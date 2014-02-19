@@ -148,6 +148,8 @@ namespace sprot
         Data_Frame data_frame;
         Frame* current_frame = &data_frame;
 
+        sequence_num_ = 1;
+
         do 
         {
             int fail_count = 5;
@@ -177,6 +179,7 @@ namespace sprot
                 //Need to send data frame
                 data_frame.data = static_cast<const unsigned char*>(buf) + data_frame_counter * MTU_;
                 data_frame.data_size = data_left > static_cast<long>(MTU_) ? MTU_ : data_left;
+                data_frame.sequence_num = sequence_num_;
             }
 
             if (current_frame == 0)
@@ -202,6 +205,7 @@ namespace sprot
                             {
                                 data_left -= (bytes_sent - 3);
                                 data_frame_counter++;
+                                sequence_num_++;
                                 break;
                             }
                         }
@@ -468,7 +472,7 @@ namespace testing
                 if (counter == 0) //Received data frame of size < MTU-3
                 {
                     counter++;
-                    if ((buf_size == (small_data_size + 3)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    if ((buf_size == (small_data_size + 3)) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 1) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_small, small_data_size) != 0)
                             THROW(exceptions::Write_Failed);
@@ -493,7 +497,7 @@ namespace testing
                 if ((counter > 1) && (counter < 6)) //Bigger data frame parts 1, 2, 3 and 4
                 {
                     counter++;
-                    if (((buf_size == default_mtu) || (counter == 6)) && (((unsigned char*)buf)[0] == 0x10) && Protocol::crc_check((unsigned char*)buf, buf_size))
+                    if (((buf_size == default_mtu) || (counter == 6)) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == (counter - 2)) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + (counter - 3) * (default_mtu - 3), buf_size - 3) != 0)
                             THROW(exceptions::Write_Failed);
