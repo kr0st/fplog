@@ -217,6 +217,16 @@ namespace sprot { namespace exceptions
             }
     };
 
+    class Read_Failed: public Exception
+    {
+        public:
+
+            Read_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Read operation failed."):
+            Exception(facility, file, line, message)
+            {
+            }
+    };
+
     class Incorrect_Parameter: public Exception
     {
         public:

@@ -652,7 +652,33 @@ namespace testing
             }
     };
 
-    class Dummy_Transport: public Transport_Interface
+
+    //Test description
+    //send: seqbegin
+    //recv: ack
+    //send: seqbegin
+    //recv: ack
+    //send: frame #1
+    //recv: ack
+    //send: frame #1
+    //recv: ack
+    //send: frame #1 with incorrect crc
+    //recv: nack
+    //send: frame #2
+    //recv: ack
+    //send: frame #1 with incorrect seq number
+    //recv: nack
+    //send: seqend with wrong crc
+    //recv: nack
+    //send: seqend
+    //recv: ack
+    //send: frame #3 with incorrect seq number
+    //recv: nack
+    //send: frame #3 with incorrect crc
+    //recv: nack
+    //send: frame #3
+    //recv: ack
+    class Read_Test_Transport: public Transport_Interface
     {
         public:
 
@@ -674,8 +700,20 @@ namespace testing
                     return 2;
                 }
 
-                //Then sending the first data frame.
+                //...and do it again to see if it breaks something
                 if (seq == 1)
+                {
+                    seq++;
+
+                    data[0] = 0x0c;
+                    data[1] = 0x6a;
+
+                    memcpy(buf, data, 2);
+                    return 2;
+                }
+
+                //Then sending the first data frame.
+                if (seq == 2)
                 {
                     seq++;
 
@@ -692,8 +730,44 @@ namespace testing
                     return 5;
                 }
 
+                //Repeating the first data frame.
+                if (seq == 3)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+
+                    //Take note that frame sequence numbers start with 1.
+                    data[1] = 1;
+
+                    data[2] = 0xde;
+                    data[3] = 0xad;
+                    data[4] = util::crc7(data, 4);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 5;
+                }
+
+                //Sending the first data frame once more now with broken crc.
+                if (seq == 4)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+
+                    //Take note that frame sequence numbers start with 1.
+                    data[1] = 1;
+
+                    data[2] = 0xde;
+                    data[3] = 0xad;
+                    data[4] = 0x88;
+
+                    memcpy(buf, data, sizeof(data));
+                    return 5;
+                }
+
                 //Second data frame
-                if (seq == 2)
+                if (seq == 5)
                 {
                     seq++;
 
@@ -709,8 +783,38 @@ namespace testing
                     return 6;
                 }
 
-                //Finally sending sequence end
-                if (seq == 3)
+                //First data frame returns with incorrect sequence number.
+                if (seq == 6)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+
+                    //Take note that frame sequence numbers start with 1.
+                    data[1] = 1;
+
+                    data[2] = 0xde;
+                    data[3] = 0xad;
+                    data[4] = util::crc7(data, 4);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 5;
+                }
+
+                //Sending sequence end with wrong crc
+                if (seq == 7)
+                {
+                    seq++;
+
+                    data[0] = 0x0d;
+                    data[1] = 0x3b;
+
+                    memcpy(buf, data, 2);
+                    return 2;
+                }
+
+                //Finally normal sequence end
+                if (seq == 8)
                 {
                     seq++;
 
@@ -721,8 +825,43 @@ namespace testing
                     return 2;
                 }
 
-                //Sending an ordinary data frame
-                if (seq == 4)
+                //Sending a standalone data frame with incorrect sequence number
+                if (seq == 9)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+
+                    data[1] = 2;
+
+                    data[2] = 0x45;
+                    data[3] = 0xe9;
+                    data[4] = 0xa6;
+                    data[5] = util::crc7(data, 5);
+
+                    memcpy(buf, data, sizeof(data));
+                    return 6;
+                }
+
+                //Sending a standalone data frame with incorrect crc
+                if (seq == 10)
+                {
+                    seq++;
+
+                    data[0] = 0x10;
+                    data[1] = 1;
+
+                    data[2] = 0x45;
+                    data[3] = 0xe9;
+                    data[4] = 0xa6;
+                    data[5] = 0x56;
+
+                    memcpy(buf, data, sizeof(data));
+                    return 6;
+                }
+
+                //Sending a correct standalone data frame
+                if (seq == 11)
                 {
                     seq++;
 
@@ -744,7 +883,7 @@ namespace testing
                 }
 
                 //Sending switch to client mode command
-                if (seq == 5)
+                if (seq == 12)
                 {
                     seq++;
 
@@ -756,7 +895,7 @@ namespace testing
                 }
 
                 //Sending switch to server mode command
-                if (seq == 6)
+                if (seq == 13)
                 {
                     seq++;
 
@@ -772,6 +911,26 @@ namespace testing
 
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
+                if (buf_size != 2)
+                    THROW(exceptions::Read_Failed);
+
+                static unsigned counter = 0;
+                
+                const unsigned char ack[] = { 0x0a, 0x5f };
+                const unsigned char nack[] = { 0x0b, 0x1e };
+
+                if ((counter == 4) || (counter == 6) || (counter == 7) || (counter == 9) || (counter == 10))
+                {
+                    counter++;
+                    if (memcmp(buf, nack, 2) != 0)
+                        THROW(exceptions::Read_Failed);
+                    return buf_size;
+                }
+
+                counter++;
+                if (memcmp(buf, ack, 2) != 0)
+                    THROW(exceptions::Read_Failed);
+
                 return buf_size;
             }
     };
@@ -787,46 +946,54 @@ namespace testing
         for (int i = 0; i < big_data_size; ++i)
             random_data_big[i] = (unsigned char) rand();
 
-        Dummy_Transport transport;
-        Protocol proto(&transport);
+        Read_Test_Transport read_test_transport;
+        Protocol read_test_protocol(&read_test_transport);
         
         char buf[256] = {0};
         char ethalon[256] = {0xde, 0xad, 0xbe, 0xee, 0xef};
         char ethalon2[256] = {0x45, 0xe9, 0xa6};
 
-        if (proto.read(buf, sizeof(buf)) != 5)
+        try
         {
-            printf("proto.read() returned incorrect size.\n");
-            return false;
-        }
+            if (read_test_protocol.read(buf, sizeof(buf)) != 5)
+            {
+                printf("read_test_protocol.read() returned incorrect size.\n");
+                return false;
+            }
 
-        if (memcmp(buf, ethalon, 5) != 0)
-        {
-            printf("proto.read() got incorrect data.\n");
-            return false;
-        }
+            if (memcmp(buf, ethalon, 5) != 0)
+            {
+                printf("read_test_protocol.read() got incorrect data.\n");
+                return false;
+            }
 
-        if (proto.read(buf, sizeof(buf)) != 3)
-        {
-            printf("proto.read() returned incorrect size.\n");
-            return false;
-        }
+            if (read_test_protocol.read(buf, sizeof(buf)) != 3)
+            {
+                printf("read_test_protocol.read() returned incorrect size.\n");
+                return false;
+            }
 
-        if (memcmp(buf, ethalon2, 3) != 0)
-        {
-            printf("proto.read() got incorrect data.\n");
-            return false;
-        }
+            if (memcmp(buf, ethalon2, 3) != 0)
+            {
+                printf("read_test_protocol.read() got incorrect data.\n");
+                return false;
+            }
 
-        if (!proto.wait_send_mode())
-        {
-            printf("proto.wait_send_mode() failed.\n");
-            return false;
-        }
+            if (!read_test_protocol.wait_send_mode())
+            {
+                printf("read_test_protocol.wait_send_mode() failed.\n");
+                return false;
+            }
 
-        if (!proto.wait_recv_mode())
+            if (!read_test_protocol.wait_recv_mode())
+            {
+                printf("read_test_protocol.wait_recv_mode() failed.\n");
+                return false;
+            }
+        }
+        catch (exceptions::Read_Failed)
         {
-            printf("proto.wait_recv_mode() failed.\n");
+            printf("read_test_protocol.read() failed.\n");
             return false;
         }
 
@@ -858,12 +1025,12 @@ namespace testing
         }
         catch(exceptions::Write_Failed)
         {
-            printf("write_test_protocol.write() failed.\n");
+            printf("write_retransmit_test_protocol.write() failed.\n");
             return false;
         }
         catch(exceptions::Timeout)
         {
-            printf("write_test_protocol.write() failed with timeout.\n");
+            printf("write_retransmit_test_protocol.write() failed with timeout.\n");
             return false;
         }
 
@@ -901,7 +1068,7 @@ namespace testing
         if (!proto_test())
             printf("proto_test failed.\n");
         
-        printf("tests finished.\n");
+        printf("tests finished OK.\n");
     }
 }};
 
