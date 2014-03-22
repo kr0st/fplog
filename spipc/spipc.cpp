@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <thread>
+#include <atomic>
 
 namespace spipc { namespace testing {
 class Memory_Transport: public sprot::Transport_Interface
@@ -18,7 +19,7 @@ class Memory_Transport: public sprot::Transport_Interface
 
         std::vector <unsigned char> buf_;
         static const size_t buf_reserve_ = 1024 * 1024;
-        std::recursive_mutex write_protector_;
+        std::mutex condition_mutex_;
         std::condition_variable data_available_;
         std::condition_variable buffer_empty_;
 
@@ -32,6 +33,8 @@ Memory_Transport::Memory_Transport()
 
 void Memory_Transport::reset()
 {
+    std::lock_guard<std::mutex> lock(condition_mutex_);
+
     std::vector<unsigned char> empty;
     buf_.swap(empty);
     buf_.reserve(buf_reserve_);
@@ -39,29 +42,35 @@ void Memory_Transport::reset()
 
 size_t Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
-    std::lock_guard<std::recursive_mutex> lock(write_protector_);
-    static std::mutex mutex;
-    std::unique_lock<std::mutex> buffer_empty_lock(mutex);
+    std::unique_lock<std::mutex> lock(condition_mutex_);
 
-    if (buf_.size() != 0)
-        buffer_empty_.wait(buffer_empty_lock);
+    while (buf_.size() != 0)
+        if (buffer_empty_.wait_for(lock, std::chrono::milliseconds(timeout)) == std::cv_status::timeout)
+        {
+            data_available_.notify_all();
+            return 0;
+        }
 
     buf_.insert(buf_.end(), (unsigned char*)buf, (unsigned char*)buf + buf_size);
     data_available_.notify_all();
+
     return buf_size;
 }
 
 size_t Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
-    static std::mutex mutex;
-    std::unique_lock<std::mutex> data_avail_lock(mutex);
+    std::unique_lock<std::mutex> lock(condition_mutex_);
 
-    data_available_.wait(data_avail_lock);
+    while (buf_.size() == 0)
+        if (data_available_.wait_for(lock, std::chrono::milliseconds(timeout)) == std::cv_status::timeout)
+        {
+            buffer_empty_.notify_all();
+            return 0;
+        }
 
     size_t read_bytes = buf_size > buf_.size() ? buf_.size() : buf_size;
     memcpy(buf, &(buf_[0]), read_bytes);
     buf_.resize(0);
-
     buffer_empty_.notify_all();
 
     return read_bytes;
@@ -72,12 +81,11 @@ std::vector<std::string> g_written_items;
 
 void th1_mem_trans_test(Memory_Transport* trans)
 {
-    static unsigned counter = 0;
     srand(std::this_thread::get_id().hash());
 
     std::vector<std::string> written_items;
-
-    while (counter++ < 10)
+    static std::atomic_int counter{0};
+    while (counter++ < 100000)
     {
         int rnd_sz = 1 + rand() % 12;
     
@@ -87,7 +95,7 @@ void th1_mem_trans_test(Memory_Transport* trans)
         to_write.push_back(0);
 
         char* write_buf = &(*to_write.begin());
-        printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
+        //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
 
         trans->write(write_buf, rnd_sz + 1);
         written_items.push_back(write_buf);
@@ -100,22 +108,26 @@ void th1_mem_trans_test(Memory_Transport* trans)
 }
 
 std::vector<std::string> g_read_items;
+//volatile bool g_stop_reading = false;
 
 void th2_mem_trans_test(Memory_Transport* trans)
 {
-    static unsigned counter = 0;
+    static std::atomic_int counter{0};
     srand(std::this_thread::get_id().hash());
     
     std::vector<std::string> read_items;
 
-    while (counter++ < 10)
+    while (counter++ < 100000)
     {
         char read_buf[256];
         memset(read_buf, 0, sizeof(read_buf));
-        trans->read(read_buf, sizeof(read_buf));
+        trans->read(read_buf, sizeof(read_buf), 1000);
+
+        //if (g_stop_reading)
+            //break;
 
         read_items.push_back(read_buf);
-        printf("Reading: %s\n", read_buf);
+        //printf("Reading: %s\n", read_buf);
 
         //std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -130,13 +142,30 @@ bool N_threads_mem_transport_test()
 
     std::thread writer(th1_mem_trans_test, &trans);
     std::thread reader(th2_mem_trans_test, &trans);
+    std::thread writer2(th1_mem_trans_test, &trans);
+    std::thread reader2(th2_mem_trans_test, &trans);
+    std::thread writer3(th1_mem_trans_test, &trans);
+    std::thread reader3(th2_mem_trans_test, &trans);
+    std::thread writer4(th1_mem_trans_test, &trans);
+    std::thread writer5(th1_mem_trans_test, &trans);
+    std::thread writer6(th1_mem_trans_test, &trans);
 
     writer.join();
+    writer2.join();
+    writer3.join();
+    writer4.join();
+    writer5.join();
+    writer6.join();
+
+    //g_stop_reading = true;
+
     reader.join();
+    reader2.join();
+    reader3.join();
 
     if (g_read_items.size() != g_written_items.size())
     {
-        printf("ERROR: number of read items != number of written items.");
+        printf("ERROR: number of read items (%u) != number of written items (%u).", g_read_items.size(), g_written_items.size());
         return false;
     }
 
@@ -148,6 +177,8 @@ bool N_threads_mem_transport_test()
 
     for (std::vector<std::string>::iterator i = g_written_items.begin(); i != g_written_items.end();)
     {
+        bool increment_i = true;
+
         for (std::vector<std::string>::iterator j = g_read_items.begin(); j != g_read_items.end();)
         {
             if (*i == *j)
@@ -156,14 +187,16 @@ bool N_threads_mem_transport_test()
                 g_read_items.erase(j);
 
                 i = g_written_items.begin();
-                j = g_read_items.begin();
+                increment_i = false;
+
+                break;
             }
-            else
-            {
-                ++i;
-                ++j;
-            }
+
+            ++j;
         }
+
+        if (increment_i)
+            ++i;
     }
 
     if (g_read_items.size() != g_written_items.size())
