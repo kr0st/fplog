@@ -5,6 +5,9 @@
 #include <tchar.h>
 #include <thread>
 #include <atomic>
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/named_condition.hpp>
+#include <boost/thread/thread.hpp>
 
 namespace spipc { namespace testing {
 class Memory_Transport: public sprot::Transport_Interface
@@ -19,21 +22,24 @@ class Memory_Transport: public sprot::Transport_Interface
 
         std::vector <unsigned char> buf_;
         static const size_t buf_reserve_ = 1024 * 1024;
-        std::mutex condition_mutex_;
-        std::condition_variable data_available_;
-        std::condition_variable buffer_empty_;
+        boost::interprocess::named_mutex condition_mutex_;
+        boost::interprocess::named_condition data_available_;
+        boost::interprocess::named_condition buffer_empty_;
 
         void reset();
 };
 
-Memory_Transport::Memory_Transport()
+Memory_Transport::Memory_Transport():
+data_available_(boost::interprocess::open_or_create, "mem_trans_data_avail"),
+buffer_empty_(boost::interprocess::open_or_create, "mem_trans_buffer_empty"),
+condition_mutex_(boost::interprocess::open_or_create, "mem_trans_cond_mutex")
 {
     reset();
 }
 
 void Memory_Transport::reset()
 {
-    std::lock_guard<std::mutex> lock(condition_mutex_);
+    boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
 
     std::vector<unsigned char> empty;
     buf_.swap(empty);
@@ -42,10 +48,10 @@ void Memory_Transport::reset()
 
 size_t Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
-    std::unique_lock<std::mutex> lock(condition_mutex_);
-
+    boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+    boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
     while (buf_.size() != 0)
-        if (buffer_empty_.wait_for(lock, std::chrono::milliseconds(timeout)) == std::cv_status::timeout)
+        if (!buffer_empty_.timed_wait(lock, to))
         {
             data_available_.notify_all();
             return 0;
@@ -59,10 +65,10 @@ size_t Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 
 size_t Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
-    std::unique_lock<std::mutex> lock(condition_mutex_);
-
+    boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+    boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
     while (buf_.size() == 0)
-        if (data_available_.wait_for(lock, std::chrono::milliseconds(timeout)) == std::cv_status::timeout)
+        if (!data_available_.timed_wait(lock, to))
         {
             buffer_empty_.notify_all();
             return 0;
