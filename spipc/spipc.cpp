@@ -7,21 +7,37 @@
 #include <atomic>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/named_condition.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/vector.hpp>
 #include <boost/thread/thread.hpp>
 
 namespace spipc { namespace testing {
-class Memory_Transport: public sprot::Transport_Interface
+class Shared_Memory_Transport: public sprot::Transport_Interface
 {
     public:
 
-        Memory_Transport();
+        Shared_Memory_Transport();
+        ~Shared_Memory_Transport();
+
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
+
     private:
 
-        std::vector <unsigned char> buf_;
+        typedef boost::interprocess::allocator<unsigned char, boost::interprocess::managed_shared_memory::segment_manager> uchar_alloc;
+        typedef boost::interprocess::vector<unsigned char, uchar_alloc> shared_vector;
+        
         static const size_t buf_reserve_ = 1024 * 1024;
+        static const size_t shared_reserve_ = buf_reserve_ + 1024;
+        const char* shared_mem_name_ = "mem_trans_shared_buff";
+        
+        boost::interprocess::managed_shared_memory shared_mem_;
+        uchar_alloc allocator_;
+        shared_vector buf_;
+        
         boost::interprocess::named_mutex condition_mutex_;
         boost::interprocess::named_condition data_available_;
         boost::interprocess::named_condition buffer_empty_;
@@ -29,24 +45,35 @@ class Memory_Transport: public sprot::Transport_Interface
         void reset();
 };
 
-Memory_Transport::Memory_Transport():
+Shared_Memory_Transport::~Shared_Memory_Transport()
+{
+    {
+        boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+        boost::interprocess::shared_memory_object::remove(shared_mem_name_);
+    }
+}
+
+Shared_Memory_Transport::Shared_Memory_Transport():
+shared_mem_(boost::interprocess::open_or_create, shared_mem_name_, shared_reserve_),
 data_available_(boost::interprocess::open_or_create, "mem_trans_data_avail"),
 buffer_empty_(boost::interprocess::open_or_create, "mem_trans_buffer_empty"),
-condition_mutex_(boost::interprocess::open_or_create, "mem_trans_cond_mutex")
+condition_mutex_(boost::interprocess::open_or_create, "mem_trans_cond_mutex"),
+allocator_(shared_mem_.get_segment_manager()),
+buf_(allocator_)
 {
     reset();
 }
 
-void Memory_Transport::reset()
+void Shared_Memory_Transport::reset()
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
 
-    std::vector<unsigned char> empty;
+    shared_vector empty(allocator_);
     buf_.swap(empty);
     buf_.reserve(buf_reserve_);
 }
 
-size_t Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
+size_t Shared_Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
@@ -63,7 +90,7 @@ size_t Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     return buf_size;
 }
 
-size_t Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
+size_t Shared_Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
@@ -85,7 +112,7 @@ size_t Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 std::recursive_mutex g_test_mutex;
 std::vector<std::string> g_written_items;
 
-void th1_mem_trans_test(Memory_Transport* trans)
+void th1_mem_trans_test(Shared_Memory_Transport* trans)
 {
     srand(std::this_thread::get_id().hash());
 
@@ -116,7 +143,7 @@ void th1_mem_trans_test(Memory_Transport* trans)
 std::vector<std::string> g_read_items;
 //volatile bool g_stop_reading = false;
 
-void th2_mem_trans_test(Memory_Transport* trans)
+void th2_mem_trans_test(Shared_Memory_Transport* trans)
 {
     static std::atomic_int counter{0};
     srand(std::this_thread::get_id().hash());
@@ -144,7 +171,7 @@ void th2_mem_trans_test(Memory_Transport* trans)
 
 bool N_threads_mem_transport_test()
 {
-    Memory_Transport trans;
+    Shared_Memory_Transport trans;
 
     std::thread writer(th1_mem_trans_test, &trans);
     std::thread reader(th2_mem_trans_test, &trans);
