@@ -35,5 +35,8 @@
     <ClCompile Include="..\sprot\sprot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="spipc_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

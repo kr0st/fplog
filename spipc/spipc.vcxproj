@@ -41,13 +41,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);./boost</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);./boost/bin.v2/libs</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\..\boost\bin.v2\libs\date_time\build\msvc-12.0\debug\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\thread\build\msvc-12.0\debug\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\system\build\msvc-12.0\debug\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\chrono\build\msvc-12.0\debug\link-static\threading-multi</LibraryPath>
+    <TargetName>$(ProjectName)_test</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\..\boost\bin.v2\libs\date_time\build\msvc-12.0\release\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\thread\build\msvc-12.0\release\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\system\build\msvc-12.0\release\link-static\threading-multi;$(OutDir)..\..\boost\bin.v2\libs\chrono\build\msvc-12.0\release\link-static\threading-multi</LibraryPath>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <TargetName>$(ProjectName)_test</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -73,6 +76,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,6 +97,7 @@
   <ItemGroup>
     <ClCompile Include="..\sprot\sprot.cpp" />
     <ClCompile Include="spipc.cpp" />
+    <ClCompile Include="spipc_test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
