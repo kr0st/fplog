@@ -13,18 +13,27 @@
 
 namespace spipc {
 
+struct UUID
+{
+    UUID(): high(0), low(0) {}
+    bool operator== (const UUID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
+
+    unsigned long long high;
+    unsigned long long low;
+};
+
 class Shared_Memory_Transport: public sprot::Transport_Interface
 {
     public:
 
         Shared_Memory_Transport();
-        ~Shared_Memory_Transport();
+        virtual ~Shared_Memory_Transport();
 
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
 
-    private:
+    protected:
 
         typedef boost::interprocess::allocator<unsigned char, boost::interprocess::managed_shared_memory::segment_manager> uchar_alloc;
         typedef boost::interprocess::vector<unsigned char, uchar_alloc> shared_vector;
@@ -44,5 +53,36 @@ class Shared_Memory_Transport: public sprot::Transport_Interface
         void reset();
 };
 
+class IPC: public sprot::Transport_Interface
+{
+    public:
 
+        IPC();
+        virtual ~IPC();
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
+        void connect(const UUID& uuid);
+
+
+    private:
+
+        UUID registered_id_;
+        std::recursive_mutex mutex_;
+        class Shared_Memory_IPC_Transport;
+        Shared_Memory_IPC_Transport* transport_;
+        sprot::Protocol* protocol_;
 };
+
+namespace exceptions {
+
+class No_Receiver: public sprot::exceptions::Exception
+{
+    public:
+
+        No_Receiver(const char* facility, const char* file = "", int line = 0, const char* message = "No receiver registered to IPC transport."):
+        Exception(facility, file, line, message)
+        {
+        }
+};
+
+}};
