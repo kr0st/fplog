@@ -158,10 +158,83 @@ bool N_threads_mem_transport_test()
     return true;
 }
 
+std::map<spipc::UUID, std::vector<std::string>> g_ipc_written;
+std::map<spipc::UUID, std::vector<std::string>> g_ipc_read;
+
+void writer_ipc_thread(spipc::UUID* uid)
+{
+    srand(std::this_thread::get_id().hash());
+    uid->high = std::this_thread::get_id().hash();
+
+    std::vector<std::string> ipc_written;
+    spipc::IPC ipc;
+    ipc.connect(*uid);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        int rnd_sz = 1 + rand() % 12;
+    
+        std::vector<char> to_write;
+        for (int j = 0; j < rnd_sz; ++j)
+            to_write.push_back(65 + rand() % 20);
+        to_write.push_back(0);
+
+        char* write_buf = &(*to_write.begin());
+        printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
+
+        ipc.write(write_buf, rnd_sz + 1);
+        ipc_written.push_back(write_buf);
+    }
+
+    std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
+    g_ipc_written[*uid] = ipc_written;
+}
+
+void reader_ipc_thread(const spipc::UUID& uid)
+{
+    srand(std::this_thread::get_id().hash());
+    std::vector<std::string> read_items;
+    spipc::IPC ipc;
+    ipc.connect(uid);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        char read_buf[256];
+        memset(read_buf, 0, sizeof(read_buf));
+        ipc.read(read_buf, sizeof(read_buf));
+
+        read_items.push_back(read_buf);
+        printf("Reading: %s\n", read_buf);
+    }
+
+    std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
+    g_ipc_read[uid] = read_items;
+}
+
+bool N_threads_IPC_test()
+{
+    spipc::UUID uid;
+
+    std::thread writer(writer_ipc_thread, &uid);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::thread reader(reader_ipc_thread, uid);
+
+    writer.join();
+    reader.join();
+
+    return true;
+}
+
 void run_all_tests()
 {
-    if (!N_threads_mem_transport_test())
-        printf("N_threads_mem_transport_test failed.\n");
+    spipc::global_init();
+
+    //if (!N_threads_mem_transport_test())
+        //printf("N_threads_mem_transport_test failed.\n");
+
+    if (!N_threads_IPC_test())
+        printf("N_threads_IPC_test failed.\n");
         
     printf("spipc tests finished OK.\n");
 }

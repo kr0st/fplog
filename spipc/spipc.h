@@ -13,10 +13,31 @@
 
 namespace spipc {
 
+extern const char* g_shared_mem_name;
+extern const char* g_data_avail_condition_name;
+extern const char* g_buf_empty_condition_name;
+extern const char* g_condition_mutex_name;
+extern const size_t g_shared_mem_size;
+
+void global_init();
+
 struct UUID
 {
     UUID(): high(0), low(0) {}
     bool operator== (const UUID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
+    bool operator< (const UUID& rhs) const
+    {
+        if (*this == rhs)
+            return false;
+
+        if (high < rhs.high)
+            return true;
+
+        if (high == rhs.high)
+            return (low < rhs.low);
+
+        return false;
+    }
 
     unsigned long long high;
     unsigned long long low;
@@ -34,23 +55,18 @@ class Shared_Memory_Transport: public sprot::Transport_Interface
 
 
     protected:
+        
+        boost::interprocess::shared_memory_object shared_mem_;
+        boost::interprocess::mapped_region* mapped_mem_region_;
+        unsigned char* buf_;
 
-        typedef boost::interprocess::allocator<unsigned char, boost::interprocess::managed_shared_memory::segment_manager> uchar_alloc;
-        typedef boost::interprocess::vector<unsigned char, uchar_alloc> shared_vector;
-        
-        static const size_t buf_reserve_ = 1024 * 1024;
-        static const size_t shared_reserve_ = buf_reserve_ + 1024;
-        const char* shared_mem_name_ = "mem_trans_shared_buff";
-        
-        boost::interprocess::managed_shared_memory shared_mem_;
-        uchar_alloc allocator_;
-        shared_vector buf_;
-        
         boost::interprocess::named_mutex condition_mutex_;
         boost::interprocess::named_condition data_available_;
         boost::interprocess::named_condition buffer_empty_;
 
         void reset();
+        size_t get_buf_size();
+        void set_buf_size(size_t size);
 };
 
 class IPC: public sprot::Transport_Interface
@@ -59,14 +75,14 @@ class IPC: public sprot::Transport_Interface
 
         IPC();
         virtual ~IPC();
-        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
-        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
-        void connect(const UUID& uuid);
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
+        void connect(const UUID& private_channel);
 
 
     private:
 
-        UUID registered_id_;
+        UUID private_channel_id_;
         std::recursive_mutex mutex_;
         class Shared_Memory_IPC_Transport;
         Shared_Memory_IPC_Transport* transport_;

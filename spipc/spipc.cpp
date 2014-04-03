@@ -3,61 +3,102 @@
 
 namespace spipc {
 
+const char* g_shared_mem_name = "mem_trans_shared_buff";
+const char* g_data_avail_condition_name = "mem_trans_data_avail";
+const char* g_buf_empty_condition_name = "mem_trans_buffer_empty";
+const char* g_condition_mutex_name = "mem_trans_cond_mutex";
+extern const size_t g_shared_mem_size = 1024 * 1024;
+
+void global_init()
+{
+    boost::interprocess::named_condition::remove(g_data_avail_condition_name);
+    boost::interprocess::named_condition::remove(g_buf_empty_condition_name);
+    boost::interprocess::named_mutex::remove(g_condition_mutex_name);
+    boost::interprocess::shared_memory_object::remove(g_shared_mem_name);
+
+    boost::interprocess::shared_memory_object shared_mem(boost::interprocess::open_or_create, g_shared_mem_name, boost::interprocess::read_write);
+    shared_mem.truncate(g_shared_mem_size);
+    boost::interprocess::mapped_region mapped_mem_region(shared_mem, boost::interprocess::read_write);
+    memset(static_cast<unsigned char*>(mapped_mem_region.get_address()), 0, g_shared_mem_size);
+}
+
 Shared_Memory_Transport::~Shared_Memory_Transport()
 {
+    boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+    delete mapped_mem_region_;
+
+    buf_ = 0;
+    mapped_mem_region_ = 0;
 }
 
 Shared_Memory_Transport::Shared_Memory_Transport():
-shared_mem_(boost::interprocess::open_or_create, shared_mem_name_, shared_reserve_),
-data_available_(boost::interprocess::open_or_create, "mem_trans_data_avail"),
-buffer_empty_(boost::interprocess::open_or_create, "mem_trans_buffer_empty"),
-condition_mutex_(boost::interprocess::open_or_create, "mem_trans_cond_mutex"),
-allocator_(shared_mem_.get_segment_manager()),
-buf_(allocator_)
+shared_mem_(boost::interprocess::open_or_create, g_shared_mem_name, boost::interprocess::read_write),
+data_available_(boost::interprocess::open_or_create, g_data_avail_condition_name),
+buffer_empty_(boost::interprocess::open_or_create, g_buf_empty_condition_name),
+condition_mutex_(boost::interprocess::open_or_create, g_condition_mutex_name),
+mapped_mem_region_(0),
+buf_(0)
 {
     reset();
+}
+
+size_t Shared_Memory_Transport::get_buf_size()
+{
+    size_t sz = 0;
+    memcpy(&sz, buf_, sizeof(size_t));
+    return sz;
 }
 
 void Shared_Memory_Transport::reset()
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-
-    shared_vector empty(allocator_);
-    buf_.swap(empty);
-    buf_.reserve(buf_reserve_);
+    shared_mem_.truncate(g_shared_mem_size);
+    
+    delete mapped_mem_region_;
+    mapped_mem_region_ = new boost::interprocess::mapped_region(shared_mem_, boost::interprocess::read_write);
+    buf_ = static_cast<unsigned char*>(mapped_mem_region_->get_address());
 }
 
 size_t Shared_Memory_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
-    while (buf_.size() != 0)
+    while (get_buf_size() != 0)
         if (!buffer_empty_.timed_wait(lock, to))
         {
             data_available_.notify_all();
             return 0;
         }
 
-    buf_.insert(buf_.end(), (unsigned char*)buf, (unsigned char*)buf + buf_size);
+    unsigned char* shared = buf_;
+    memcpy(shared, &buf_size, sizeof(size_t));
+    shared += sizeof(size_t);
+
+    memcpy(shared, buf, buf_size);
     data_available_.notify_all();
 
     return buf_size;
+}
+
+void Shared_Memory_Transport::set_buf_size(size_t size)
+{
+    memcpy(buf_, &size, sizeof(size_t));
 }
 
 size_t Shared_Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
-    while (buf_.size() == 0)
+    while (get_buf_size() == 0)
         if (!data_available_.timed_wait(lock, to))
         {
             buffer_empty_.notify_all();
             return 0;
         }
 
-    size_t read_bytes = buf_size > buf_.size() ? buf_.size() : buf_size;
-    memcpy(buf, &(buf_[0]), read_bytes);
-    buf_.resize(0);
+    size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
+    memcpy(buf, buf_ + sizeof(size_t), read_bytes);
+    set_buf_size(0);
     buffer_empty_.notify_all();
 
     return read_bytes;
@@ -67,44 +108,84 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
 {
     public:
 
-        Shared_Memory_IPC_Transport(){ Shared_Memory_Transport(); }
         virtual ~Shared_Memory_IPC_Transport(){};
 
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
-        void register_receiver(const UUID& uuid);
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
+
+        void register_private_channel(const UUID& chan_id);
 
     private:
 
-       UUID receiver_id_; 
+       UUID private_channel_id_;
+       size_t last_writer_ = 0;
 };
+
+size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
+{
+    std::vector<unsigned char> tmp;
+    tmp.resize(buf_size + sizeof(UUID));
+    memcpy(&(tmp[0]), &private_channel_id_, sizeof(UUID));
+    memcpy(&(tmp[sizeof(UUID)]), buf, buf_size);
+
+    boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+    last_writer_ = std::this_thread::get_id().hash();
+    
+    boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
+    while (get_buf_size() != 0)
+        if (!buffer_empty_.timed_wait(lock, to))
+        {
+            data_available_.notify_all();
+            return 0;
+        }
+
+    unsigned char* shared = buf_;
+    size_t tmp_sz = tmp.size();
+    memcpy(shared, &tmp_sz, sizeof(size_t));
+    shared += sizeof(size_t);
+
+    memcpy(shared, &(tmp[0]), tmp_sz);
+    data_available_.notify_all();
+
+    return buf_size;
+}
 
 size_t IPC::Shared_Memory_IPC_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-    
+
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
     UUID empty_uuid;
-    if (receiver_id_ == empty_uuid)
+    if (private_channel_id_ == empty_uuid)
         THROW(exceptions::No_Receiver);
 
 start_read:
 
-    while (buf_.size() == 0)
+    while (get_buf_size() == 0)
         if (!data_available_.timed_wait(lock, to))
         {
             buffer_empty_.notify_all();
             return 0;
         }
 
-    size_t read_bytes = buf_size > buf_.size() ? buf_.size() : buf_size;
+    size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
     if (read_bytes <= sizeof(UUID))
         THROW(sprot::exceptions::Invalid_Frame);
     
-    if (memcmp(&(buf_[0]), &receiver_id_, sizeof(UUID)) == 0)
+    if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UUID)) == 0)
     {
+        if (std::this_thread::get_id().hash() == last_writer_)
+        {
+            lock.unlock();
+            data_available_.notify_all();
+            lock.lock();
+
+            goto start_read;
+        }
+
         read_bytes -= sizeof(UUID);
-        memcpy(buf, &(buf_[sizeof(UUID)]), read_bytes);
-        buf_.resize(0);
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UUID)]), read_bytes);
+        set_buf_size(0);
         buffer_empty_.notify_all();
     }
     else
@@ -118,10 +199,10 @@ start_read:
     return read_bytes;
 }
 
-void IPC::Shared_Memory_IPC_Transport::register_receiver(const UUID& uuid)
+void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UUID& chan_id)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-    receiver_id_ = uuid;
+    private_channel_id_ = chan_id;
 }
 
 IPC::IPC()
@@ -151,27 +232,19 @@ size_t IPC::write(const void* buf, size_t buf_size, size_t timeout)
     if (buf_size == 0)
         return 0;
 
-    const unsigned char* converted_buf = (unsigned char*)buf;
-    std::vector<unsigned char> tmp_buf(converted_buf, converted_buf + buf_size);
-
-    const unsigned char* converted_uuid = (unsigned char*)&registered_id_;
-    std::vector<unsigned char> uuid(converted_uuid, converted_uuid + sizeof(UUID));
-
-    tmp_buf.insert(tmp_buf.begin(), uuid.begin(), uuid.end());
-
-    return protocol_->write(&(tmp_buf[0]), tmp_buf.size(), timeout);
+    return protocol_->write(buf, buf_size, timeout);
 }
 
-void IPC::connect(const UUID& uuid)
+void IPC::connect(const UUID& private_channel)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    registered_id_ = uuid;
+    private_channel_id_ = private_channel;
     
+    transport_->register_private_channel(private_channel_id_);
+
     UUID empty;
-    if (uuid == empty)
+    if (private_channel == empty)
         THROW(sprot::exceptions::Incorrect_Parameter);
-    
-    transport_->register_receiver(registered_id_);
 }
 
 };
