@@ -1,5 +1,6 @@
 #include "targetver.h"
 #include "spipc.h"
+#include <process.h>
 
 namespace spipc {
 
@@ -118,19 +119,22 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
     private:
 
        UUID private_channel_id_;
-       size_t last_writer_ = 0;
 };
 
 size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::vector<unsigned char> tmp;
-    tmp.resize(buf_size + sizeof(UUID));
+    tmp.resize(buf_size + sizeof(UUID) + sizeof(size_t) + sizeof(int));
+
+    int pid = _getpid();
+    size_t tid = std::this_thread::get_id().hash();
+
     memcpy(&(tmp[0]), &private_channel_id_, sizeof(UUID));
-    memcpy(&(tmp[sizeof(UUID)]), buf, buf_size);
+    memcpy(&(tmp[sizeof(UUID)]), &pid, sizeof(int));
+    memcpy(&(tmp[sizeof(UUID) + sizeof(int)]), &tid, sizeof(size_t));
+    memcpy(&(tmp[sizeof(UUID) + sizeof(size_t) + sizeof(int)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-    last_writer_ = std::this_thread::get_id().hash();
-    
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
     while (get_buf_size() != 0)
         if (!buffer_empty_.timed_wait(lock, to))
@@ -169,12 +173,21 @@ start_read:
         }
 
     size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
-    if (read_bytes <= sizeof(UUID))
+    if (read_bytes <= (sizeof(UUID) + sizeof(int) + sizeof(size_t)))
         THROW(sprot::exceptions::Invalid_Frame);
     
     if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UUID)) == 0)
     {
-        if (std::this_thread::get_id().hash() == last_writer_)
+        int this_pid = _getpid();
+        size_t this_tid = std::this_thread::get_id().hash();
+
+        int read_pid = 0;
+        size_t read_tid = 0;
+
+        memcpy(&read_pid, buf_ + sizeof(size_t) + sizeof(UUID), sizeof(int));
+        memcpy(&read_tid, buf_ + sizeof(size_t) + sizeof(UUID) + sizeof(int), sizeof(size_t));
+
+        if ((this_pid == read_pid) && (this_tid == read_tid))
         {
             lock.unlock();
             data_available_.notify_all();
@@ -183,8 +196,8 @@ start_read:
             goto start_read;
         }
 
-        read_bytes -= sizeof(UUID);
-        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UUID)]), read_bytes);
+        read_bytes -= (sizeof(UUID) + sizeof(int) + sizeof(size_t));
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UUID) + sizeof(int) + sizeof(size_t)]), read_bytes);
         set_buf_size(0);
         buffer_empty_.notify_all();
     }
