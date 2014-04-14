@@ -21,11 +21,11 @@ extern const size_t g_shared_mem_size;
 
 void global_init();
 
-struct UUID
+struct UID
 {
-    UUID(): high(0), low(0) {}
-    bool operator== (const UUID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
-    bool operator< (const UUID& rhs) const
+    UID(): high(0), low(0) {}
+    bool operator== (const UID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
+    bool operator< (const UID& rhs) const
     {
         if (*this == rhs)
             return false;
@@ -77,12 +77,12 @@ class IPC: public sprot::Transport_Interface
         virtual ~IPC();
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
-        void connect(const UUID& private_channel);
+        void connect(const UID& private_channel);
 
 
     private:
 
-        UUID private_channel_id_;
+        UID private_channel_id_;
         std::recursive_mutex mutex_;
         class Shared_Memory_IPC_Transport;
         Shared_Memory_IPC_Transport* transport_;

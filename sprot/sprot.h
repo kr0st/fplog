@@ -183,6 +183,13 @@ namespace sprot { namespace exceptions
             {
             }
 
+            std::string what()
+            {
+                char buf[256];
+                _itoa_s(line_, buf, sizeof(buf) / sizeof(char), 10);
+                return "[" + facility_ + ", f:" + file_ + ", l:" + buf + "] " + message_;
+            }
+
 
         protected:
 

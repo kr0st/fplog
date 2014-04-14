@@ -114,25 +114,25 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
-        void register_private_channel(const UUID& chan_id);
+        void register_private_channel(const UID& chan_id);
 
     private:
 
-       UUID private_channel_id_;
+       UID private_channel_id_;
 };
 
 size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::vector<unsigned char> tmp;
-    tmp.resize(buf_size + sizeof(UUID) + sizeof(size_t) + sizeof(int));
+    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int));
 
     int pid = _getpid();
     size_t tid = std::this_thread::get_id().hash();
 
-    memcpy(&(tmp[0]), &private_channel_id_, sizeof(UUID));
-    memcpy(&(tmp[sizeof(UUID)]), &pid, sizeof(int));
-    memcpy(&(tmp[sizeof(UUID) + sizeof(int)]), &tid, sizeof(size_t));
-    memcpy(&(tmp[sizeof(UUID) + sizeof(size_t) + sizeof(int)]), buf, buf_size);
+    memcpy(&(tmp[0]), &private_channel_id_, sizeof(UID));
+    memcpy(&(tmp[sizeof(UID)]), &pid, sizeof(int));
+    memcpy(&(tmp[sizeof(UID) + sizeof(int)]), &tid, sizeof(size_t));
+    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
@@ -159,8 +159,8 @@ size_t IPC::Shared_Memory_IPC_Transport::read(void* buf, size_t buf_size, size_t
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
 
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
-    UUID empty_uuid;
-    if (private_channel_id_ == empty_uuid)
+    UID empty_UID;
+    if (private_channel_id_ == empty_UID)
         THROW(exceptions::No_Receiver);
 
 start_read:
@@ -173,10 +173,10 @@ start_read:
         }
 
     size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
-    if (read_bytes <= (sizeof(UUID) + sizeof(int) + sizeof(size_t)))
+    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t)))
         THROW(sprot::exceptions::Invalid_Frame);
     
-    if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UUID)) == 0)
+    if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UID)) == 0)
     {
         int this_pid = _getpid();
         size_t this_tid = std::this_thread::get_id().hash();
@@ -184,8 +184,8 @@ start_read:
         int read_pid = 0;
         size_t read_tid = 0;
 
-        memcpy(&read_pid, buf_ + sizeof(size_t) + sizeof(UUID), sizeof(int));
-        memcpy(&read_tid, buf_ + sizeof(size_t) + sizeof(UUID) + sizeof(int), sizeof(size_t));
+        memcpy(&read_pid, buf_ + sizeof(size_t) + sizeof(UID), sizeof(int));
+        memcpy(&read_tid, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int), sizeof(size_t));
 
         if ((this_pid == read_pid) && (this_tid == read_tid))
         {
@@ -196,8 +196,8 @@ start_read:
             goto start_read;
         }
 
-        read_bytes -= (sizeof(UUID) + sizeof(int) + sizeof(size_t));
-        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UUID) + sizeof(int) + sizeof(size_t)]), read_bytes);
+        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t));
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t)]), read_bytes);
         set_buf_size(0);
         buffer_empty_.notify_all();
     }
@@ -212,7 +212,7 @@ start_read:
     return read_bytes;
 }
 
-void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UUID& chan_id)
+void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UID& chan_id)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     private_channel_id_ = chan_id;
@@ -248,14 +248,14 @@ size_t IPC::write(const void* buf, size_t buf_size, size_t timeout)
     return protocol_->write(buf, buf_size, timeout);
 }
 
-void IPC::connect(const UUID& private_channel)
+void IPC::connect(const UID& private_channel)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     private_channel_id_ = private_channel;
     
     transport_->register_private_channel(private_channel_id_);
 
-    UUID empty;
+    UID empty;
     if (private_channel == empty)
         THROW(sprot::exceptions::Incorrect_Parameter);
 }

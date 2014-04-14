@@ -158,19 +158,18 @@ bool N_threads_mem_transport_test()
     return true;
 }
 
-std::map<spipc::UUID, std::vector<std::string>> g_ipc_written;
-std::map<spipc::UUID, std::vector<std::string>> g_ipc_read;
+std::map<spipc::UID, std::vector<std::string>> g_ipc_written;
+std::map<spipc::UID, std::vector<std::string>> g_ipc_read;
 
-void writer_ipc_thread(spipc::UUID* uid)
+void writer_ipc_thread(const spipc::UID& uid)
 {
     srand(std::this_thread::get_id().hash());
-    uid->high = std::this_thread::get_id().hash();
-
     std::vector<std::string> ipc_written;
     spipc::IPC ipc;
-    ipc.connect(*uid);
 
-    for (int i = 0; i < 10; ++i)
+    ipc.connect(uid);
+
+    for (int i = 0; i < 10000; ++i)
     {
         int rnd_sz = 1 + rand() % 12;
     
@@ -180,31 +179,31 @@ void writer_ipc_thread(spipc::UUID* uid)
         to_write.push_back(0);
 
         char* write_buf = &(*to_write.begin());
-        printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
+        //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
 
         ipc.write(write_buf, rnd_sz + 1);
         ipc_written.push_back(write_buf);
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
-    g_ipc_written[*uid] = ipc_written;
+    g_ipc_written[uid] = ipc_written;
 }
 
-void reader_ipc_thread(const spipc::UUID& uid)
+void reader_ipc_thread(const spipc::UID& uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> read_items;
     spipc::IPC ipc;
     ipc.connect(uid);
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10000; ++i)
     {
         char read_buf[256];
         memset(read_buf, 0, sizeof(read_buf));
         ipc.read(read_buf, sizeof(read_buf));
 
         read_items.push_back(read_buf);
-        printf("Reading: %s\n", read_buf);
+        //printf("Reading: %s\n", read_buf);
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
@@ -213,15 +212,45 @@ void reader_ipc_thread(const spipc::UUID& uid)
 
 bool N_threads_IPC_test()
 {
-    spipc::UUID uid;
+    spipc::UID uid;
 
-    std::thread writer(writer_ipc_thread, &uid);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    uid.high = 11223;
+    uid.low = 334432;
 
+    std::thread writer(writer_ipc_thread, uid);
     std::thread reader(reader_ipc_thread, uid);
+
+    uid.high = 34773;
+    uid.low = 987856;
+
+    std::thread writer2(writer_ipc_thread, uid);
+    std::thread reader2(reader_ipc_thread, uid);
+
+    uid.high = 122273;
+    uid.low = 67424234;
+
+    std::thread writer3(writer_ipc_thread, uid);
+    std::thread reader3(reader_ipc_thread, uid);
 
     writer.join();
     reader.join();
+
+    writer2.join();
+    reader2.join();
+
+    writer3.join();
+    reader3.join();
+
+    std::map<spipc::UID, std::vector<std::string>>::iterator it(g_ipc_written.begin());
+    for (; it != g_ipc_written.end(); ++it)
+    {
+        std::vector<std::string> v1(g_ipc_read[it->first]);
+        if (v1 != it->second)
+        {
+            printf("ERROR: IPC read/write problem detected - written items did not match read items.\n");
+            return false;
+        }
+    }
 
     return true;
 }
@@ -230,12 +259,28 @@ void run_all_tests()
 {
     spipc::global_init();
 
-    //if (!N_threads_mem_transport_test())
-        //printf("N_threads_mem_transport_test failed.\n");
+    try
+    {
+        if (!N_threads_mem_transport_test())
+            printf("N_threads_mem_transport_test failed.\n");
+    }
+    catch (sprot::exceptions::Exception& e)
+    {
+        printf("ERROR: N_threads_mem_transport_test failed with exception.\n");
+        printf("%s\n", e.what().c_str());
+    }
 
-    if (!N_threads_IPC_test())
-        printf("N_threads_IPC_test failed.\n");
-        
+    try
+    {
+        if (!N_threads_IPC_test())
+            printf("N_threads_IPC_test failed.\n");
+    }
+    catch (sprot::exceptions::Exception& e)
+    {
+        printf("ERROR: N_threads_IPC_test failed with exception.\n");
+        printf("%s\n", e.what().c_str());
+    }
+
     printf("spipc tests finished OK.\n");
 }
 
