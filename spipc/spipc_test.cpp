@@ -165,24 +165,34 @@ void writer_ipc_thread(const spipc::UID& uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> ipc_written;
-    spipc::IPC ipc;
 
-    ipc.connect(uid);
-
-    for (int i = 0; i < 10000; ++i)
+    try
     {
-        int rnd_sz = 1 + rand() % 12;
+        spipc::IPC ipc;
+
+        ipc.connect(uid);
+
+        for (int i = 0; i < 50000; ++i)
+        {
+            int rnd_sz = 1 + rand() % 1258;
     
-        std::vector<char> to_write;
-        for (int j = 0; j < rnd_sz; ++j)
-            to_write.push_back(65 + rand() % 20);
-        to_write.push_back(0);
+            std::vector<char> to_write;
+            for (int j = 0; j < rnd_sz; ++j)
+                to_write.push_back(65 + rand() % 20);
+            to_write.push_back(0);
 
-        char* write_buf = &(*to_write.begin());
-        //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
+            char* write_buf = &(*to_write.begin());
+            //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
 
-        ipc.write(write_buf, rnd_sz + 1);
-        ipc_written.push_back(write_buf);
+            ipc.write(write_buf, rnd_sz + 1);
+            ipc_written.push_back(write_buf);
+        }
+    }
+    catch (sprot::exceptions::Exception& e)
+    {
+        printf("ERROR: N_threads_IPC_test failed with exception.\n");
+        printf("%s\n", e.what().c_str());
+        return;
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
@@ -193,17 +203,27 @@ void reader_ipc_thread(const spipc::UID& uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> read_items;
-    spipc::IPC ipc;
-    ipc.connect(uid);
 
-    for (int i = 0; i < 10000; ++i)
+    try
     {
-        char read_buf[256];
-        memset(read_buf, 0, sizeof(read_buf));
-        ipc.read(read_buf, sizeof(read_buf));
+        spipc::IPC ipc;
+        ipc.connect(uid);
 
-        read_items.push_back(read_buf);
-        //printf("Reading: %s\n", read_buf);
+        for (int i = 0; i < 50000; ++i)
+        {
+            char read_buf[3000];
+            memset(read_buf, 0, sizeof(read_buf));
+            ipc.read(read_buf, sizeof(read_buf));
+
+            read_items.push_back(read_buf);
+            //printf("Reading: %s\n", read_buf);
+        }
+    }
+    catch (sprot::exceptions::Exception& e)
+    {
+        printf("ERROR: N_threads_IPC_test failed with exception.\n");
+        printf("%s\n", e.what().c_str());
+        return;
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);

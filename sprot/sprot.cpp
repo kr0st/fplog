@@ -364,7 +364,19 @@ namespace sprot
             THROW(exceptions::Buffer_Overflow);
 
         if (!buf_.empty())
+        {
             memcpy(out_buf_, &*buf_.begin(), buf_.size());
+
+            //Potentially we might have a large chunk of memory used
+            //while assemblying the frame before copying it to out buffer
+            //therefore we need to really dealloc internal buffer buf_.
+            if (buf_.size() > recv_buf_reserve_)
+            {
+                std::vector<unsigned char> empty;
+                buf_.swap(empty);
+                buf_.reserve(recv_buf_reserve_);
+            }
+        }
     }
 
     size_t Protocol::send_data(const unsigned char* data, size_t length, size_t timeout)

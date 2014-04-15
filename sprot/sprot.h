@@ -110,7 +110,7 @@ namespace sprot
                 }
             };
 
-            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024 * 1024, size_t MTU = 1024 * 1024);
+            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);

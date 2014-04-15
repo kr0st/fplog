@@ -8,7 +8,7 @@ const char* g_shared_mem_name = "mem_trans_shared_buff";
 const char* g_data_avail_condition_name = "mem_trans_data_avail";
 const char* g_buf_empty_condition_name = "mem_trans_buffer_empty";
 const char* g_condition_mutex_name = "mem_trans_cond_mutex";
-extern const size_t g_shared_mem_size = 1024 * 1024;
+extern const size_t g_shared_mem_size = 1024;
 
 void global_init()
 {
@@ -221,7 +221,7 @@ void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UID& chan_
 IPC::IPC()
 {
     transport_ = new IPC::Shared_Memory_IPC_Transport();
-    protocol_ = new sprot::Protocol(transport_);
+    protocol_ = new sprot::Protocol(transport_, sprot::Protocol::Switching::Auto, g_shared_mem_size / 2, g_shared_mem_size / 3);
 }
 
 IPC::~IPC()
