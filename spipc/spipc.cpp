@@ -165,6 +165,9 @@ size_t IPC::Shared_Memory_IPC_Transport::read(void* buf, size_t buf_size, size_t
 
 start_read:
 
+    if (boost::get_system_time() >= to)
+        return 0;
+
     while (get_buf_size() == 0)
         if (!data_available_.timed_wait(lock, to))
         {

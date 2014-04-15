@@ -125,6 +125,8 @@ namespace sprot
 
         private:
 
+            static const size_t default_timeout = 200;
+
             Transport_Interface* transport_;
             Switching::Type switching_;
             Mode::Type current_mode_;
@@ -152,16 +154,16 @@ namespace sprot
 
             bool on_data(Data_Frame& frame);
 
-            size_t send_frame(Frame::Type type, size_t timeout = infinite_wait, const unsigned char* buf = 0, size_t length = 0);
-            size_t send_data(const unsigned char* data, size_t length, size_t timeout = infinite_wait);
+            size_t send_frame(Frame::Type type, size_t timeout = default_timeout, const unsigned char* buf = 0, size_t length = 0);
+            size_t send_data(const unsigned char* data, size_t length, size_t timeout = default_timeout);
 
             void complete_read();
             void reset();
 
             Data_Frame make_data_frame(const unsigned char* buf, size_t length);
 
-            size_t read_impl(void* buf, size_t buf_size, size_t timeout = infinite_wait, bool no_mode_check = false);
-            size_t write_impl(const void* buf, size_t buf_size, size_t timeout = infinite_wait, bool no_mode_check = false);
+            size_t read_impl(void* buf, size_t buf_size, size_t timeout = default_timeout, bool no_mode_check = false);
+            size_t write_impl(const void* buf, size_t buf_size, size_t timeout = default_timeout, bool no_mode_check = false);
     };
 
 namespace util

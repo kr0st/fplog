@@ -184,7 +184,7 @@ void writer_ipc_thread(const spipc::UID& uid)
             char* write_buf = &(*to_write.begin());
             //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
 
-            ipc.write(write_buf, rnd_sz + 1);
+            ipc.write(write_buf, rnd_sz + 1, 1000);
             ipc_written.push_back(write_buf);
         }
     }
@@ -213,7 +213,7 @@ void reader_ipc_thread(const spipc::UID& uid)
         {
             char read_buf[3000];
             memset(read_buf, 0, sizeof(read_buf));
-            ipc.read(read_buf, sizeof(read_buf));
+            ipc.read(read_buf, sizeof(read_buf), 1000);
 
             read_items.push_back(read_buf);
             //printf("Reading: %s\n", read_buf);
