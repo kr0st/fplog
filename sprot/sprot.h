@@ -90,6 +90,14 @@ namespace sprot
                 Type type = UNDEF;
             };
 
+            struct Timeout
+            {
+                enum Type
+                {
+                    Operation = 200 //ms
+                };
+            };
+
             struct Data_Frame: public Frame
             {
                 const unsigned char* data = 0;

@@ -134,7 +134,7 @@ namespace sprot
         }
 
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
-        size_t op_timeout = 200; //ms
+        size_t op_timeout = Timeout::Operation; //ms
 
         bool seq_begin_sent = false;
         long data_left = buf_size;
@@ -245,7 +245,18 @@ namespace sprot
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
         reset();
-        return read_impl(buf, buf_size, timeout);
+        
+        try
+        {
+            size_t read = read_impl(buf, buf_size, timeout);
+            return read;
+        }
+        catch (exceptions::Write_Failed)
+        {
+            THROW(exceptions::Read_Failed);
+        }
+
+        return 0;
     }
     
     bool Protocol::on_frame(const unsigned char* buf, size_t recv_length, size_t max_capacity)
@@ -355,7 +366,18 @@ namespace sprot
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
         reset();
-        return write_impl(buf, buf_size, timeout);
+        
+        try
+        {
+            size_t wrote = write_impl(buf, buf_size, timeout);
+            return wrote;
+        }
+        catch(exceptions::Read_Failed)
+        {
+            THROW(exceptions::Write_Failed);
+        }
+
+        return 0;
     }
 
     void Protocol::complete_read()
@@ -390,7 +412,8 @@ namespace sprot
         memcpy(&frame[2], data, length);
         frame[frame_sz - 1] = util::crc7(frame, frame_sz - 1);
 
-        if (transport_->write(frame, frame_sz, timeout) != frame_sz)
+        size_t data_written = transport_->write(frame, frame_sz, timeout);
+        if (data_written != frame_sz)
             THROW(exceptions::Write_Failed);
 
         return frame_sz;
@@ -410,7 +433,8 @@ namespace sprot
         frame[0] = type;
         frame[1] = util::crc7(frame, 1);
 
-        if (transport_->write(frame, sizeof(frame), timeout) != sizeof(frame))
+        size_t data_written = transport_->write(frame, sizeof(frame), timeout);
+        if (data_written != sizeof(frame))
             THROW(exceptions::Write_Failed);
 
         return 1; //Control frame has 1 byte actual payload

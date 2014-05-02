@@ -124,24 +124,39 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
 size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::vector<unsigned char> tmp;
-    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int));
+    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(clock_t));
 
     int pid = _getpid();
     size_t tid = std::this_thread::get_id().hash();
+    clock_t timestamp = clock();
 
     memcpy(&(tmp[0]), &private_channel_id_, sizeof(UID));
     memcpy(&(tmp[sizeof(UID)]), &pid, sizeof(int));
     memcpy(&(tmp[sizeof(UID) + sizeof(int)]), &tid, sizeof(size_t));
-    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int)]), buf, buf_size);
+    memcpy(&(tmp[sizeof(UID) + sizeof(int) + sizeof(size_t)]), &timestamp, sizeof(clock_t));
+    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(clock_t)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
+
     while (get_buf_size() != 0)
+    {
+        clock_t read_timestamp = 0;
+        memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(clock_t));
+
+        //Purge buffer in case content is older than the default single operation timeout
+        if ((1000 * abs(timestamp - read_timestamp)) / CLOCKS_PER_SEC > sprot::Protocol::Timeout::Operation)
+        {
+            set_buf_size(0);
+            break;
+        }
+
         if (!buffer_empty_.timed_wait(lock, to))
         {
             data_available_.notify_all();
             return 0;
         }
+    }
 
     unsigned char* shared = buf_;
     size_t tmp_sz = tmp.size();
@@ -176,8 +191,12 @@ start_read:
         }
 
     size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
-    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t)))
+    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t)))
         THROW(sprot::exceptions::Invalid_Frame);
+
+    clock_t current_timestamp = clock();
+    clock_t read_timestamp = 0;
+    memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(clock_t));
     
     if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UID)) == 0)
     {
@@ -199,13 +218,23 @@ start_read:
             goto start_read;
         }
 
-        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t));
-        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t)]), read_bytes);
+        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t));
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t)]), read_bytes);
         set_buf_size(0);
         buffer_empty_.notify_all();
     }
     else
     {
+        //Purge buffer in case content is older than the default single operation timeout
+        if ((1000 * abs(current_timestamp - read_timestamp)) / CLOCKS_PER_SEC > sprot::Protocol::Timeout::Operation)
+        {
+            set_buf_size(0);
+            lock.unlock();
+            buffer_empty_.notify_all();
+            lock.lock();
+            goto start_read;
+        }
+
         lock.unlock();
         data_available_.notify_all();
         lock.lock();
