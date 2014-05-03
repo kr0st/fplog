@@ -64,6 +64,8 @@ bool N_threads_mem_transport_test()
     printf("Running N_threads_mem_transport_test()...\n");
     Shared_Memory_Transport trans;
 
+    time_t begin = clock();
+
     std::thread writer(th1_mem_trans_test, &trans);
     std::thread reader(th2_mem_trans_test, &trans);
     std::thread writer2(th1_mem_trans_test, &trans);
@@ -86,6 +88,10 @@ bool N_threads_mem_transport_test()
     reader.join();
     reader2.join();
     reader3.join();
+
+    clock_t end = clock();
+
+    printf("Shared mem transport delivers %g messages per second.\n", g_read_items.size() * 1.0 / (end * 1.0 - begin * 1.0) * 1000);
 
     if (g_read_items.size() != g_written_items.size())
     {
@@ -170,7 +176,7 @@ void writer_ipc_thread(const spipc::UID& uid)
 
     ipc.connect(uid);
 
-    for (int i = 0; i < 100000; ++i)
+    for (int i = 0; i < 15000; ++i)
     {
         int rnd_sz = 1 + rand() % 1258;
     
@@ -207,7 +213,7 @@ void reader_ipc_thread(const spipc::UID& uid)
     spipc::IPC ipc;
     ipc.connect(uid);
 
-    for (int i = 0; i < 100000; ++i)
+    for (int i = 0; i < 15000; ++i)
     {
         char read_buf[3000];
         memset(read_buf, 0, sizeof(read_buf));
@@ -233,6 +239,7 @@ void reader_ipc_thread(const spipc::UID& uid)
 bool N_threads_IPC_test()
 {
     spipc::UID uid;
+    clock_t begin = clock();
 
     uid.high = 11223;
     uid.low = 334432;
@@ -261,17 +268,23 @@ bool N_threads_IPC_test()
     writer3.join();
     reader3.join();
 
+    clock_t end = clock();
+    size_t read_messages = 0;
+
     std::map<spipc::UID, std::vector<std::string>>::iterator it(g_ipc_written.begin());
     for (; it != g_ipc_written.end(); ++it)
     {
         std::vector<std::string> v1(g_ipc_read[it->first]);
+        read_messages += v1.size();
+
         if (v1 != it->second)
         {
             printf("ERROR: IPC read/write problem detected - written items did not match read items.\n");
             return false;
         }
     }
-
+    
+    printf("IPC delivers %g messages per second.\n", read_messages * 1.0 / (end * 1.0 - begin * 1.0) * 1000);
     return true;
 }
 
@@ -281,8 +294,8 @@ void run_all_tests()
 
     try
     {
-        //if (!N_threads_mem_transport_test())
-            //printf("N_threads_mem_transport_test failed.\n");
+        if (!N_threads_mem_transport_test())
+            printf("N_threads_mem_transport_test failed.\n");
     }
     catch (sprot::exceptions::Exception& e)
     {
