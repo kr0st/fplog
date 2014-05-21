@@ -63,8 +63,9 @@ bool N_threads_mem_transport_test()
 {
     printf("Running N_threads_mem_transport_test()...\n");
     Shared_Memory_Transport trans;
-
-    time_t begin = clock();
+    
+    std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+    long long begin = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
     std::thread writer(th1_mem_trans_test, &trans);
     std::thread reader(th2_mem_trans_test, &trans);
@@ -89,7 +90,7 @@ bool N_threads_mem_transport_test()
     reader2.join();
     reader3.join();
 
-    clock_t end = clock();
+    long long end = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
     printf("Shared mem transport delivers %g messages per second.\n", g_read_items.size() * 1.0 / (end * 1.0 - begin * 1.0) * 1000);
 
@@ -239,7 +240,8 @@ void reader_ipc_thread(const spipc::UID& uid)
 bool N_threads_IPC_test()
 {
     spipc::UID uid;
-    clock_t begin = clock();
+    std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+    long long begin = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
     uid.high = 11223;
     uid.low = 334432;
@@ -268,7 +270,7 @@ bool N_threads_IPC_test()
     writer3.join();
     reader3.join();
 
-    clock_t end = clock();
+    long long end = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
     size_t read_messages = 0;
 
     std::map<spipc::UID, std::vector<std::string>>::iterator it(g_ipc_written.begin());

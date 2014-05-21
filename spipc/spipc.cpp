@@ -1,6 +1,7 @@
 #include "targetver.h"
 #include "spipc.h"
 #include <process.h>
+#include <chrono>
 
 namespace spipc {
 
@@ -124,28 +125,30 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
 size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::vector<unsigned char> tmp;
-    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(clock_t));
+    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(long long));
 
     int pid = _getpid();
     size_t tid = std::this_thread::get_id().hash();
-    clock_t timestamp = clock();
+
+    std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+    long long timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
     memcpy(&(tmp[0]), &private_channel_id_, sizeof(UID));
     memcpy(&(tmp[sizeof(UID)]), &pid, sizeof(int));
     memcpy(&(tmp[sizeof(UID) + sizeof(int)]), &tid, sizeof(size_t));
-    memcpy(&(tmp[sizeof(UID) + sizeof(int) + sizeof(size_t)]), &timestamp, sizeof(clock_t));
-    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(clock_t)]), buf, buf_size);
+    memcpy(&(tmp[sizeof(UID) + sizeof(int) + sizeof(size_t)]), &timestamp, sizeof(long long));
+    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(long long)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
 
     while (get_buf_size() != 0)
     {
-        clock_t read_timestamp = 0;
-        memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(clock_t));
+        long long read_timestamp = 0;
+        memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
 
         //Purge buffer in case content is older than the default single operation timeout
-        if ((1000 * abs(timestamp - read_timestamp)) / CLOCKS_PER_SEC > sprot::Protocol::Timeout::Operation)
+        if (abs(timestamp - read_timestamp) > sprot::Protocol::Timeout::Operation)
         {
             set_buf_size(0);
             break;
@@ -191,12 +194,14 @@ start_read:
         }
 
     size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
-    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t)))
+    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)))
         THROW(sprot::exceptions::Invalid_Frame);
 
-    clock_t current_timestamp = clock();
-    clock_t read_timestamp = 0;
-    memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(clock_t));
+    std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+    long long current_timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
+    long long read_timestamp = 0;
+
+    memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
     
     if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UID)) == 0)
     {
@@ -218,15 +223,15 @@ start_read:
             goto start_read;
         }
 
-        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t));
-        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(clock_t)]), read_bytes);
+        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long));
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)]), read_bytes);
         set_buf_size(0);
         buffer_empty_.notify_all();
     }
     else
     {
         //Purge buffer in case content is older than the default single operation timeout
-        if ((1000 * abs(current_timestamp - read_timestamp)) / CLOCKS_PER_SEC > sprot::Protocol::Timeout::Operation)
+        if (abs(current_timestamp - read_timestamp) > sprot::Protocol::Timeout::Operation)
         {
             set_buf_size(0);
             lock.unlock();
