@@ -128,12 +128,10 @@ namespace sprot
             bool wait_send_mode(size_t timeout = infinite_wait);
             bool wait_recv_mode(size_t timeout = infinite_wait);
 
-            static const unsigned default_send_timeout = 100; //ms
-
 
         private:
 
-            static const size_t default_timeout = 200;
+            static const size_t default_timeout = 200; //ms
 
             Transport_Interface* transport_;
             Switching::Type switching_;
