@@ -1,6 +1,6 @@
 ==================================================================================================================
-spipc
-	sprot-based interprocess communication for fplog
+fplogd
+	sprot-based logs transport daemon for fplog
 ==================================================================================================================
 
 for more details visit
