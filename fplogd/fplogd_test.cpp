@@ -19,14 +19,14 @@ class Foo
 {
     public:
 
-        void Bar(){}
+        void Bar(){ printf("Foo::Bar called!\n"); }
 };
 
-void FooBar() {}
+void FooBar() { printf("FooBar called!\n"); }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    try 
+    /*try 
     {
         std::string flock_name(fplogd::get_lock_file_name());
         std::ofstream o(flock_name);
@@ -42,10 +42,11 @@ int _tmain(int argc, _TCHAR* argv[])
     catch (interprocess_exception& e)
     {
         printf("Unable to lock: %s\n", e.what());
-    }
+    }*/
 
     fplogd::notify_when_started<Foo>(&Foo::Bar, new Foo());
     fplogd::notify_when_started(FooBar);
 
+    std::this_thread::sleep_for(std::chrono::hours(1));
 	return 0;
 }

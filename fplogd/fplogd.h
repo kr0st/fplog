@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <thread>
 
 namespace fplogd {
     
@@ -11,9 +12,20 @@ bool is_started();
 std::string get_lock_file_name();
 void notify_when_started(Start_Notification callback);
 
+template <class T> void thread_worker(void (T::*callback) (void), T* instance)
+{
+    while (!is_started())
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    (instance->*callback)();
+};
+
 template <class T> void notify_when_started(void (T::*callback) (void), T* instance)
 {
-    instance->*callback;
+    if (!instance || !callback)
+        return;
+
+    std::thread notifier(thread_worker<T>, callback, instance);
+    notifier.detach();
 }
 
 };
