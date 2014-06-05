@@ -8,8 +8,6 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
-//#include <boost/thread/thread_time.hpp>
-//flock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(12));
 
 using namespace boost::interprocess;
 
@@ -30,10 +28,9 @@ int _tmain(int argc, _TCHAR* argv[])
 {
     try 
     {
-        const char* flock_name = "C:\\Users\\rosti_000\\.fplogd_lock";
-
+        std::string flock_name(fplogd::get_lock_file_name());
         std::ofstream o(flock_name);
-        file_lock flock(flock_name);
+        file_lock flock(flock_name.c_str());
         printf("file_lock complete...\n");
 
         scoped_lock<file_lock> lock(flock);
