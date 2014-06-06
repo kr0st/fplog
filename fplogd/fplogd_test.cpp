@@ -44,9 +44,13 @@ int _tmain(int argc, _TCHAR* argv[])
         printf("Unable to lock: %s\n", e.what());
     }*/
 
-    fplogd::notify_when_started<Foo>(&Foo::Bar, new Foo());
+    /*fplogd::notify_when_started<Foo>(&Foo::Bar, new Foo());
     fplogd::notify_when_started(FooBar);
 
-    std::this_thread::sleep_for(std::chrono::hours(1));
+    std::this_thread::sleep_for(std::chrono::hours(1));*/
+
+    fplogd::get_registered_channels();
+    _getch();
+
 	return 0;
 }

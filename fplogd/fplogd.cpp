@@ -4,12 +4,16 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/thread/thread_time.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 #ifdef WIN32
 #include <Shlobj.h>
 #endif
 
 static char* g_lock_file_name = ".fplogd_lock";
+static char* g_config_file_name = "fplogd.ini";
+
 static std::string get_home_dir()
 {
 #ifdef WIN32
@@ -66,6 +70,25 @@ void notify_when_started(Start_Notification callback)
     Notification_Helper *helper = new Notification_Helper();
     helper->set_callback(callback);
     notify_when_started<Notification_Helper>(&Notification_Helper::start_notification, helper);
+}
+
+std::vector<spipc::UID> get_registered_channels()
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    read_ini(get_home_dir() + g_config_file_name, pt);
+
+    for (auto& section : pt)
+    {
+        std::cout << '[' << section.first << "]\n";
+        for (auto& key : section.second)
+            std::cout << key.first << "=" << key.second.get_value<std::string>() << "\n";
+    }
+
+    //TODO: implement for real
+    std::vector<spipc::UID> res;
+    return res;
 }
 
 };

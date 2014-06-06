@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <thread>
+#include <vector>
+#include "../spipc/spipc.h"
 
 namespace fplogd {
     
@@ -27,5 +29,7 @@ template <class T> void notify_when_started(void (T::*callback) (void), T* insta
     std::thread notifier(thread_worker<T>, callback, instance);
     notifier.detach();
 }
+
+std::vector<spipc::UID> get_registered_channels();
 
 };
