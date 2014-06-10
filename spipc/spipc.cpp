@@ -1,7 +1,10 @@
 #include "targetver.h"
 #include "spipc.h"
+
 #include <process.h>
 #include <chrono>
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace spipc {
 
@@ -23,6 +26,42 @@ void global_init()
     boost::interprocess::mapped_region mapped_mem_region(shared_mem, boost::interprocess::read_write);
     memset(static_cast<unsigned char*>(mapped_mem_region.get_address()), 0, g_shared_mem_size);
 }
+
+UID UID::from_string(std::string& str)
+{
+    unsigned long long limit = std::numeric_limits<unsigned long long>::max();
+    high = limit;
+    low = limit;
+
+    try
+    {
+        boost::char_separator<char> sep("_");
+        boost::tokenizer<boost::char_separator<char>> tok(str, sep);
+        for(boost::tokenizer<boost::char_separator<char>>::iterator it = tok.begin(); it != tok.end(); ++it)
+        {
+            if (high == limit)
+            {
+                high = boost::lexical_cast<unsigned long long>(*it);
+                continue;
+            }
+
+            if (low == limit)
+            {
+                low = boost::lexical_cast<unsigned long long>(*it);
+                continue;
+            }
+
+            THROW(exceptions::Invalid_Uid);
+        }
+    }
+    catch(boost::exception&)
+    {
+        THROW(exceptions::Invalid_Uid);
+    }
+
+    return *this;
+}
+
 
 Shared_Memory_Transport::~Shared_Memory_Transport()
 {

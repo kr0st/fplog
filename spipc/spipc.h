@@ -45,15 +45,7 @@ struct UID
         return std::string("12_38");
     }
 
-    UID from_string(std::string& str)
-    {
-        //TODO: remove dummy & implement
-        UID uid;
-        uid.high = 12;
-        uid.low = 38;
-
-        return uid;
-    }
+    UID from_string(std::string& str);
 
     unsigned long long high;
     unsigned long long low;
@@ -112,6 +104,16 @@ class No_Receiver: public sprot::exceptions::Exception
     public:
 
         No_Receiver(const char* facility, const char* file = "", int line = 0, const char* message = "No receiver registered to IPC transport."):
+        Exception(facility, file, line, message)
+        {
+        }
+};
+
+class Invalid_Uid: public sprot::exceptions::Exception
+{
+    public:
+
+        Invalid_Uid(const char* facility, const char* file = "", int line = 0, const char* message = "Supplied UID is invalid."):
         Exception(facility, file, line, message)
         {
         }

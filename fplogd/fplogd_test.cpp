@@ -48,9 +48,8 @@ int _tmain(int argc, _TCHAR* argv[])
     fplogd::notify_when_started(FooBar);
 
     std::this_thread::sleep_for(std::chrono::hours(1));*/
-
-    fplogd::get_registered_channels();
-    _getch();
+    
+    std::vector<spipc::UID> uids(fplogd::get_registered_channels());
 
 	return 0;
 }

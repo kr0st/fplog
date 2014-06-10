@@ -76,18 +76,20 @@ std::vector<spipc::UID> get_registered_channels()
 {
     using boost::property_tree::ptree;
     ptree pt;
+    std::vector<spipc::UID> res;
 
     read_ini(get_home_dir() + g_config_file_name, pt);
 
-    for (auto& section : pt)
+    for (auto& section: pt)
     {
-        std::cout << '[' << section.first << "]\n";
-        for (auto& key : section.second)
-            std::cout << key.first << "=" << key.second.get_value<std::string>() << "\n";
+        spipc::UID uid;
+        for (auto& key: section.second)
+        {
+            uid.from_string(key.second.get_value<std::string>());
+            res.push_back(uid);
+        }
     }
 
-    //TODO: implement for real
-    std::vector<spipc::UID> res;
     return res;
 }
 
