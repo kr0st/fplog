@@ -41,8 +41,7 @@ struct UID
 
     std::string to_string(UID& uid)
     {
-        //TODO: remove dummy & implement
-        return std::string("12_38");
+        return (std::to_string(uid.high) + "_" + std::to_string(uid.low));
     }
 
     UID from_string(std::string& str);

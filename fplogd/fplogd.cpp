@@ -1,6 +1,8 @@
 #include "targetver.h"
 #include "fplogd.h"
 
+#include <queue>
+#include <mutex>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/thread/thread_time.hpp>
@@ -57,19 +59,26 @@ class Notification_Helper
 {
     public:
 
-        void start_notification(){ callback_(); delete this; }
-        void set_callback(Start_Notification callback) { callback_ = callback; }
+        void start_stop_notification(){ callback_(); delete this; }
+        void set_callback(Start_Stop_Notification callback) { callback_ = callback; }
 
     private:
 
-        Start_Notification callback_;
+        Start_Stop_Notification callback_;
 };
 
-void notify_when_started(Start_Notification callback)
+void notify_when_started(Start_Stop_Notification callback)
 {
     Notification_Helper *helper = new Notification_Helper();
     helper->set_callback(callback);
-    notify_when_started<Notification_Helper>(&Notification_Helper::start_notification, helper);
+    notify_when_started<Notification_Helper>(&Notification_Helper::start_stop_notification, helper);
+}
+
+void notify_when_stopped(Start_Stop_Notification callback)
+{
+    Notification_Helper *helper = new Notification_Helper();
+    helper->set_callback(callback);
+    notify_when_stopped<Notification_Helper>(&Notification_Helper::start_stop_notification, helper);
 }
 
 std::vector<spipc::UID> get_registered_channels()
@@ -91,6 +100,71 @@ std::vector<spipc::UID> get_registered_channels()
     }
 
     return res;
+}
+
+class Impl
+{
+    public:
+
+        Impl():
+        should_stop_(false),
+        overload_checker_(&Impl::overload_prevention, this)
+        {
+        };
+
+        void start()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            should_stop_ = false;
+        }
+
+        void stop()
+        {
+            {
+                std::lock_guard<std::recursive_mutex> lock(mutex_);
+                should_stop_ = true;
+            }
+
+            join_all_threads();
+        }
+
+
+    private:
+
+        void join_all_threads()
+        {
+        }
+
+        void overload_prevention()
+        {
+            while(true)
+            {
+                {
+                    std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    if (should_stop_)
+                        return;
+                }
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
+        }
+
+        std::recursive_mutex mutex_;
+        std::queue<std::string> msgq_;
+        std::thread overload_checker_;
+        volatile bool should_stop_;
+};
+
+static Impl g_impl;
+
+void start()
+{
+    g_impl.start();
+}
+
+void stop()
+{
+    g_impl.stop();
 }
 
 };
