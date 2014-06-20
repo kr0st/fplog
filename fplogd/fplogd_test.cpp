@@ -49,7 +49,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
     std::this_thread::sleep_for(std::chrono::hours(1));*/
     
-    std::vector<spipc::UID> uids(fplogd::get_registered_channels());
+    std::vector<fplogd::Channel_Data> channels(fplogd::get_registered_channels());
 
 	return 0;
 }

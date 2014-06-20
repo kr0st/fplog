@@ -48,7 +48,13 @@ template <class T> void notify_when_stopped(void (T::*callback) (void), T* insta
     notifier.detach();
 }
 
-std::vector<spipc::UID> get_registered_channels();
+struct Channel_Data
+{
+    spipc::UID uid;
+    std::string app_name;
+};
+
+std::vector<Channel_Data> get_registered_channels();
 
 void start();
 void stop();

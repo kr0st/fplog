@@ -81,21 +81,23 @@ void notify_when_stopped(Start_Stop_Notification callback)
     notify_when_stopped<Notification_Helper>(&Notification_Helper::start_stop_notification, helper);
 }
 
-std::vector<spipc::UID> get_registered_channels()
+std::vector<Channel_Data> get_registered_channels()
 {
     using boost::property_tree::ptree;
     ptree pt;
-    std::vector<spipc::UID> res;
+    std::vector<Channel_Data> res;
 
     read_ini(get_home_dir() + g_config_file_name, pt);
 
     for (auto& section: pt)
     {
-        spipc::UID uid;
+        Channel_Data data;
+
         for (auto& key: section.second)
         {
-            uid.from_string(key.second.get_value<std::string>());
-            res.push_back(uid);
+            data.uid.from_string(key.second.get_value<std::string>());
+            data.app_name = key.first;
+            res.push_back(data);
         }
     }
 
@@ -116,6 +118,18 @@ class Impl
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             should_stop_ = false;
+
+            std::vector<Channel_Data> channels(get_registered_channels());
+            for each (auto channel in channels)
+            {
+                Thread_Data* worker = new Thread_Data();
+                
+                worker->app_name = channel.app_name;
+                worker->uid = channel.uid;
+                worker->thread = new std::thread(&Impl::ipc_listener, this, worker);
+                
+                pool_.push_back(worker);
+            }
         }
 
         void stop()
@@ -131,10 +145,64 @@ class Impl
 
     private:
 
-        void join_all_threads()
+        struct Thread_Data
         {
+            Thread_Data(): thread(0) {}
+
+            std::thread* thread;
+            spipc::UID uid;
+            std::string app_name;
+        };
+
+        void ipc_listener(Thread_Data* data)
+        {
+            spipc::IPC ipc;
+            ipc.connect(data->uid);
+
+            while(true)
+            {
+                //TODO: sprot needs fixing for buffer overflow
+                char buf[2048];
+                memset(buf, 0, sizeof(buf));
+
+                try
+                {
+                    ipc.read(buf, sizeof(buf) - 1, 1000);
+
+                    std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    mq_.push(buf);
+                }
+                catch(sprot::exceptions::Exception&)
+                {
+                    //TODO: handle exceptions
+                }
+
+                {
+                    std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    if (should_stop_)
+                        return;
+                }
+            }
         }
 
+        void join_all_threads()
+        {
+            for each (auto worker in pool_)
+            {
+                if (!worker)
+                    continue;
+
+                if (worker->thread)
+                    worker->thread->join();
+                
+                delete worker->thread;
+                delete worker;
+            }
+
+            pool_.clear();
+        }
+
+        //TODO: need real implementation
         void overload_prevention()
         {
             while(true)
@@ -145,13 +213,14 @@ class Impl
                         return;
                 }
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         }
 
         std::recursive_mutex mutex_;
-        std::queue<std::string> msgq_;
+        std::queue<std::string> mq_;
         std::thread overload_checker_;
+        std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
 };
 
