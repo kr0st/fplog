@@ -24,12 +24,18 @@
     <ClInclude Include="sprot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\spipc\spipc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sprot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sprot_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spipc\spipc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

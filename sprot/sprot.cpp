@@ -57,7 +57,8 @@ namespace sprot
     sequence_num_(0),
     out_buf_(0),
     out_buf_sz_(0),
-    MTU_(MTU - 3) //3 bytes of overhead for data frame
+    MTU_(MTU - 3), //3 bytes of overhead for data frame
+    incomplete_read_(false)
     {
         if (!transport_)
             THROW(exceptions::Incorrect_Parameter);
@@ -68,42 +69,47 @@ namespace sprot
         if (!buf)
             THROW(exceptions::Incorrect_Parameter);
 
-        if (!no_mode_check)
-        {
-            if (current_mode_ == Mode::Undefined)
-                current_mode_ = Mode::Server;
-
-            if (current_mode_ == Mode::Client)
-            {
-                if (switching_ == Switching::Auto)
-                {
-                    if (!wait_recv_mode(timeout))
-                        THROW(exceptions::Incorrect_Mode);
-                }
-                else
-                    THROW(exceptions::Incorrect_Mode);
-            }
-        }
-
         out_buf_ = static_cast<unsigned char*>(buf);
         out_buf_sz_ = buf_size;
-        
-        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
-        bool looping = true;
-        while(looping)
+        if (!incomplete_read_)
         {
-            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
-            if (timer_stop - timer_start >= converted_timeout)
-                THROW(exceptions::Timeout);
+            if (!no_mode_check)
+            {
+                if (current_mode_ == Mode::Undefined)
+                    current_mode_ = Mode::Server;
 
-            size_t recv_sz = transport_->read(buf, buf_size, timeout);            
-            if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
-                looping = on_frame(static_cast<unsigned char*>(buf), recv_sz, buf_size);
-            else
-                send_frame(Frame::NACK);
-        };
+                if (current_mode_ == Mode::Client)
+                {
+                    if (switching_ == Switching::Auto)
+                    {
+                        if (!wait_recv_mode(timeout))
+                            THROW(exceptions::Incorrect_Mode);
+                    }
+                    else
+                        THROW(exceptions::Incorrect_Mode);
+                }
+            }
+        
+            time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
+
+            bool looping = true;
+            while(looping)
+            {
+                time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+                system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+                if (timer_stop - timer_start >= converted_timeout)
+                    THROW(exceptions::Timeout);
+
+                size_t recv_sz = transport_->read(buf, buf_size, timeout);            
+                if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
+                    looping = on_frame(static_cast<unsigned char*>(buf), recv_sz, buf_size);
+                else
+                    send_frame(Frame::NACK);
+            }
+        }
+        else
+            complete_read();
 
         size_t read_data = buf_.size();
         reset();
@@ -244,7 +250,8 @@ namespace sprot
 
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
-        reset();
+        if (!incomplete_read_)
+            reset();
         
         try
         {
@@ -299,6 +306,7 @@ namespace sprot
 
     void Protocol::reset()
     {
+        incomplete_read_ = false;
         is_sequence_ = false;
         sequence_num_ = 0;
         
@@ -382,8 +390,12 @@ namespace sprot
 
     void Protocol::complete_read()
     {
+        incomplete_read_ = true;
+
         if (out_buf_sz_ < buf_.size())
-            THROW(exceptions::Buffer_Overflow);
+            throw exceptions::Buffer_Overflow(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, "Buffer too small.", buf_.size());
+
+        incomplete_read_ = false;
 
         if (!buf_.empty())
         {

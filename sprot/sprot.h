@@ -146,6 +146,8 @@ namespace sprot
             unsigned char sequence_num_;
             size_t MTU_;
 
+            bool incomplete_read_;
+
             static bool crc_check(const unsigned char* buf, size_t length);
 
             //Returns true when more frames are needed before returning data to upper layer,
@@ -266,10 +268,18 @@ namespace sprot { namespace exceptions
     {
         public:
 
-            Buffer_Overflow(const char* facility, const char* file = "", int line = 0, const char* message = "Buffer too small."):
-            Exception(facility, file, line, message)
+            Buffer_Overflow(const char* facility, const char* file = "", int line = 0, const char* message = "Buffer too small.", size_t buf_sz = 0):
+            Exception(facility, file, line, message),
+            buf_sz_(buf_sz)
             {
             }
+
+            size_t get_required_size() { return buf_sz_; }
+
+
+        private:
+
+            size_t buf_sz_;
     };
 
     class Invalid_Frame: public Exception
