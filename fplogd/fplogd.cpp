@@ -140,6 +140,19 @@ class Impl
             }
 
             join_all_threads();
+
+            std::string* str = 0;
+            do
+            {
+                str = 0;
+
+                if (mq_.size() > 0)
+                {
+                    mq_.pop();
+                    str = mq_.front();
+                    delete str;
+                }
+            } while (str);
         }
 
 
@@ -159,28 +172,46 @@ class Impl
             spipc::IPC ipc;
             ipc.connect(data->uid);
 
+            size_t buf_sz = 2048;
+            char *buf = new char [buf_sz];
+
             while(true)
             {
-                //TODO: sprot needs fixing for buffer overflow
-                char buf[2048];
-                memset(buf, 0, sizeof(buf));
+                memset(buf, 0, buf_sz);
 
                 try
                 {
-                    ipc.read(buf, sizeof(buf) - 1, 1000);
+                    ipc.read(buf, buf_sz - 1, 1000);
 
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
-                    mq_.push(buf);
+                    mq_.push(new std::string(buf));
+
+                    if (buf_sz > 2048)
+                    {
+                        buf_sz = 2048;
+                        delete [] buf;
+                        buf = new char [buf_sz];
+                    }
+                }
+                catch(sprot::exceptions::Buffer_Overflow& e)
+                {
+                    buf_sz = e.get_required_size() + 1;
+                    delete [] buf;
+                    buf = new char [buf_sz];
                 }
                 catch(sprot::exceptions::Exception&)
                 {
-                    //TODO: handle exceptions
+                    //TODO: handle exceptions (send special log message to queue originating from fplog)
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
 
                 {
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     if (should_stop_)
+                    {
+                        delete [] buf;
                         return;
+                    }
                 }
             }
         }
@@ -218,7 +249,7 @@ class Impl
         }
 
         std::recursive_mutex mutex_;
-        std::queue<std::string> mq_;
+        std::queue<std::string*> mq_;
         std::thread overload_checker_;
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
