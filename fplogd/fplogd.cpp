@@ -110,9 +110,17 @@ class Impl
 
         Impl():
         should_stop_(false),
-        overload_checker_(&Impl::overload_prevention, this)
+        log_transport_(0),
+        overload_checker_(&Impl::overload_prevention, this),
+        mq_reader_(&Impl::mq_reader, this)
         {
         };
+
+        void set_log_transport(sprot::Transport_Interface* transport)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            log_transport_ = transport;
+        }
 
         void start()
         {
@@ -146,13 +154,15 @@ class Impl
             {
                 str = 0;
 
-                if (mq_.size() > 0)
+                if (!mq_.empty())
                 {
-                    mq_.pop();
                     str = mq_.front();
+                    mq_.pop();
                     delete str;
                 }
             } while (str);
+
+            delete log_transport_;
         }
 
 
@@ -218,6 +228,9 @@ class Impl
 
         void join_all_threads()
         {
+            overload_checker_.join();
+            mq_reader_.join();
+
             for each (auto worker in pool_)
             {
                 if (!worker)
@@ -248,17 +261,60 @@ class Impl
             }
         }
 
+        void mq_reader()
+        {
+            while(true)
+            {
+                {
+                    std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    if (should_stop_)
+                        return;
+                }
+
+                if (!mq_.empty())
+                {
+                    std::string* str = mq_.front();
+                    std::auto_ptr<std::string> str_ptr(str);
+                    mq_.pop();
+
+                    //TODO: exception handling!
+                    if (log_transport_)
+                        log_transport_->write(str->c_str(), str->size() + 1, 200);
+                }
+                else
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+        }
+
         std::recursive_mutex mutex_;
         std::queue<std::string*> mq_;
+
         std::thread overload_checker_;
+        std::thread mq_reader_;
+
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
+        sprot::Transport_Interface* log_transport_;
+};
+
+class Console_Output: public sprot::Transport_Interface
+{
+    public:
+
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) { return 0; }
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
+        {
+            if (buf && (buf_size > 0))
+                printf("%s\n", buf);
+            return buf_size;
+        }
 };
 
 static Impl g_impl;
 
 void start()
 {
+    g_impl.set_log_transport(new Console_Output());
     g_impl.start();
 }
 

@@ -48,8 +48,32 @@ int _tmain(int argc, _TCHAR* argv[])
     fplogd::notify_when_started(FooBar);
 
     std::this_thread::sleep_for(std::chrono::hours(1));*/
-    
+
+    /*spipc::global_init();
+
     std::vector<fplogd::Channel_Data> channels(fplogd::get_registered_channels());
+    spipc::IPC ipc;
+    ipc.connect(channels[0].uid);
+
+    while (true)
+    {
+        char str[256] = {0};
+        sprintf_s(str, sizeof(str), "%s: kill me kill me kill me...", channels[0].app_name.c_str());
+        
+        try
+        {
+            ipc.write(str, sizeof(str), 1000);
+        }
+        catch(sprot::exceptions::Exception)
+        {
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }*/
+
+    fplogd::start();
+    _getch();
+    fplogd::stop();
 
 	return 0;
 }
