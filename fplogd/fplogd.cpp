@@ -1,6 +1,8 @@
 #include "targetver.h"
 #include "fplogd.h"
 
+#include <stdio.h>
+#include <conio.h>
 #include <queue>
 #include <mutex>
 #include <boost/interprocess/sync/file_lock.hpp>
@@ -324,3 +326,10 @@ void stop()
 }
 
 };
+
+int main()
+{
+    fplogd::start();
+    _getch();
+    fplogd::stop();
+}

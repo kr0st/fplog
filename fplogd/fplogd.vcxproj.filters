@@ -15,33 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sprot\sprot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fplogd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\spipc\spipc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\sprot\sprot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="fplogd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fplogd_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spipc\spipc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,6 +8,12 @@
 #include <mutex>
 #include <vector>
 
+#ifdef SPROT_EXPORT
+#define SPROT_API __declspec(dllexport)
+#else
+#define SPROT_API __declspec(dllimport)
+#endif
+
 #ifdef _DEBUG
 #define private public
 #endif
@@ -36,7 +42,7 @@
 
 namespace sprot
 {
-    class Transport_Interface
+    class SPROT_API Transport_Interface
     {
         public:
 
@@ -46,7 +52,7 @@ namespace sprot
             virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
     };
 
-    class Protocol: public Transport_Interface
+    class SPROT_API Protocol: public Transport_Interface
     {
         public:
 
@@ -176,12 +182,12 @@ namespace sprot
 
 namespace util
 {
-    unsigned char crc7(const unsigned char* buf, size_t length);
+    SPROT_API unsigned char crc7(const unsigned char* buf, size_t length);
 }};
 
 namespace sprot { namespace exceptions
 {
-    class Exception
+    class SPROT_API Exception
     {
         public:
 
@@ -214,7 +220,7 @@ namespace sprot { namespace exceptions
             Exception();
     };
 
-    class Incorrect_Mode: public Exception
+    class SPROT_API Incorrect_Mode: public Exception
     {
         public:
 
@@ -224,7 +230,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Write_Failed: public Exception
+    class SPROT_API Write_Failed: public Exception
     {
         public:
 
@@ -234,7 +240,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Read_Failed: public Exception
+    class SPROT_API Read_Failed: public Exception
     {
         public:
 
@@ -244,7 +250,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Incorrect_Parameter: public Exception
+    class SPROT_API Incorrect_Parameter: public Exception
     {
         public:
 
@@ -254,7 +260,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Not_Implemented: public Exception
+    class SPROT_API Not_Implemented: public Exception
     {
         public:
 
@@ -264,7 +270,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Buffer_Overflow: public Exception
+    class SPROT_API Buffer_Overflow: public Exception
     {
         public:
 
@@ -282,7 +288,7 @@ namespace sprot { namespace exceptions
             size_t buf_sz_;
     };
 
-    class Invalid_Frame: public Exception
+    class SPROT_API Invalid_Frame: public Exception
     {
         public:
 
@@ -292,7 +298,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class Timeout: public Exception
+    class SPROT_API Timeout: public Exception
     {
         public:
 

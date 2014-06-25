@@ -4,7 +4,6 @@
 #include <tchar.h>
 
 #include "sprot.h"
-#include "../spipc/spipc.h"
 
 #include <mutex>
 #include <thread>
@@ -502,7 +501,7 @@ namespace sprot { namespace testing
             }
     };
 
-    void buffer_overflow_test_worker()
+    /*void buffer_overflow_test_worker()
     {
         char data_5mb[5 * 1024 * 1024] = {0};
         for (int i = 0; i < sizeof(data_5mb); ++i)
@@ -515,7 +514,7 @@ namespace sprot { namespace testing
         buffer_overflow_test.connect(uid);
         buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    }
+    }*/
 
     bool proto_test()
     {
@@ -616,7 +615,7 @@ namespace sprot { namespace testing
             return false;
         }
 
-        char data_5mb[5 * 1024 * 1024] = {0};
+        /*char data_5mb[5 * 1024 * 1024] = {0};
         for (int i = 0; i < sizeof(data_5mb); ++i)
             data_5mb[i] = 65 + i % 23;
 
@@ -664,7 +663,7 @@ retry:
             goto retry;
         }
 
-        worker.join();
+        worker.join();*/
 
         return true;
     }

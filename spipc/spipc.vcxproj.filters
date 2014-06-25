@@ -21,21 +21,12 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sprot\sprot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="spipc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="spipc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sprot\sprot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spipc_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

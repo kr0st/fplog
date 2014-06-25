@@ -11,6 +11,12 @@
 
 #include "..\sprot\sprot.h"
 
+#ifdef SPIPC_EXPORT
+#define SPIPC_API __declspec(dllexport)
+#else
+#define SPIPC_API __declspec(dllimport)
+#endif
+
 namespace spipc {
 
 extern const char* g_shared_mem_name;
@@ -21,7 +27,7 @@ extern const size_t g_shared_mem_size;
 
 void global_init();
 
-struct UID
+struct SPIPC_API UID
 {
     UID(): high(0), low(0) {}
     bool operator== (const UID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
@@ -50,7 +56,7 @@ struct UID
     unsigned long long low;
 };
 
-class Shared_Memory_Transport: public sprot::Transport_Interface
+class SPIPC_API Shared_Memory_Transport: public sprot::Transport_Interface
 {
     public:
 
@@ -76,7 +82,7 @@ class Shared_Memory_Transport: public sprot::Transport_Interface
         void set_buf_size(size_t size);
 };
 
-class IPC: public sprot::Transport_Interface
+class SPIPC_API IPC: public sprot::Transport_Interface
 {
     public:
 
@@ -98,7 +104,7 @@ class IPC: public sprot::Transport_Interface
 
 namespace exceptions {
 
-class No_Receiver: public sprot::exceptions::Exception
+class SPIPC_API No_Receiver: public sprot::exceptions::Exception
 {
     public:
 
@@ -108,7 +114,7 @@ class No_Receiver: public sprot::exceptions::Exception
         }
 };
 
-class Invalid_Uid: public sprot::exceptions::Exception
+class SPIPC_API Invalid_Uid: public sprot::exceptions::Exception
 {
     public:
 
