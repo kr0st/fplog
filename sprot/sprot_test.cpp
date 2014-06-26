@@ -501,21 +501,6 @@ namespace sprot { namespace testing
             }
     };
 
-    /*void buffer_overflow_test_worker()
-    {
-        char data_5mb[5 * 1024 * 1024] = {0};
-        for (int i = 0; i < sizeof(data_5mb); ++i)
-            data_5mb[i] = 65 + i % 23;
-
-        spipc::IPC buffer_overflow_test;
-        spipc::UID uid;
-        uid.high = 12;
-        uid.low = 21;
-        buffer_overflow_test.connect(uid);
-        buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    }*/
-
     bool proto_test()
     {
         random_data_small = new unsigned char[small_data_size];
@@ -614,56 +599,6 @@ namespace sprot { namespace testing
             printf("write_retransmit_test_protocol.write() failed with timeout.\n");
             return false;
         }
-
-        /*char data_5mb[5 * 1024 * 1024] = {0};
-        for (int i = 0; i < sizeof(data_5mb); ++i)
-            data_5mb[i] = 65 + i % 23;
-
-        size_t read_buf_sz = 256 * 1024;
-        char* read_buf = new char[read_buf_sz];
-
-        spipc::global_init();
-        spipc::IPC buffer_overflow_test;
-        spipc::UID uid;
-        uid.high = 12;
-        uid.low = 21;
-        buffer_overflow_test.connect(uid);
-
-        std::thread worker(&buffer_overflow_test_worker);
-
-        int retries = 0;
-retry:
-
-        if (retries > 1)
-        {
-            printf("buffer_overflow_test.read() failed.\n");
-            return false;
-        }
-
-        try
-        {
-            buffer_overflow_test.read(read_buf, read_buf_sz);
-            if ((sizeof(data_5mb) != read_buf_sz) || memcmp(read_buf, data_5mb, sizeof(data_5mb)) != 0)
-            {
-                printf("buffer_overflow_test.read() got corrupted data.\n");
-                return false;
-            }
-        }
-        catch(exceptions::Read_Failed)
-        {
-            printf("buffer_overflow_test.read() failed.\n");
-            return false;
-        }
-        catch(exceptions::Buffer_Overflow& e)
-        {
-            retries++;
-            delete read_buf;
-            read_buf_sz = e.get_required_size();
-            read_buf = new char[read_buf_sz];
-            goto retry;
-        }
-
-        worker.join();*/
 
         return true;
     }

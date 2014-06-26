@@ -25,7 +25,7 @@ extern const char* g_buf_empty_condition_name;
 extern const char* g_condition_mutex_name;
 extern const size_t g_shared_mem_size;
 
-void global_init();
+SPIPC_API void global_init();
 
 struct SPIPC_API UID
 {
