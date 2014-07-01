@@ -329,6 +329,7 @@ void stop()
 
 int main()
 {
+    spipc::global_init();
     fplogd::start();
     _getch();
     fplogd::stop();

@@ -2,7 +2,7 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include "../spipc/spipc.h"
+#include <spipc/spipc.h>
 
 namespace fplogd {
     

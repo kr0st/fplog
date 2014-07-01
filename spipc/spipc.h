@@ -9,7 +9,7 @@
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/thread/thread.hpp>
 
-#include "..\sprot\sprot.h"
+#include <sprot/sprot.h>
 
 #ifdef SPIPC_EXPORT
 #define SPIPC_API __declspec(dllexport)
