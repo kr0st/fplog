@@ -2,6 +2,7 @@
 #define LIBJSON_GUARD_STREAM_H
 
 #include "JSONDebug.h"
+#include "../../impex.h"
 
 #ifdef JSON_STREAM
 
@@ -17,12 +18,7 @@
 #include "JSONMemory.h"
 #endif
 
-#ifndef JSON_LIBRARY
-class JSONNode; //foreward declaration
-typedef void (*json_stream_callback_t)(JSONNode &, void *);
-#endif
-
-class JSONStream {
+class JSON_API JSONStream {
 public:
 	LIBJSON_OBJECT(JSONStream);
     JSONStream(json_stream_callback_t call_p, json_stream_e_callback_t call_e = NULL, void * callbackIdentifier = JSONSTREAM_SELF) json_nothrow;

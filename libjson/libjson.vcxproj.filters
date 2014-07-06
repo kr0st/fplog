@@ -134,5 +134,8 @@
     <ClInclude Include="_internal\Source\NumberToString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="impex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -107,11 +107,7 @@ void JSONStream::parse(void) json_nothrow {
 			  #endif
 			  START_MEM_SCOPE
 				 JSONNode temp(JSONWorker::parse(buffer.substr(pos, end - pos + 1)));
-				 #ifndef JSON_LIBRARY
-					call(temp, getIdentifier());
-				 #else
 					call(&temp, getIdentifier());
-				 #endif
 			  END_MEM_SCOPE
 			  json_string::iterator beginning = buffer.begin();
 			  buffer.erase(beginning, beginning + end);

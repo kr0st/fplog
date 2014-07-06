@@ -129,26 +129,21 @@ typedef void (*json_stream_e_callback_t)(void * identifier);
 
 typedef void (*json_mutex_callback_t)(void *);
 typedef void (*json_free_t)(void *);
-#ifndef JSON_LIBRARY
-    typedef void * (*json_malloc_t)(size_t);
-    typedef void * (*json_realloc_t)(void *, size_t);
-#else
-    #define JSONNODE void  /* so that JSONNODE* is void* */
-    typedef JSONNODE** JSONNODE_ITERATOR;
-    #ifdef JSON_STREAM
-	   #define JSONSTREAM void
-	    typedef void (*json_stream_callback_t)(JSONNODE *, void * identifier);
-    #endif
-    typedef void * (*json_malloc_t)(unsigned long);
-    typedef void * (*json_realloc_t)(void *, unsigned long);
+#define JSONNODE void  /* so that JSONNODE* is void* */
+typedef JSONNODE** JSONNODE_ITERATOR;
+#ifdef JSON_STREAM
+	#define JSONSTREAM void
+	typedef void (*json_stream_callback_t)(JSONNODE *, void * identifier);
 #endif
+typedef void * (*json_malloc_t)(unsigned long);
+typedef void * (*json_realloc_t)(void *, unsigned long);
 
 #ifdef JSON_DEBUG
     #ifdef NDEBUG
 	   #ifdef __GNUC__
 		  #warning, Have JSON_DEBUG on in a release build
 	   #else
-		  #error, Have JSON_DEBUG on in a release build
+		  #pragma message ( "Have JSON_DEBUG on in a release build" )
 	   #endif
     #endif
 #else
@@ -156,7 +151,7 @@ typedef void (*json_free_t)(void *);
 	   #ifdef __GNUC__
 		  #warning, Release build of libjson, but NDEBUG is not on
 	   #else
-		  #error, Release build of libjson, but NDEBUG is not on
+          #pragma message ( "Release build of libjson, but NDEBUG is not on" )		  
 	   #endif
 	#endif
 #endif

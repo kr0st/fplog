@@ -3,6 +3,8 @@
 
 #include "JSONDebug.h"   //for string type
 #include "internalJSONNode.h"  //internal structure for json value
+#include "../../impex.h"
+
 #include <stdexcept>
 #include <cstdarg>  //for the ... parameter
 
@@ -129,7 +131,7 @@
 */
 
 
-class JSONNode {
+class JSON_API JSONNode {
 public:
 	LIBJSON_OBJECT(JSONNode);
     explicit JSONNode(char mytype = JSON_NODE) json_nothrow json_hot;
