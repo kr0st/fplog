@@ -1,6 +1,7 @@
 
 #include <libjson/libjson.h>
 #include "fplog.h"
+#include "utils.h"
 
 int main()
 {
@@ -15,6 +16,9 @@ int main()
     arr.push_back(bar);
 
     printf("%s\n", arr.write_formatted().c_str());
+
+    printf("Timezone: %d\n", generic_util::get_system_timezone());
+    printf("iso8601 timezone: %s\n", generic_util::timezone_from_minutes_to_iso8601(generic_util::get_system_timezone()).c_str());
 
     return 0;
 }
