@@ -19,6 +19,7 @@ int main()
 
     printf("Timezone: %d\n", generic_util::get_system_timezone());
     printf("iso8601 timezone: %s\n", generic_util::timezone_from_minutes_to_iso8601(generic_util::get_system_timezone()).c_str());
+    printf("Full iso8601 date-time with timezone: %s\n", generic_util::get_iso8601_timestamp().c_str());
 
     return 0;
 }
