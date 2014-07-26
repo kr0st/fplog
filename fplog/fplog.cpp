@@ -33,7 +33,79 @@ const char* Message::Optional_Fields::encrypted = "encrypted"; //true/false, if 
                                                                //the rest of the log message including the decrypted version of Text field
 const char* Message::Optional_Fields::file = "file"; //filename when sending a file inside the log message
 
-            
+Message::Message(const char* prio, const char* text):
+msg_(JSON_NODE)
+{
+    if (prio)
+        msg_.push_back(JSONNode(Message::Mandatory_Fields::priority, prio));
+    else
+        msg_.push_back(JSONNode(Message::Mandatory_Fields::priority, Prio::debug));
+
+    if (text)
+        msg_.push_back(JSONNode(Message::Mandatory_Fields::text, text));
+}
+
+Message& Message::add(const char* param_name, int param)
+{
+    if (param_name)
+        msg_.push_back(JSONNode(param_name, param));
+
+    return *this;
+}
+
+Message& Message::add(const char* param_name, long long param)
+{
+    if (param_name)
+        msg_.push_back(JSONNode(param_name, param));
+
+    return *this;
+}
+
+Message& Message::add(const char* param_name, double param)
+{
+    if (param_name)
+        msg_.push_back(JSONNode(param_name, param));
+
+    return *this;
+}
+
+Message& Message::add(const char* param_name, std::string& param)
+{
+    if (param_name)
+        msg_.push_back(JSONNode(param_name, param));
+
+    return *this;
+}
+
+Message& Message::add(const char* param_name, const char* param)
+{
+    if (param_name && param)
+        msg_.push_back(JSONNode(param_name, param));
+
+    return *this;
+}
+
+Message& Message::add(JSONNode& param)
+{    
+    msg_.push_back(param);
+    return *this;
+}
+
+std::string Message::as_string()
+{
+    return msg_.write();
+}
+
+JSONNode& Message::as_json()
+{
+    return msg_;
+}
+
+void write(Message& msg)
+{
+    printf("%s\n", msg.as_string().c_str());
+}
+
 bool Priority_Filter::should_pass(Message& msg)
 {
     /*JSONNode::iterator it(msg.find("priority"));

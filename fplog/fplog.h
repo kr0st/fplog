@@ -4,6 +4,12 @@
 #include <set>
 #include <libjson/libjson.h>
 
+#ifdef FPLOG_EXPORT
+#define FPLOG_API __declspec(dllexport)
+#else
+#define FPLOG_API __declspec(dllimport)
+#endif
+
 #ifndef __SHORT_FORM_OF_FILE__
 
 #ifdef WIN32
@@ -27,7 +33,7 @@
 namespace fplog
 {
 
-struct Facility
+struct FPLOG_API Facility
 {
     static const char* system; //message from some system component
     static const char* user; //message from user-level component
@@ -35,7 +41,7 @@ struct Facility
     static const char* fplog; //message from fplog directly, could inform about log system malfunction
 };
 
-struct Prio
+struct FPLOG_API Prio
 {
     static const char* emergency; //system is unusable
     static const char* alert; //action must be taken immediately
@@ -47,7 +53,7 @@ struct Prio
     static const char* debug; //debug/trace info for developers
 };
 
-class Message
+class FPLOG_API Message
 {
     public:
         
@@ -73,7 +79,7 @@ class Message
             static const char* file; //filename when sending a file inside the log message
         };
 
-        Message(const char* prio);
+        Message(const char* prio, const char* text = 0);
         void set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
         Message& add(const char* param_name, int param);
@@ -81,15 +87,22 @@ class Message
         Message& add(const char* param_name, double param);
         Message& add(const char* param_name, std::string& param);
         Message& add(const char* param_name, const char* param);
+        Message& add(JSONNode& param);
+
+        std::string as_string();
+        JSONNode& as_json();
+
+    private:
+
+        JSONNode msg_;
 };
 
-class Filter_Base
+class FPLOG_API Filter_Base
 {
     public:
 
         Filter_Base(const char* filter_id) { if (filter_id) filter_id_ = filter_id; else filter_id_ = ""; }
         virtual bool should_pass(Message& msg) = 0;
-        virtual ~Filter_Base();
 
 
     protected:
@@ -103,7 +116,7 @@ class Filter_Base
 };
 
 //You need to explicitly state messages of which priorities you need to log by using add/remove.
-class Priority_Filter: public Filter_Base
+class FPLOG_API Priority_Filter: public Filter_Base
 {
     public:
 
@@ -118,13 +131,13 @@ class Priority_Filter: public Filter_Base
         std::set<std::string> prio_;
 };
 
-void openlog(const char* facility, Filter_Base* filter = 0);
-void closelog();
+FPLOG_API void openlog(const char* facility, Filter_Base* filter = 0);
+FPLOG_API void closelog();
 
-void add_filter(Filter_Base* filter);
-void remove_filter(Filter_Base* filter);
-Filter_Base* find_filter(const char* filter_id);
+FPLOG_API void add_filter(Filter_Base* filter);
+FPLOG_API void remove_filter(Filter_Base* filter);
+FPLOG_API Filter_Base* find_filter(const char* filter_id);
 
-void write(Message& msg);
+FPLOG_API void write(Message& msg);
 
 };
