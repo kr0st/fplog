@@ -1,4 +1,5 @@
 #include "fplog.h"
+#include <sprot/sprot.h>
 
 namespace fplog
 {
@@ -21,8 +22,8 @@ const char* Message::Mandatory_Fields::facility = "facility"; //according to sys
 const char* Message::Mandatory_Fields::priority = "priority"; //same as severity for syslog
 const char* Message::Mandatory_Fields::timestamp = "timestamp"; //ISO8601 timestamp with milliseconds and timezone
 const char* Message::Mandatory_Fields::hostname = "hostname"; //IP address or any specific sending device id, added by fplogd before sending
-const char* Message::Mandatory_Fields::text = "text"; //log message text
 
+const char* Message::Optional_Fields::text = "text"; //log message text
 const char* Message::Optional_Fields::component = "component"; //package name or any logical software component
 const char* Message::Optional_Fields::class_name = "class"; //class name if OOP is used
 const char* Message::Optional_Fields::method = "method"; //method of a given class if OOP is used or just a function name
@@ -33,60 +34,48 @@ const char* Message::Optional_Fields::encrypted = "encrypted"; //true/false, if 
                                                                //the rest of the log message including the decrypted version of Text field
 const char* Message::Optional_Fields::file = "file"; //filename when sending a file inside the log message
 
-Message::Message(const char* prio, const char* text):
+
+Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
 {
-    if (prio)
-        msg_.push_back(JSONNode(Message::Mandatory_Fields::priority, prio));
-    else
-        msg_.push_back(JSONNode(Message::Mandatory_Fields::priority, Prio::debug));
+    if (format)
+    {
+        va_list aptr;
+        va_start(aptr, format);
 
-    if (text)
-        msg_.push_back(JSONNode(Message::Mandatory_Fields::text, text));
+        char buffer[2048] = {0};
+        vsnprintf(buffer, sizeof(buffer) - 1, format, aptr);
+        set_text(buffer);
+
+        va_end(aptr);
+    }
+
+    set<const char*>(Mandatory_Fields::priority, prio ? prio : Prio::debug);
+    set(Mandatory_Fields::facility, facility ? facility : Facility::user);
 }
 
-Message& Message::add(const char* param_name, int param)
+Message& Message::set_text(std::string& text)
 {
-    if (param_name)
-        msg_.push_back(JSONNode(param_name, param));
-
-    return *this;
+    return set<std::string&>(Optional_Fields::text, text);
 }
 
-Message& Message::add(const char* param_name, long long param)
+Message& Message::set_text(const char* text)
 {
-    if (param_name)
-        msg_.push_back(JSONNode(param_name, param));
-
-    return *this;
+    return set<const char*>(Optional_Fields::text, text);
 }
 
-Message& Message::add(const char* param_name, double param)
+Message& Message::set_class(std::string& class_name)
 {
-    if (param_name)
-        msg_.push_back(JSONNode(param_name, param));
-
-    return *this;
+    return set<std::string&>(Optional_Fields::class_name, class_name);
 }
 
-Message& Message::add(const char* param_name, std::string& param)
+Message& Message::set_class(const char* class_name)
 {
-    if (param_name)
-        msg_.push_back(JSONNode(param_name, param));
-
-    return *this;
-}
-
-Message& Message::add(const char* param_name, const char* param)
-{
-    if (param_name && param)
-        msg_.push_back(JSONNode(param_name, param));
-
-    return *this;
+    return set<const char*>(Optional_Fields::class_name, class_name);
 }
 
 Message& Message::add(JSONNode& param)
-{    
+{
     msg_.push_back(param);
     return *this;
 }

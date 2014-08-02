@@ -3,6 +3,7 @@
 #include <string>
 #include <set>
 #include <libjson/libjson.h>
+#include <typeinfo>
 
 #ifdef FPLOG_EXPORT
 #define FPLOG_API __declspec(dllexport)
@@ -29,6 +30,9 @@
 #endif
 
 #endif
+
+#define CLASSNAME typeid(*this).name()
+
 
 namespace fplog
 {
@@ -63,11 +67,11 @@ class FPLOG_API Message
             static const char* priority; //same as severity for syslog
             static const char* timestamp; //ISO8601 timestamp with milliseconds and timezone
             static const char* hostname; //IP address or any specific sending device id, added by fplogd before sending
-            static const char* text; //log message text
         };
 
         struct Optional_Fields
         {
+            static const char* text; //log message text
             static const char* component; //package name or any logical software component
             static const char* class_name; //class name if OOP is used
             static const char* method; //method of a given class if OOP is used or just a function name
@@ -75,26 +79,70 @@ class FPLOG_API Message
             static const char* line; //line number in the above mentioned source file
             static const char* options; //for example encryption method + options when encryption is in use
             static const char* encrypted; //true/false, if true then Text field contains encrypted JSON values - 
-                                          //the rest of the log message including the decrypted version of Text field
+                                          //the rest of the log message including the plaintext version of Text field
             static const char* file; //filename when sending a file inside the log message
         };
 
-        Message(const char* prio, const char* text = 0);
+        Message(const char* prio, const char *facility, const char* format = 0, ...);
+
         void set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
-        Message& add(const char* param_name, int param);
-        Message& add(const char* param_name, long long param);
-        Message& add(const char* param_name, double param);
-        Message& add(const char* param_name, std::string& param);
-        Message& add(const char* param_name, const char* param);
+        Message& add(const char* param_name, int param){ return add<int>(param_name, param); }
+        Message& add(const char* param_name, long long param){ return add<long long>(param_name, param); }
+        Message& add(const char* param_name, double param){ return add<double>(param_name, param); }
+        Message& add(const char* param_name, std::string& param){ return add<std::string>(param_name, param); }
+        Message& add(const char* param_name, const char* param){ return add<const char*>(param_name, param); }
         Message& add(JSONNode& param);
+
+        Message& set_text(std::string& text);
+        Message& set_text(const char* text);
+
+        Message& set_class(std::string& class_name);
+        Message& set_class(const char* class_name);
 
         std::string as_string();
         JSONNode& as_json();
 
+
     private:
 
+        template <typename T> Message& set(const char* param_name, T param)
+        {
+            validate_params_ = false;
+            try
+            {
+                add(param_name, param);
+            }
+            catch(std::exception& e)
+            {
+                validate_params_ = true;
+                throw e;
+            }
+            catch(sprot::exceptions::Exception& e)
+            {
+                validate_params_ = true;
+                throw e;
+            }
+        }
+
+        template <typename T> bool is_valid(const char* param_name, T param)
+        {
+            if (!validate_params_)
+                return true;
+
+            return true;
+        }
+
+        template <typename T> Message& add(const char* param_name, T param)
+        {
+            if (param_name && is_valid<T>(param_name, param))
+                msg_.push_back(JSONNode(param_name, param));
+
+            return *this;
+        }
+
         JSONNode msg_;
+        bool validate_params_;
 };
 
 class FPLOG_API Filter_Base
@@ -139,5 +187,4 @@ FPLOG_API void remove_filter(Filter_Base* filter);
 FPLOG_API Filter_Base* find_filter(const char* filter_id);
 
 FPLOG_API void write(Message& msg);
-
 };
