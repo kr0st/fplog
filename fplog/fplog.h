@@ -32,6 +32,27 @@
 #endif
 
 #define CLASSNAME typeid(*this).name()
+#define CLASSNAME_SHORT \
+    (strrchr(CLASSNAME,' ') \
+    ? strrchr(CLASSNAME,' ')+1 \
+    : CLASSNAME \
+    )
+
+#define FUNCTION_SHORT \
+    (strrchr(__FUNCTION__,':') \
+    ? strrchr(__FUNCTION__,':')+1 \
+    : __FUNCTION__ \
+    )
+
+#define FPL_TRACE(format, ...) fplog::Message(fplog::Prio::debug, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_INFO(format, ...) fplog::Message(fplog::Prio::info, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_WARN(format, ...) fplog::Message(fplog::Prio::warning, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_ERROR(format, ...) fplog::Message(fplog::Prio::error, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+
+#define FPL_CTRACE(format, ...) FPL_TRACE(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CINFO(format, ...) FPL_INFO(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CWARN(format, ...) FPL_WARN(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CERROR(format, ...) FPL_ERROR(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 
 
 namespace fplog
@@ -85,13 +106,15 @@ class FPLOG_API Message
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
 
-        void set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
+        Message& set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
         Message& add(const char* param_name, int param){ return add<int>(param_name, param); }
         Message& add(const char* param_name, long long param){ return add<long long>(param_name, param); }
         Message& add(const char* param_name, double param){ return add<double>(param_name, param); }
         Message& add(const char* param_name, std::string& param){ return add<std::string>(param_name, param); }
         Message& add(const char* param_name, const char* param){ return add<const char*>(param_name, param); }
+        
+        //before adding JSON element make sure it has a name
         Message& add(JSONNode& param);
 
         Message& set_text(std::string& text);
@@ -100,11 +123,21 @@ class FPLOG_API Message
         Message& set_class(std::string& class_name);
         Message& set_class(const char* class_name);
 
+        Message& set_module(std::string& module);
+        Message& set_module(const char* module);
+
+        Message& set_method(std::string& method);
+        Message& set_method(const char* method);
+
+        Message& set_line(int line);
+
         std::string as_string();
         JSONNode& as_json();
 
 
     private:
+
+        Message();
 
         template <typename T> Message& set(const char* param_name, T param)
         {
@@ -133,9 +166,11 @@ class FPLOG_API Message
             return true;
         }
 
+        bool is_valid(JSONNode& param);
+
         template <typename T> Message& add(const char* param_name, T param)
         {
-            if (param_name && is_valid<T>(param_name, param))
+            if (param_name && is_valid(param_name, param))
                 msg_.push_back(JSONNode(param_name, param));
 
             return *this;
@@ -143,6 +178,23 @@ class FPLOG_API Message
 
         JSONNode msg_;
         bool validate_params_;
+};
+
+class FPLOG_API File
+{
+    public:
+
+        File(const char* prio, const char* name, const char* content, size_t size);
+        Message as_message(){ return msg_; }
+
+
+    private:
+
+        File();
+        File(File&);
+
+        Message msg_;
+        char* buf_;
 };
 
 class FPLOG_API Filter_Base
@@ -187,4 +239,5 @@ FPLOG_API void remove_filter(Filter_Base* filter);
 FPLOG_API Filter_Base* find_filter(const char* filter_id);
 
 FPLOG_API void write(Message& msg);
+
 };

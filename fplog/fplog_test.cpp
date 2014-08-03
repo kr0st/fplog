@@ -3,6 +3,18 @@
 #include "fplog.h"
 #include "utils.h"
 
+class Bar
+{
+    public:
+        virtual void FooBar() = 0;
+};
+
+class Foo: public Bar
+{
+    public:
+        void FooBar(){ fplog::write(FPL_CINFO("blah-blah %d!", 38).add("real", -9.54)); }
+};
+
 int main()
 {
     JSONNode arr(JSON_ARRAY);
@@ -26,7 +38,16 @@ int main()
     printf("iso8601 timezone: %s\n", generic_util::timezone_from_minutes_to_iso8601(generic_util::get_system_timezone()).c_str());
     printf("Full iso8601 date-time with timezone: %s\n", generic_util::get_iso8601_timestamp().c_str());
 
-    fplog::write(fplog::Message(fplog::Prio::alert, "go fetch some numbers").add("int", 23).add("double", -1.23));
+    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("int", 23).add("double", -1.23));
+
+    Foo Bar;
+    Bar.FooBar();
+
+    char buf[256];
+    const char* str = "asafdkfj *** Hello, world! -=-=-=-=-=-+++   ";
+
+    fplog::File f(fplog::Prio::alert, "dump.bin", str, strlen(str));
+    fplog::write(f.as_message());
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "fplog.h"
+#include "utils.h"
 #include <sprot/sprot.h>
 
 namespace fplog
@@ -38,6 +39,10 @@ const char* Message::Optional_Fields::file = "file"; //filename when sending a f
 Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
 {
+    set_timestamp();
+    set(Mandatory_Fields::priority, prio ? prio : Prio::debug);
+    set(Mandatory_Fields::facility, facility ? facility : Facility::user);
+
     if (format)
     {
         va_list aptr;
@@ -49,35 +54,63 @@ msg_(JSON_NODE)
 
         va_end(aptr);
     }
+}
 
-    set<const char*>(Mandatory_Fields::priority, prio ? prio : Prio::debug);
-    set(Mandatory_Fields::facility, facility ? facility : Facility::user);
+Message& Message::set_module(std::string& module)
+{
+    return set(Optional_Fields::module, module);
+}
+
+Message& Message::set_module(const char* module)
+{
+    return set(Optional_Fields::module, module);
+}
+
+Message& Message::set_line(int line)
+{
+    return set(Optional_Fields::line, line);
 }
 
 Message& Message::set_text(std::string& text)
 {
-    return set<std::string&>(Optional_Fields::text, text);
+    return set(Optional_Fields::text, text);
 }
 
 Message& Message::set_text(const char* text)
 {
-    return set<const char*>(Optional_Fields::text, text);
+    return set(Optional_Fields::text, text);
 }
 
 Message& Message::set_class(std::string& class_name)
 {
-    return set<std::string&>(Optional_Fields::class_name, class_name);
+    return set(Optional_Fields::class_name, class_name);
 }
 
 Message& Message::set_class(const char* class_name)
 {
-    return set<const char*>(Optional_Fields::class_name, class_name);
+    return set(Optional_Fields::class_name, class_name);
+}
+
+Message& Message::set_method(std::string& method)
+{
+    return set(Optional_Fields::method, method);
+}
+
+Message& Message::set_method(const char* method)
+{
+    return set(Optional_Fields::method, method);
 }
 
 Message& Message::add(JSONNode& param)
 {
-    msg_.push_back(param);
+    if (is_valid(param))
+        msg_.push_back(param);
     return *this;
+}
+
+bool Message::is_valid(JSONNode& param)
+{
+    return true;
 }
 
 std::string Message::as_string()
@@ -102,6 +135,35 @@ bool Priority_Filter::should_pass(Message& msg)
         return (prio_.find(it->as_string()) != prio_.end());*/
 
     return false;
+}
+
+Message& Message::set_timestamp(const char* timestamp)
+{
+    if (timestamp)
+        return add(Mandatory_Fields::timestamp, timestamp);
+
+    return add(Mandatory_Fields::timestamp, generic_util::get_iso8601_timestamp().c_str());
+}
+
+File::File(const char* prio, const char* name, const char* content, size_t size):
+msg_(prio, Facility::user)
+{
+    if (!name)
+        return;
+
+    msg_.add(Message::Optional_Fields::file, name);
+
+    if (size > 0)
+    {
+        size_t dest_len = generic_util::base64_encoded_length(size);
+        buf_ = new char [dest_len + 1];
+        memset(buf_, 0, dest_len + 1);
+        generic_util::base64_encode(content, size, buf_, dest_len);
+
+        msg_.set_text(buf_);
+
+        delete [] buf_;
+    }
 }
 
 };
