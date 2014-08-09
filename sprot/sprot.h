@@ -7,6 +7,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <fplog_exceptions.h>
 
 #ifdef SPROT_EXPORT
 #define SPROT_API __declspec(dllexport)
@@ -20,25 +21,6 @@
 
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
-
-#ifdef WIN32
-#define __SHORT_FORM_OF_FILE_WIN__ \
-    (strrchr(__FILE__,'\\') \
-    ? strrchr(__FILE__,'\\')+1 \
-    : __FILE__ \
-    )
-#define __SHORT_FORM_OF_FILE__ __SHORT_FORM_OF_FILE_WIN__
-#else
-#define __SHORT_FORM_OF_FILE_NIX__ \
-    (strrchr(__FILE__,'/') \
-    ? strrchr(__FILE__,'/')+1 \
-    : __FILE__ \
-    )
-#define __SHORT_FORM_OF_FILE__ __SHORT_FORM_OF_FILE_NIX__
-#endif
-
-#define THROW(exception_type) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__); }
-#define THROWM(exception_type, message) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, message); }
 
 namespace sprot
 {
@@ -187,40 +169,21 @@ namespace util
 
 namespace sprot { namespace exceptions
 {
-    class SPROT_API Exception
+    class Exception: public fplog::exceptions::Generic_Exception
     {
         public:
 
             Exception(const char* facility, const char* file = "", int line = 0, const char* message = ""):
-            facility_(facility),
-            message_(message),
-            file_(file),
-            line_(line)
+            Generic_Exception(facility, file, line, message)
             {
             }
-
-            std::string what()
-            {
-                char buf[256];
-                _itoa_s(line_, buf, sizeof(buf) / sizeof(char), 10);
-                return "[" + facility_ + ", f:" + file_ + ", l:" + buf + "] " + message_;
-            }
-
-
-        protected:
-
-            std::string facility_;
-            std::string message_;
-            std::string file_;
-            int line_;
-
 
         private:
 
             Exception();
     };
 
-    class SPROT_API Incorrect_Mode: public Exception
+    class Incorrect_Mode: public Exception
     {
         public:
 
@@ -230,65 +193,7 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class SPROT_API Write_Failed: public Exception
-    {
-        public:
-
-            Write_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Write operation failed."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-
-    class SPROT_API Read_Failed: public Exception
-    {
-        public:
-
-            Read_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Read operation failed."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-
-    class SPROT_API Incorrect_Parameter: public Exception
-    {
-        public:
-
-            Incorrect_Parameter(const char* facility, const char* file = "", int line = 0, const char* message = "Parameter supplied to function has incorrect value."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-
-    class SPROT_API Not_Implemented: public Exception
-    {
-        public:
-
-            Not_Implemented(const char* facility, const char* file = "", int line = 0, const char* message = "Feature not implemented yet."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-
-    class SPROT_API Buffer_Overflow: public Exception
-    {
-        public:
-
-            Buffer_Overflow(const char* facility, const char* file = "", int line = 0, const char* message = "Buffer too small.", size_t buf_sz = 0):
-            Exception(facility, file, line, message),
-            buf_sz_(buf_sz)
-            {
-            }
-
-            size_t get_required_size() { return buf_sz_; }
-
-
-        private:
-
-            size_t buf_sz_;
-    };
-
-    class SPROT_API Invalid_Frame: public Exception
+    class Invalid_Frame: public Exception
     {
         public:
 
@@ -298,14 +203,4 @@ namespace sprot { namespace exceptions
             }
     };
 
-    class SPROT_API Timeout: public Exception
-    {
-        public:
-
-            Timeout(const char* facility, const char* file = "", int line = 0, const char* message = "Timeout while reading or writing."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-}
-};
+}};

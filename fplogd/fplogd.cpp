@@ -5,6 +5,7 @@
 #include <conio.h>
 #include <queue>
 #include <mutex>
+#include <fplog_exceptions.h>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/thread/thread_time.hpp>
@@ -205,13 +206,13 @@ class Impl
                         buf = new char [buf_sz];
                     }
                 }
-                catch(sprot::exceptions::Buffer_Overflow& e)
+                catch(fplog::exceptions::Buffer_Overflow& e)
                 {
                     buf_sz = e.get_required_size() + 1;
                     delete [] buf;
                     buf = new char [buf_sz];
                 }
-                catch(sprot::exceptions::Exception&)
+                catch(fplog::exceptions::Generic_Exception&)
                 {
                     //TODO: handle exceptions (send special log message to queue originating from fplog)
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));

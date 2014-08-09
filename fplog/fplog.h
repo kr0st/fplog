@@ -4,31 +4,12 @@
 #include <set>
 #include <libjson/libjson.h>
 #include <typeinfo>
+#include <fplog_exceptions.h>
 
 #ifdef FPLOG_EXPORT
 #define FPLOG_API __declspec(dllexport)
 #else
 #define FPLOG_API __declspec(dllimport)
-#endif
-
-#ifndef __SHORT_FORM_OF_FILE__
-
-#ifdef WIN32
-#define __SHORT_FORM_OF_FILE_WIN__ \
-    (strrchr(__FILE__,'\\') \
-    ? strrchr(__FILE__,'\\')+1 \
-    : __FILE__ \
-    )
-#define __SHORT_FORM_OF_FILE__ __SHORT_FORM_OF_FILE_WIN__
-#else
-#define __SHORT_FORM_OF_FILE_NIX__ \
-    (strrchr(__FILE__,'/') \
-    ? strrchr(__FILE__,'/')+1 \
-    : __FILE__ \
-    )
-#define __SHORT_FORM_OF_FILE__ __SHORT_FORM_OF_FILE_NIX__
-#endif
-
 #endif
 
 #define CLASSNAME typeid(*this).name()

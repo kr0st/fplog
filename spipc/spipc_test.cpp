@@ -341,12 +341,12 @@ retry:
             return false;
         }
     }
-    catch(sprot::exceptions::Read_Failed)
+    catch(fplog::exceptions::Read_Failed)
     {
         printf("buffer_overflow_test.read() failed.\n");
         return false;
     }
-    catch(sprot::exceptions::Buffer_Overflow& e)
+    catch(fplog::exceptions::Buffer_Overflow& e)
     {
         retries++;
         delete read_buf;

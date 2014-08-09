@@ -61,13 +61,13 @@ namespace sprot
     incomplete_read_(false)
     {
         if (!transport_)
-            THROW(exceptions::Incorrect_Parameter);
+            THROW(fplog::exceptions::Incorrect_Parameter);
     }
 
     size_t Protocol::read_impl(void* buf, size_t buf_size, size_t timeout, bool no_mode_check)
     {
         if (!buf)
-            THROW(exceptions::Incorrect_Parameter);
+            THROW(fplog::exceptions::Incorrect_Parameter);
 
         out_buf_ = static_cast<unsigned char*>(buf);
         out_buf_sz_ = buf_size;
@@ -99,7 +99,7 @@ namespace sprot
                 time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
                 system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
                 if (timer_stop - timer_start >= converted_timeout)
-                    THROW(exceptions::Timeout);
+                    THROW(fplog::exceptions::Timeout);
 
                 size_t recv_sz = transport_->read(buf, buf_size, timeout);            
                 if (crc_check(static_cast<unsigned char*>(buf), recv_sz))
@@ -120,7 +120,7 @@ namespace sprot
     size_t Protocol::write_impl(const void* buf, size_t buf_size, size_t timeout, bool no_mode_check)
     {
         if (!buf)
-            THROW(exceptions::Incorrect_Parameter);
+            THROW(fplog::exceptions::Incorrect_Parameter);
 
         if (!no_mode_check)
         {
@@ -192,7 +192,7 @@ namespace sprot
                 time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
                 system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
                 if (timer_stop - timer_start >= converted_timeout)
-                    THROW(exceptions::Timeout);
+                    THROW(fplog::exceptions::Timeout);
             
                 try
                 {
@@ -228,10 +228,10 @@ namespace sprot
                         }
                     }
                 }
-                catch (exceptions::Timeout)
+                catch (fplog::exceptions::Timeout)
                 {
                 }
-                catch (exceptions::Write_Failed)
+                catch (fplog::exceptions::Write_Failed)
                 {
                 }
 
@@ -239,7 +239,7 @@ namespace sprot
             }
 
             if (fail_count == 0)
-                THROW(exceptions::Write_Failed);
+                THROW(fplog::exceptions::Write_Failed);
 
         } while (current_frame != 0);
 
@@ -258,9 +258,9 @@ namespace sprot
             size_t read = read_impl(buf, buf_size, timeout);
             return read;
         }
-        catch (exceptions::Write_Failed)
+        catch (fplog::exceptions::Write_Failed)
         {
-            THROW(exceptions::Read_Failed);
+            THROW(fplog::exceptions::Read_Failed);
         }
 
         return 0;
@@ -272,7 +272,7 @@ namespace sprot
             return true;
 
         if (!buf)
-            THROW(exceptions::Incorrect_Parameter);
+            THROW(fplog::exceptions::Incorrect_Parameter);
 
         switch (buf[0])
         {
@@ -380,9 +380,9 @@ namespace sprot
             size_t wrote = write_impl(buf, buf_size, timeout);
             return wrote;
         }
-        catch(exceptions::Read_Failed)
+        catch(fplog::exceptions::Read_Failed)
         {
-            THROW(exceptions::Write_Failed);
+            THROW(fplog::exceptions::Write_Failed);
         }
 
         return 0;
@@ -393,7 +393,7 @@ namespace sprot
         incomplete_read_ = true;
 
         if (out_buf_sz_ < buf_.size())
-            throw exceptions::Buffer_Overflow(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, "Buffer too small.", buf_.size());
+            throw fplog::exceptions::Buffer_Overflow(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, "Buffer too small.", buf_.size());
 
         incomplete_read_ = false;
 
@@ -426,7 +426,7 @@ namespace sprot
 
         size_t data_written = transport_->write(frame, frame_sz, timeout);
         if (data_written != frame_sz)
-            THROW(exceptions::Write_Failed);
+            THROW(fplog::exceptions::Write_Failed);
 
         return frame_sz;
     }
@@ -436,7 +436,7 @@ namespace sprot
         if (type == Frame::DATA)
         {
             if (!buf || (length == 0))
-                THROW(exceptions::Incorrect_Parameter);
+                THROW(fplog::exceptions::Incorrect_Parameter);
 
             return send_data(buf, length, timeout);
         }
@@ -447,7 +447,7 @@ namespace sprot
 
         size_t data_written = transport_->write(frame, sizeof(frame), timeout);
         if (data_written != sizeof(frame))
-            THROW(exceptions::Write_Failed);
+            THROW(fplog::exceptions::Write_Failed);
 
         return 1; //Control frame has 1 byte actual payload
     }

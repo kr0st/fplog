@@ -60,7 +60,7 @@ namespace sprot { namespace testing
                     if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0c) && (((unsigned char*)buf)[1] == 0x6a))
                         return buf_size;
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
                 }
 
                 static size_t composite_frame_size = 0;
@@ -71,10 +71,10 @@ namespace sprot { namespace testing
                     if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 1) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + 0 * (default_mtu - 3), buf_size - 3) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     composite_frame_size += (buf_size - 3);
                     return buf_size;
@@ -86,10 +86,10 @@ namespace sprot { namespace testing
                     if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 2) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + 1 * (default_mtu - 3), buf_size - 3) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     if ((counter == 5))
                         composite_frame_size += (buf_size - 3);
@@ -103,10 +103,10 @@ namespace sprot { namespace testing
                     if ((buf_size == default_mtu) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 3) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + 2 * (default_mtu - 3), buf_size - 3) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     if ((counter == 7))
                         composite_frame_size += (buf_size - 3);
@@ -120,17 +120,17 @@ namespace sprot { namespace testing
                     if ((((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 4) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + 3 * (default_mtu - 3), buf_size - 3) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     composite_frame_size += (buf_size - 3);
                     return buf_size;
                 }
 
                 if ((counter == 8) && (composite_frame_size != big_data_size))
-                    THROW(exceptions::Write_Failed);
+                    THROW(fplog::exceptions::Write_Failed);
 
                 if ((counter > 7) && (counter < 12))
                 {
@@ -138,7 +138,7 @@ namespace sprot { namespace testing
                     if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0d) && (((unsigned char*)buf)[1] == 0x2b))
                         return buf_size;
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
                 }
 
                 return buf_size;
@@ -168,10 +168,10 @@ namespace sprot { namespace testing
                     if ((buf_size == (small_data_size + 3)) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == 1) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_small, small_data_size) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     return buf_size;
                 }
@@ -182,7 +182,7 @@ namespace sprot { namespace testing
                     if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0c) && (((unsigned char*)buf)[1] == 0x6a))
                         return buf_size;
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
                 }
 
                 static size_t composite_frame_size = 0;
@@ -193,17 +193,17 @@ namespace sprot { namespace testing
                     if (((buf_size == default_mtu) || (counter == 6)) && (((unsigned char*)buf)[0] == 0x10) && (((unsigned char*)buf)[1] == (counter - 2)) && Protocol::crc_check((unsigned char*)buf, buf_size))
                     {
                         if (memcmp((unsigned char*)buf + 2, random_data_big + (counter - 3) * (default_mtu - 3), buf_size - 3) != 0)
-                            THROW(exceptions::Write_Failed);
+                            THROW(fplog::exceptions::Write_Failed);
                     }
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
 
                     composite_frame_size += (buf_size - 3);
                     return buf_size;
                 }
 
                 if ((counter == 6) && (composite_frame_size != big_data_size))
-                    THROW(exceptions::Write_Failed);
+                    THROW(fplog::exceptions::Write_Failed);
 
                 if (counter == 6)
                 {
@@ -211,7 +211,7 @@ namespace sprot { namespace testing
                     if ((buf_size == 2) && (((unsigned char*)buf)[0] == 0x0d) && (((unsigned char*)buf)[1] == 0x2b))
                         return buf_size;
                     else
-                        THROW(exceptions::Write_Failed);
+                        THROW(fplog::exceptions::Write_Failed);
                 }
 
                 return buf_size;
@@ -478,7 +478,7 @@ namespace sprot { namespace testing
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
                 if (buf_size != 2)
-                    THROW(exceptions::Read_Failed);
+                    THROW(fplog::exceptions::Read_Failed);
 
                 static unsigned counter = 0;
                 
@@ -489,13 +489,13 @@ namespace sprot { namespace testing
                 {
                     counter++;
                     if (memcmp(buf, nack, 2) != 0)
-                        THROW(exceptions::Read_Failed);
+                        THROW(fplog::exceptions::Read_Failed);
                     return buf_size;
                 }
 
                 counter++;
                 if (memcmp(buf, ack, 2) != 0)
-                    THROW(exceptions::Read_Failed);
+                    THROW(fplog::exceptions::Read_Failed);
 
                 return buf_size;
             }
@@ -557,7 +557,7 @@ namespace sprot { namespace testing
                 return false;
             }
         }
-        catch (exceptions::Read_Failed)
+        catch (fplog::exceptions::Read_Failed)
         {
             printf("read_test_protocol.read() failed.\n");
             return false;
@@ -571,12 +571,12 @@ namespace sprot { namespace testing
             write_test_protocol.write(random_data_small, small_data_size);
             write_test_protocol.write(random_data_big, big_data_size);
         }
-        catch(exceptions::Write_Failed)
+        catch(fplog::exceptions::Write_Failed)
         {
             printf("write_test_protocol.write() failed.\n");
             return false;
         }
-        catch(exceptions::Timeout)
+        catch(fplog::exceptions::Timeout)
         {
             printf("write_test_protocol.write() failed with timeout.\n");
             return false;
@@ -589,12 +589,12 @@ namespace sprot { namespace testing
         {
             write_retransmit_test_protocol.write(random_data_big, big_data_size);
         }
-        catch(exceptions::Write_Failed)
+        catch(fplog::exceptions::Write_Failed)
         {
             printf("write_retransmit_test_protocol.write() failed.\n");
             return false;
         }
-        catch(exceptions::Timeout)
+        catch(fplog::exceptions::Timeout)
         {
             printf("write_retransmit_test_protocol.write() failed with timeout.\n");
             return false;

@@ -317,7 +317,7 @@ size_t IPC::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (!buf)
-        THROW(sprot::exceptions::Incorrect_Parameter);
+        THROW(fplog::exceptions::Incorrect_Parameter);
     if (buf_size == 0)
         return 0;
 
@@ -333,7 +333,7 @@ void IPC::connect(const UID& private_channel)
 
     UID empty;
     if (private_channel == empty)
-        THROW(sprot::exceptions::Incorrect_Parameter);
+        THROW(fplog::exceptions::Incorrect_Parameter);
 }
 
 };
