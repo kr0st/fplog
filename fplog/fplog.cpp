@@ -125,11 +125,6 @@ JSONNode& Message::as_json()
     return msg_;
 }
 
-void write(Message& msg)
-{
-    printf("%s\n", msg.as_string().c_str());
-}
-
 bool Priority_Filter::should_pass(Message& msg)
 {
     /*JSONNode::iterator it(msg.find("priority"));
@@ -186,6 +181,46 @@ Message& Message::add_binary(const char* param_name, const void* buf, size_t buf
     delete [] base64;
 
     return add(blob);
+}
+
+void Message::one_time_init()
+{
+    reserved_names_.push_back(Mandatory_Fields::facility);
+    reserved_names_.push_back(Mandatory_Fields::hostname);
+    reserved_names_.push_back(Mandatory_Fields::priority);
+    reserved_names_.push_back(Mandatory_Fields::timestamp);
+
+    reserved_names_.push_back(Optional_Fields::blob);
+    reserved_names_.push_back(Optional_Fields::class_name);
+    reserved_names_.push_back(Optional_Fields::component);
+    reserved_names_.push_back(Optional_Fields::encrypted);
+    reserved_names_.push_back(Optional_Fields::file);
+    reserved_names_.push_back(Optional_Fields::method);
+    reserved_names_.push_back(Optional_Fields::line);
+    reserved_names_.push_back(Optional_Fields::module);
+    reserved_names_.push_back(Optional_Fields::options);
+    reserved_names_.push_back(Optional_Fields::text);
+}
+
+std::vector<std::string> Message::reserved_names_;
+
+/************************* fplog client API implementation *************************/
+
+class Fplog_Impl
+{
+    public:
+
+        Fplog_Impl()
+        {
+            Message::one_time_init();
+        }
+};
+
+static Fplog_Impl g_fplog_impl;
+
+void write(Message& msg)
+{
+    printf("%s\n", msg.as_string().c_str());
 }
 
 };

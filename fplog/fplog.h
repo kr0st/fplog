@@ -2,9 +2,12 @@
 
 #include <string>
 #include <set>
+#include <vector>
 #include <libjson/libjson.h>
 #include <typeinfo>
 #include <fplog_exceptions.h>
+#include <algorithm>
+#include "utils.h"
 
 #ifdef FPLOG_EXPORT
 #define FPLOG_API __declspec(dllexport)
@@ -61,6 +64,8 @@ struct FPLOG_API Prio
 
 class FPLOG_API Message
 {
+    friend class Fplog_Impl;
+
     public:
         
         struct Mandatory_Fields
@@ -127,6 +132,7 @@ class FPLOG_API Message
         template <typename T> Message& set(const char* param_name, T param)
         {
             validate_params_ = false;
+            
             try
             {
                 add(param_name, param);
@@ -141,6 +147,8 @@ class FPLOG_API Message
                 validate_params_ = true;
                 throw e;
             }
+
+            validate_params_ = true;
         }
 
         template <typename T> bool is_valid(const char* param_name, T param)
@@ -148,21 +156,35 @@ class FPLOG_API Message
             if (!validate_params_)
                 return true;
 
-            return true;
+            if (!param_name)
+                return false;
+
+            std::string lowercased(param_name);
+            generic_util::trim(lowercased);
+
+            std::transform(lowercased.begin(), lowercased.end(), lowercased.begin(), ::tolower);
+
+            return (std::find(reserved_names_.begin(), reserved_names_.end(), lowercased) == reserved_names_.end());
         }
 
         bool is_valid(JSONNode& param);
 
         template <typename T> Message& add(const char* param_name, T param)
         {
-            if (param_name && is_valid(param_name, param))
-                msg_.push_back(JSONNode(param_name, param));
+            std::string trimmed(param_name);
+            generic_util::trim(trimmed);
+
+            if (param_name && is_valid(trimmed.c_str(), param))
+                msg_.push_back(JSONNode(trimmed, param));
 
             return *this;
         }
 
         JSONNode msg_;
         bool validate_params_;
+
+        static std::vector<std::string> reserved_names_;
+        static void one_time_init();
 };
 
 class FPLOG_API File

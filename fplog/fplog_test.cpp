@@ -40,7 +40,7 @@ int main()
 
     int var = -533;
 
-    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("int", 23).add("double", -1.23).add_binary("int_bin", &var, sizeof(int)));
+    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("int", 23).add("    double ", -1.23).add_binary("int_bin", &var, sizeof(int)));
 
     Foo Bar;
     Bar.FooBar();
