@@ -102,6 +102,9 @@ class FPLOG_API Message
             static const char* encrypted; //true/false, if true then Text field contains encrypted JSON values - 
                                           //the rest of the log message including the plaintext version of Text field
             static const char* file; //filename when sending a file inside the log message
+            static const char* /*the*/blob; //used when attaching binary fields to the message, resulting JSON object will look
+                                            //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
+                                            //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
@@ -113,7 +116,8 @@ class FPLOG_API Message
         Message& add(const char* param_name, double param){ return add<double>(param_name, param); }
         Message& add(const char* param_name, std::string& param){ return add<std::string>(param_name, param); }
         Message& add(const char* param_name, const char* param){ return add<const char*>(param_name, param); }
-        
+        Message& add_binary(const char* param_name, const void* buf, size_t buf_size_bytes);
+
         //before adding JSON element make sure it has a name
         Message& add(JSONNode& param);
 
@@ -184,7 +188,7 @@ class FPLOG_API File
 {
     public:
 
-        File(const char* prio, const char* name, const char* content, size_t size);
+        File(const char* prio, const char* name, const void* content, size_t size);
         Message as_message(){ return msg_; }
 
 

@@ -119,7 +119,7 @@ void _base64_encode_triple(unsigned char triple[3], char result[4])
  * @param targetlen the length of the target buffer
  * @return 1 on success, 0 otherwise
  */  
-bool base64_encode(const char* src, size_t sourcelen, char *target, size_t targetlen)
+bool base64_encode(const void* src, size_t sourcelen, char* target, size_t targetlen)
  {
     unsigned char *source = (unsigned char*)src;
 
@@ -248,7 +248,7 @@ int _base64_decode_triple(char quadruple[4], unsigned char *result)
  * @param targetlen length of the target buffer
  * @return length of converted data on success, -1 otherwise
  */  
-size_t base64_decode(const char *source, char *dest, size_t targetlen)
+size_t base64_decode(const char* source, void* dest, size_t targetlen)
  {
     unsigned char* target = (unsigned char*)dest;
     char *src, *tmpptr;

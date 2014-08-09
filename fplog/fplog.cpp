@@ -34,7 +34,9 @@ const char* Message::Optional_Fields::options = "options"; //for example encrypt
 const char* Message::Optional_Fields::encrypted = "encrypted"; //true/false, if true then Text field contains encrypted JSON values - 
                                                                //the rest of the log message including the decrypted version of Text field
 const char* Message::Optional_Fields::file = "file"; //filename when sending a file inside the log message
-
+const char* Message::Optional_Fields::/*the*/blob = "blob"; //used when attaching binary fields to the message, resulting JSON object will look
+                                                            //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
+                                                            //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
 
 Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
@@ -145,7 +147,7 @@ Message& Message::set_timestamp(const char* timestamp)
     return add(Mandatory_Fields::timestamp, generic_util::get_iso8601_timestamp().c_str());
 }
 
-File::File(const char* prio, const char* name, const char* content, size_t size):
+File::File(const char* prio, const char* name, const void* content, size_t size):
 msg_(prio, Facility::user)
 {
     if (!name)
@@ -164,6 +166,26 @@ msg_(prio, Facility::user)
 
         delete [] buf_;
     }
+}
+
+Message& Message::add_binary(const char* param_name, const void* buf, size_t buf_size_bytes)
+{
+    if (!param_name || !buf || !buf_size_bytes)
+        return *this;
+
+    JSONNode blob(JSON_NODE);
+    blob.set_name(param_name);
+
+    size_t dest_len = generic_util::base64_encoded_length(buf_size_bytes);
+    char* base64 = new char [dest_len + 1];
+    memset(base64, 0, dest_len + 1);
+    generic_util::base64_encode(buf, buf_size_bytes, base64, dest_len);
+
+    blob.push_back(JSONNode("blob", base64));
+
+    delete [] base64;
+
+    return add(blob);
 }
 
 };

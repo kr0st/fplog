@@ -17,8 +17,8 @@ std::string get_iso8601_timestamp();
 //Milliseconds elapsed since 01-Jan-1970
 unsigned long long get_msec_time();
 
-bool base64_encode(const char *source, size_t sourcelen, char *dest, size_t destlen);
-size_t base64_decode(const char *source, char *dest, size_t destlen);
+bool base64_encode(const void* source, size_t sourcelen, char* dest, size_t destlen);
+size_t base64_decode(const char* source, void* dest, size_t destlen);
 size_t base64_encoded_length(size_t non_encoded_length);
 
 };
