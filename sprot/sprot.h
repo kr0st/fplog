@@ -8,6 +8,7 @@
 #include <mutex>
 #include <vector>
 #include <fplog_exceptions.h>
+#include <fplog_transport.h>
 
 #ifdef SPROT_EXPORT
 #define SPROT_API __declspec(dllexport)
@@ -24,17 +25,7 @@
 
 namespace sprot
 {
-    class SPROT_API Transport_Interface
-    {
-        public:
-
-            static const size_t infinite_wait = static_cast<size_t>(-1);
-
-            virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
-            virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
-    };
-
-    class SPROT_API Protocol: public Transport_Interface
+    class SPROT_API Protocol: public fplog::Transport_Interface
     {
         public:
 
@@ -106,7 +97,7 @@ namespace sprot
                 }
             };
 
-            Protocol(Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
+            Protocol(fplog::Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
@@ -121,7 +112,7 @@ namespace sprot
 
             static const size_t default_timeout = 200; //ms
 
-            Transport_Interface* transport_;
+            fplog::Transport_Interface* transport_;
             Switching::Type switching_;
             Mode::Type current_mode_;
             bool is_sequence_;

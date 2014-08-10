@@ -5,6 +5,7 @@
 #include <vector>
 #include <libjson/libjson.h>
 #include <typeinfo>
+#include <fplog_transport.h>
 #include <fplog_exceptions.h>
 #include <algorithm>
 #include "utils.h"
@@ -28,10 +29,10 @@
     : __FUNCTION__ \
     )
 
-#define FPL_TRACE(format, ...) fplog::Message(fplog::Prio::debug, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
-#define FPL_INFO(format, ...) fplog::Message(fplog::Prio::info, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
-#define FPL_WARN(format, ...) fplog::Message(fplog::Prio::warning, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
-#define FPL_ERROR(format, ...) fplog::Message(fplog::Prio::error, fplog::Facility::user, format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_TRACE(format, ...) fplog::Message(fplog::Prio::debug, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_INFO(format, ...) fplog::Message(fplog::Prio::info, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_WARN(format, ...) fplog::Message(fplog::Prio::warning, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_ERROR(format, ...) fplog::Message(fplog::Prio::error, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
 
 #define FPL_CTRACE(format, ...) FPL_TRACE(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 #define FPL_CINFO(format, ...) FPL_INFO(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
@@ -67,16 +68,17 @@ class FPLOG_API Message
     friend class Fplog_Impl;
 
     public:
-        
-        struct Mandatory_Fields
+
+        struct FPLOG_API Mandatory_Fields
         {
             static const char* facility; //according to syslog
             static const char* priority; //same as severity for syslog
             static const char* timestamp; //ISO8601 timestamp with milliseconds and timezone
             static const char* hostname; //IP address or any specific sending device id, added by fplogd before sending
+            static const char* appname; //name of application or service using this logging library, needed for fplog IPC
         };
 
-        struct Optional_Fields
+        struct FPLOG_API Optional_Fields
         {
             static const char* text; //log message text
             static const char* component; //package name or any logical software component
@@ -120,6 +122,7 @@ class FPLOG_API Message
         Message& set_method(const char* method);
 
         Message& set_line(int line);
+        Message& set_file(const char* name);
 
         std::string as_string();
         JSONNode& as_json();
@@ -142,7 +145,7 @@ class FPLOG_API Message
                 validate_params_ = true;
                 throw e;
             }
-            catch(sprot::exceptions::Exception& e)
+            catch(fplog::exceptions::Generic_Exception& e)
             {
                 validate_params_ = true;
                 throw e;
@@ -238,13 +241,27 @@ class FPLOG_API Priority_Filter: public Filter_Base
         std::set<std::string> prio_;
 };
 
+//One time per application call.
+FPLOG_API void initlog(const char* appname, fplog::Transport_Interface* transport = 0);
+
+//Mandatory call from every thread that wants to log some data. Done to increase flexibility:
+//each thread will have its own filters configuration and can decide independently which stuff to log.
 FPLOG_API void openlog(const char* facility, Filter_Base* filter = 0);
+
+//Optional but advised to call from each thread that logs data right before stopping and exiting the thread.
+//Doing this will free some memory (amount is really small) that is needed to support logging from a given thread.
+//Not doing closelog() does not lead to memory leak because everything will be deallocated in any case on app exit,
+//fplog frees its resources when implementation class instance is destroyed.
 FPLOG_API void closelog();
 
+//Scope of filter-related functions is a calling thread - all manipulations will apply to calling thread only.
 FPLOG_API void add_filter(Filter_Base* filter);
 FPLOG_API void remove_filter(Filter_Base* filter);
 FPLOG_API Filter_Base* find_filter(const char* filter_id);
 
+FPLOG_API const char* get_facility();
+
+//Should be used from any thread that opened logger, calling from other threads will have no effect.
 FPLOG_API void write(Message& msg);
 
 };

@@ -119,7 +119,7 @@ class Impl
         {
         };
 
-        void set_log_transport(sprot::Transport_Interface* transport)
+        void set_log_transport(fplog::Transport_Interface* transport)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             log_transport_ = transport;
@@ -297,10 +297,10 @@ class Impl
 
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
-        sprot::Transport_Interface* log_transport_;
+        fplog::Transport_Interface* log_transport_;
 };
 
-class Console_Output: public sprot::Transport_Interface
+class Console_Output: public fplog::Transport_Interface
 {
     public:
 

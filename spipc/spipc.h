@@ -56,7 +56,7 @@ struct SPIPC_API UID
     unsigned long long low;
 };
 
-class SPIPC_API Shared_Memory_Transport: public sprot::Transport_Interface
+class SPIPC_API Shared_Memory_Transport: public fplog::Transport_Interface
 {
     public:
 
@@ -82,14 +82,14 @@ class SPIPC_API Shared_Memory_Transport: public sprot::Transport_Interface
         void set_buf_size(size_t size);
 };
 
-class SPIPC_API IPC: public sprot::Transport_Interface
+class SPIPC_API IPC: public fplog::Transport_Interface
 {
     public:
 
         IPC();
         virtual ~IPC();
-        virtual size_t read(void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
-        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = sprot::Transport_Interface::infinite_wait);
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
         void connect(const UID& private_channel);
 
 

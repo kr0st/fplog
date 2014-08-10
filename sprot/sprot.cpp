@@ -48,7 +48,7 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
-    Protocol::Protocol(Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve, size_t MTU):
+    Protocol::Protocol(fplog::Transport_Interface* transport, Switching::Type switching, size_t recv_buf_reserve, size_t MTU):
     transport_(transport),
     switching_(switching),
     current_mode_(Mode::Undefined),

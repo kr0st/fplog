@@ -1,6 +1,6 @@
 #include "fplog.h"
 #include "utils.h"
-#include <sprot/sprot.h>
+#include <mutex>
 
 namespace fplog
 {
@@ -23,6 +23,7 @@ const char* Message::Mandatory_Fields::facility = "facility"; //according to sys
 const char* Message::Mandatory_Fields::priority = "priority"; //same as severity for syslog
 const char* Message::Mandatory_Fields::timestamp = "timestamp"; //ISO8601 timestamp with milliseconds and timezone
 const char* Message::Mandatory_Fields::hostname = "hostname"; //IP address or any specific sending device id, added by fplogd before sending
+const char* Message::Mandatory_Fields::appname = "appname"; //name of application or service using this logging library, needed for fplog IPC
 
 const char* Message::Optional_Fields::text = "text"; //log message text
 const char* Message::Optional_Fields::component = "component"; //package name or any logical software component
@@ -137,9 +138,17 @@ bool Priority_Filter::should_pass(Message& msg)
 Message& Message::set_timestamp(const char* timestamp)
 {
     if (timestamp)
-        return add(Mandatory_Fields::timestamp, timestamp);
+        return set(Mandatory_Fields::timestamp, timestamp);
 
-    return add(Mandatory_Fields::timestamp, generic_util::get_iso8601_timestamp().c_str());
+    return set(Mandatory_Fields::timestamp, generic_util::get_iso8601_timestamp().c_str());
+}
+
+Message& Message::set_file(const char* name)
+{
+    if (name)
+        return set(Optional_Fields::file, name);
+
+    return *this;
 }
 
 File::File(const char* prio, const char* name, const void* content, size_t size):
@@ -148,7 +157,7 @@ msg_(prio, Facility::user)
     if (!name)
         return;
 
-    msg_.add(Message::Optional_Fields::file, name);
+    msg_.set_file(name);
 
     if (size > 0)
     {
@@ -185,6 +194,7 @@ Message& Message::add_binary(const char* param_name, const void* buf, size_t buf
 
 void Message::one_time_init()
 {
+    reserved_names_.push_back(Mandatory_Fields::appname);
     reserved_names_.push_back(Mandatory_Fields::facility);
     reserved_names_.push_back(Mandatory_Fields::hostname);
     reserved_names_.push_back(Mandatory_Fields::priority);
@@ -210,17 +220,100 @@ class Fplog_Impl
 {
     public:
 
-        Fplog_Impl()
+        Fplog_Impl():
+        appname_("noname"),
+        facility_(Facility::user),
+        inited_(false),
+        own_transport_(true)
         {
             Message::one_time_init();
         }
+
+        const char* get_facility()
+        {
+            return facility_.c_str();
+        }
+
+        void openlog(const char* facility, Filter_Base* filter)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            if (facility)
+                facility_ = facility;
+            else
+                return;
+        }
+
+        void initlog(const char* appname, fplog::Transport_Interface* transport)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            
+            if (inited_)
+                return;
+
+            if (appname)
+                appname_ = appname;
+            else
+                return;
+
+            if (transport)
+            {
+                own_transport_ = false;
+                transport_ = transport;
+            }
+            else
+            {
+                own_transport_ = true;
+            }
+        }
+
+        void write(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            msg.set(Message::Mandatory_Fields::appname, appname_);
+            printf("%s\n", msg.as_string().c_str());
+        }
+
+
+    private:
+
+        
+        bool inited_;
+        bool own_transport_;
+        
+        std::string appname_;
+        std::string facility_;
+
+        std::recursive_mutex mutex_;
+        fplog::Transport_Interface* transport_;
 };
 
 static Fplog_Impl g_fplog_impl;
 
+
 void write(Message& msg)
 {
-    printf("%s\n", msg.as_string().c_str());
+    g_fplog_impl.write(msg);
+}
+
+void initlog(const char* appname, fplog::Transport_Interface* transport)
+{
+    return g_fplog_impl.initlog(appname, transport);
+}
+
+void openlog(const char* facility, Filter_Base* filter)
+{
+    return g_fplog_impl.openlog(facility, filter);
+}
+
+void closelog()
+{
+}
+
+const char* get_facility()
+{
+    return g_fplog_impl.get_facility();
 }
 
 };

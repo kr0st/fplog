@@ -25,7 +25,7 @@ namespace sprot { namespace testing
     //dataframe #3 - nack, ack
     //dataframe #4 - ack
     //seqend - nack, nack, nack, ack
-    class Write_Retransmit_Test_Transport: public Transport_Interface
+    class Write_Retransmit_Test_Transport: public fplog::Transport_Interface
     {
         public:
 
@@ -145,7 +145,7 @@ namespace sprot { namespace testing
             }
     };
 
-    class Write_Test_Transport: public Transport_Interface
+    class Write_Test_Transport: public fplog::Transport_Interface
     {
         public:
 
@@ -244,7 +244,7 @@ namespace sprot { namespace testing
     //recv: nack
     //send: frame #3
     //recv: ack
-    class Read_Test_Transport: public Transport_Interface
+    class Read_Test_Transport: public fplog::Transport_Interface
     {
         public:
 
