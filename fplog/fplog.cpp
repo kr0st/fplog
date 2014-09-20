@@ -38,6 +38,7 @@ const char* Message::Optional_Fields::file = "file"; //filename when sending a f
 const char* Message::Optional_Fields::/*the*/blob = "blob"; //used when attaching binary fields to the message, resulting JSON object will look
                                                             //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
                                                             //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
+const char* Message::Optional_Fields::warning = "warning"; //contains warning for the user in case there was an issue with this specific log message
 
 Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
@@ -107,12 +108,39 @@ Message& Message::set_method(const char* method)
 Message& Message::add(JSONNode& param)
 {
     if (is_valid(param))
-        msg_.push_back(param);
+    {
+        JSONNode::iterator it(msg_.find_nocase(param.name()));
+        if (it != msg_.end())
+            *it=param;
+        else
+            msg_.push_back(param);
+    }
+
     return *this;
 }
 
 bool Message::is_valid(JSONNode& param)
 {
+    if (!validate_params_)
+        return true;
+
+    for(JSONNode::iterator it(param.begin()); it != param.end(); ++it)
+    {
+        if (!is_valid(*it))
+            return false;
+
+        std::string lowercased(it->name());
+        generic_util::trim(lowercased);
+        std::transform(lowercased.begin(), lowercased.end(), lowercased.begin(), ::tolower);
+
+        bool invalid(std::find(reserved_names_.begin(), reserved_names_.end(), lowercased) != reserved_names_.end());
+        if (invalid)
+        {
+            set(Optional_Fields::warning, "Some parameters are missing from this log message because they were malformed.");
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -189,7 +217,26 @@ Message& Message::add_binary(const char* param_name, const void* buf, size_t buf
 
     delete [] base64;
 
-    return add(blob);
+    validate_params_ = false;
+            
+    try
+    {
+        add(blob);
+    }
+    catch(std::exception& e)
+    {
+        validate_params_ = true;
+        throw e;
+    }
+    catch(fplog::exceptions::Generic_Exception& e)
+    {
+        validate_params_ = true;
+        throw e;
+    }
+
+    validate_params_ = true;
+
+    return *this;
 }
 
 void Message::one_time_init()
@@ -210,6 +257,7 @@ void Message::one_time_init()
     reserved_names_.push_back(Optional_Fields::module);
     reserved_names_.push_back(Optional_Fields::options);
     reserved_names_.push_back(Optional_Fields::text);
+    reserved_names_.push_back(Optional_Fields::warning);
 }
 
 std::vector<std::string> Message::reserved_names_;

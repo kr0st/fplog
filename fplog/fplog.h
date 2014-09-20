@@ -93,6 +93,7 @@ class FPLOG_API Message
             static const char* /*the*/blob; //used when attaching binary fields to the message, resulting JSON object will look
                                             //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
                                             //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
+            static const char* warning; //contains warning for the user in case there was an issue with this specific log message
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
@@ -167,7 +168,11 @@ class FPLOG_API Message
 
             std::transform(lowercased.begin(), lowercased.end(), lowercased.begin(), ::tolower);
 
-            return (std::find(reserved_names_.begin(), reserved_names_.end(), lowercased) == reserved_names_.end());
+            bool valid(std::find(reserved_names_.begin(), reserved_names_.end(), lowercased) == reserved_names_.end());
+            if (!valid)
+                set(Optional_Fields::warning, "Some parameters are missing from this log message because they were malformed.");
+
+            return valid;
         }
 
         bool is_valid(JSONNode& param);
@@ -178,7 +183,13 @@ class FPLOG_API Message
             generic_util::trim(trimmed);
 
             if (param_name && is_valid(trimmed.c_str(), param))
-                msg_.push_back(JSONNode(trimmed, param));
+            {
+                JSONNode::iterator it(msg_.find_nocase(param_name));
+                if (it != msg_.end())
+                    *it=param;
+                else
+                    msg_.push_back(JSONNode(trimmed, param));
+            }
 
             return *this;
         }

@@ -39,7 +39,8 @@ bool send_file_test()
 bool trim_and_blob_test()
 {
     int var = -533;
-    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("int", 23).add("    Double ", -1.23).add_binary("int_bin", &var, sizeof(int)));
+    int var2 = 54674;
+    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("blob", 66).add("int", 23).add_binary("int_bin", &var, sizeof(int)).add_binary("int_bin", &var2, sizeof(int)).add("    Double ", -1.23).add("encrypted", "sfewre"));
     return true;
 }
 
@@ -56,7 +57,7 @@ bool input_validators_test()
     JSONNode json3(JSON_NODE);
     json3.push_back(json2);
 
-    printf("%s\n", json3.write_formatted().c_str());
+    fplog::write(fplog::Message(fplog::Prio::info, fplog::Facility::user).add(json3));
 
     return true;
 }

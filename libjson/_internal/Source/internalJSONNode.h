@@ -1,6 +1,8 @@
 #ifndef INTERNAL_JSONNODE_H
 #define INTERNAL_JSONNODE_H
 
+#include <utils.h>
+
 #include "JSONDebug.h"
 #include "JSONChildren.h"
 #include "JSONMemory.h"
@@ -340,7 +342,11 @@ inline void internalJSONNode::setname(const json_string & newname) json_nothrow 
     #ifdef JSON_LESS_MEMORY
 	   JSON_ASSERT(newname.capacity() == newname.length(), JSON_TEXT("name object too large"));
     #endif
-    _name = newname;
+    
+    std::string trimmed(newname);
+    generic_util::trim(trimmed);
+
+    _name = trimmed;
     _name_encoded = true;
 }
 
