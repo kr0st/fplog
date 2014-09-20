@@ -84,8 +84,13 @@ void run_all_tests()
 
 }};
 
+#include <lua.hpp>
+
 int main()
 {
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+
     fplog::testing::run_all_tests();
     return 0;
 }

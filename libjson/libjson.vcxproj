@@ -112,6 +112,12 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="_internal\Source\JSONAllocator.cpp" />
