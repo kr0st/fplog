@@ -51,17 +51,23 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>LUA_BUILD_AS_DLL;LUA_LIB;WIN32;_DEBUG;_WINDOWS;_USRDLL;LUA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>LUA_COMPAT_MODULE;LUA_BUILD_AS_DLL;LUA_LIB;WIN32;_DEBUG;_WINDOWS;_USRDLL;LUA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
+      <Command>del ..\Stage\$(ProjectName).* /F /Q
+del ..\Stage\*.lua /F /Q
+del $(OutDir)\*.lua
+</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\
+copy $(OutDir)..\lua\json.lua ..\Stage\
+copy $(OutDir)..\lua\json.lua $(OutDir)
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,7 +78,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>LUA_BUILD_AS_DLL;LUA_LIB;WIN32;NDEBUG;_WINDOWS;_USRDLL;LUA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>LUA_COMPAT_MODULE;LUA_BUILD_AS_DLL;LUA_LIB;WIN32;NDEBUG;_WINDOWS;_USRDLL;LUA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -81,10 +87,16 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
+      <Command>del ..\Stage\$(ProjectName).* /F /Q
+del ..\Stage\*.lua /F /Q
+del $(OutDir)\*.lua
+</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\
+copy $(OutDir)..\lua\json.lua ..\Stage\
+copy $(OutDir)..\lua\json.lua $(OutDir)
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
