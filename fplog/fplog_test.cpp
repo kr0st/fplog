@@ -87,10 +87,57 @@ bool input_validators_test()
     return true;
 }
 
+bool filter_test()
+{
+    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+    if (!filter)
+        return false;
+
+    {
+        fplog::Message msg(fplog::Prio::alert, fplog::Facility::system, "this message should not appear");
+        fplog::write(msg);
+    }
+
+    filter->add(fplog::Prio::emergency);
+    filter->add(fplog::Prio::debug);
+
+    {
+        fplog::Message msg(fplog::Prio::alert, fplog::Facility::system, "this message still should not appear");
+        fplog::write(msg);
+    }
+    {
+        fplog::Message msg(fplog::Prio::emergency, fplog::Facility::system, "this emergency message is visible");
+        fplog::write(msg);
+    }
+    {
+        fplog::Message msg(fplog::Prio::debug, fplog::Facility::system, "along with this debug message");
+        fplog::write(msg);
+    }
+
+    filter->remove(fplog::Prio::emergency);
+
+    {
+        fplog::Message msg(fplog::Prio::emergency, fplog::Facility::system, "this is invisible emergency");
+        fplog::write(msg);
+    }
+
+    remove_filter(filter);
+
+    {
+        fplog::Message msg(fplog::Prio::debug, fplog::Facility::system, "this debug message should be invisible");
+        fplog::write(msg);
+    }
+
+    return true;
+}
+
 void run_all_tests()
 {
     initlog("fplog_test");
-    openlog(Facility::security);
+    openlog(Facility::security, new Priority_Filter("prio_filter"));
+
+    if (!filter_test())
+        printf("filter_test failed!\n");
 
     //if (!class_logging_test())
         //printf("class_logging_test failed!\n");
@@ -98,8 +145,8 @@ void run_all_tests()
     //if (!send_file_test())
         //printf("send_file_test failed!\n");
 
-    if (!trim_and_blob_test())
-        printf("trim_and_blob_test failed!\n");
+    //if (!trim_and_blob_test())
+        //printf("trim_and_blob_test failed!\n");
 
     //if (!input_validators_test())
         //printf("input_validators_test failed!\n");

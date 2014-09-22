@@ -8,6 +8,8 @@
 #include <fplog_transport.h>
 #include <fplog_exceptions.h>
 #include <algorithm>
+#include <mutex>
+
 #include "utils.h"
 
 #ifdef FPLOG_EXPORT
@@ -224,11 +226,13 @@ class FPLOG_API Filter_Base
 
         Filter_Base(const char* filter_id) { if (filter_id) filter_id_ = filter_id; else filter_id_ = ""; }
         virtual bool should_pass(Message& msg) = 0;
+        std::string get_id(){ std::lock_guard<std::recursive_mutex> lock(mutex_); std::string id(filter_id_); return id; };
 
 
     protected:
 
         std::string filter_id_; //just a human-readable name for the filter
+        std::recursive_mutex mutex_;
 
 
     private:
@@ -240,6 +244,8 @@ class FPLOG_API Filter_Base
 class FPLOG_API Priority_Filter: public Filter_Base
 {
     public:
+
+        Priority_Filter(const char* filter_id): Filter_Base(filter_id){}
 
         virtual bool should_pass(Message& msg);
 

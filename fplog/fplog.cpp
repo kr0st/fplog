@@ -1,6 +1,7 @@
 #include "fplog.h"
 #include "utils.h"
-#include <mutex>
+#include <map>
+#include <thread>
 
 namespace fplog
 {
@@ -156,9 +157,9 @@ JSONNode& Message::as_json()
 
 bool Priority_Filter::should_pass(Message& msg)
 {
-    /*JSONNode::iterator it(msg.find("priority"));
-    if (it != msg.end())
-        return (prio_.find(it->as_string()) != prio_.end());*/
+    JSONNode::iterator it(msg.as_json().find(fplog::Message::Mandatory_Fields::priority));
+    if (it != msg.as_json().end())
+        return (prio_.find(it->as_string()) != prio_.end());
 
     return false;
 }
@@ -290,6 +291,9 @@ class Fplog_Impl
                 facility_ = facility;
             else
                 return;
+
+            if (filter)
+                add_filter(filter);
         }
 
         void initlog(const char* appname, fplog::Transport_Interface* transport)
@@ -315,26 +319,118 @@ class Fplog_Impl
             }
         }
 
+        void closelog()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            std::map<unsigned long long, Filter_Mapping_Entry> empty_table;
+            thread_filters_table_.swap(empty_table);
+        }
+
         void write(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             msg.set(Message::Mandatory_Fields::appname, appname_);
-            printf("%s\n", msg.as_string().c_str());
+            if (passed_filters(msg))
+                printf("%s\n", msg.as_string().c_str());
+        }
+
+        void add_filter(Filter_Base* filter)
+        {
+            if (!filter)
+                return;
+
+            std::string filter_id(filter->get_id());
+            generic_util::trim(filter_id);
+            if (filter_id.empty())
+                return;
+
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            Filter_Mapping_Entry mapping;
+            mapping.filter_id_ptr_map[filter_id] = filter;
+            mapping.filter_ptr_id_map[filter] = filter_id;
+
+            thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
+        }
+
+        void remove_filter(Filter_Base* filter)
+        {
+            if (!filter)
+                return;
+
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+            std::string filter_id(mapping.filter_ptr_id_map[filter]);
+
+            if (!filter_id.empty())
+            {
+                mapping.filter_ptr_id_map.erase(mapping.filter_ptr_id_map.find(filter));
+                mapping.filter_id_ptr_map.erase(mapping.filter_id_ptr_map.find(filter_id));
+
+                thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
+            }
+        }
+
+        Filter_Base* find_filter(const char* filter_id)
+        {
+            if (!filter_id)
+                return 0;
+
+            std::string filter_id_trimmed(filter_id);
+            generic_util::trim(filter_id_trimmed);
+            if (filter_id_trimmed.empty())
+                return 0;
+
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+            std::map<std::string, Filter_Base*>::iterator found(mapping.filter_id_ptr_map.find(filter_id_trimmed));
+            if (found != mapping.filter_id_ptr_map.end())
+                return found->second;
+
+            return 0;
         }
 
 
     private:
 
-        
         bool inited_;
         bool own_transport_;
         
         std::string appname_;
         std::string facility_;
 
+        struct Filter_Mapping_Entry
+        {
+            std::map<Filter_Base*, std::string> filter_ptr_id_map;
+            std::map<std::string, Filter_Base*> filter_id_ptr_map;
+        };
+
+        std::map<unsigned long long, Filter_Mapping_Entry> thread_filters_table_;
+
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
+
+        bool passed_filters(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+            
+            if (mapping.filter_ptr_id_map.size() == 0)
+                return false;
+
+            bool should_pass = true;
+
+            for (std::map<Filter_Base*, std::string>::iterator it = mapping.filter_ptr_id_map.begin(); it != mapping.filter_ptr_id_map.end(); ++it)
+            {
+                should_pass = (should_pass && it->first->should_pass(msg));
+                if (!should_pass)
+                    break;
+            }
+
+            return should_pass;
+        }
 };
 
 static Fplog_Impl g_fplog_impl;
@@ -357,11 +453,27 @@ void openlog(const char* facility, Filter_Base* filter)
 
 void closelog()
 {
+    return g_fplog_impl.closelog();
 }
 
 const char* get_facility()
 {
     return g_fplog_impl.get_facility();
+}
+
+void add_filter(Filter_Base* filter)
+{
+    return g_fplog_impl.add_filter(filter);
+}
+
+void remove_filter(Filter_Base* filter)
+{
+    return g_fplog_impl.remove_filter(filter);
+}
+
+Filter_Base* find_filter(const char* filter_id)
+{
+    return g_fplog_impl.find_filter(filter_id);
 }
 
 };
