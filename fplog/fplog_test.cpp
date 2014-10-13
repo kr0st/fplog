@@ -42,30 +42,7 @@ bool trim_and_blob_test()
 {
     int var = -533;
     int var2 = 54674;
-
-    fplog::Message msg(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers");
-    msg.add("blob", 66).add("int", 23).add_binary("int_bin", &var, sizeof(int)).add_binary("int_bin", &var2, sizeof(int)).add("    Double ", -1.23).add("encrypted", "sfewre");
-    //fplog::write(msg);
-    std::string log_msg_escaped(msg.as_string());
-    boost::replace_all(log_msg_escaped, "\"", "\\\"");
-
-    const char* format = "log_msg=\"%s\"; fplog_message = json.decode(log_msg); print(fplog_message.int)";
-    char lua_script[2048] = {0};
-    _snprintf(lua_script, sizeof(lua_script) - 1, format, log_msg_escaped.c_str());
-
-    printf("%s\n", lua_script);
-
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-
-    luaL_dostring(L, "json = require(\"json\");");        
-    luaL_dostring(L, lua_script);
-
-    printf("%s\n", lua_tostring(L, -1));
-    lua_pop(L, 1);
-
-    lua_close(L);
-
+    fplog::write(fplog::Message(fplog::Prio::alert, fplog::Facility::system, "go fetch some numbers").add("blob", 66).add("int", 23).add_binary("int_bin", &var, sizeof(int)).add_binary("int_bin", &var2, sizeof(int)).add("    Double ", -1.23).add("encrypted", "sfewre"));
     return true;
 }
 
