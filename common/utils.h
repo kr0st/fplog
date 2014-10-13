@@ -42,4 +42,6 @@ static inline std::string &trim(std::string &s) {
         return ltrim(rtrim(s));
 }
 
+std::string& escape_quotes(std::string& str);
+
 };

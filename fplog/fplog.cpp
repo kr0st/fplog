@@ -1,7 +1,10 @@
 #include "fplog.h"
 #include "utils.h"
+
 #include <map>
 #include <thread>
+#include <lua.hpp>
+
 
 namespace fplog
 {
@@ -346,7 +349,7 @@ class Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Filter_Mapping_Entry mapping;
+            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
             mapping.filter_id_ptr_map[filter_id] = filter;
             mapping.filter_ptr_id_map[filter] = filter_id;
 
@@ -474,6 +477,112 @@ void remove_filter(Filter_Base* filter)
 Filter_Base* find_filter(const char* filter_id)
 {
     return g_fplog_impl.find_filter(filter_id);
+}
+
+class Lua_Filter::Lua_Filter_Impl
+{
+    public:
+
+        Lua_Filter_Impl(const char* lua_script):
+        lua_script_(lua_script)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            static bool inited_ = one_time_init();
+        }
+
+        bool should_pass(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            std::string log_msg_escaped(msg.as_string());
+            generic_util::escape_quotes(log_msg_escaped);
+
+            const char* format = "log_msg=\"%s\"; fplog_message = json.decode(log_msg);";
+            int lua_len = log_msg_escaped.length() + 256;
+            
+            char* lua_script = new char[lua_len];
+            memset(lua_script, 0, lua_len);
+            std::auto_ptr<char> lua_script_ptr(lua_script);
+
+            _snprintf(lua_script, lua_len - 1, format, log_msg_escaped.c_str());
+
+            std::string full_script(lua_script + lua_script_);
+            luaL_dostring(lua_state_, full_script.c_str());
+
+            //TODO: real implementation here - need to eval lua script result
+            return true;
+        }
+
+
+    private:
+
+        static bool inited_;
+        class Static_Destructor
+        {
+            public:
+
+                ~Static_Destructor()
+                {
+                    Lua_Filter_Impl::one_time_deinit();
+                }
+        };
+
+        static Static_Destructor static_destructor_;
+        static lua_State *lua_state_;
+        static std::recursive_mutex mutex_;
+
+        Lua_Filter_Impl();
+
+        bool one_time_init()
+        {
+            if (lua_state_ != 0)
+                return true;
+
+            lua_state_ = luaL_newstate();
+            luaL_openlibs(lua_state_);
+
+            luaL_dostring(lua_state_, "json = require(\"json\");");        
+
+            return (lua_state_ != 0);
+        }
+
+        static void one_time_deinit()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            if(lua_state_) lua_close(lua_state_);
+            lua_state_ = 0;
+        }
+
+        std::string get_lua_error()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            std::string err(lua_tostring(lua_state_, -1));
+            lua_pop(lua_state_, 1);
+
+            return err;
+        }
+
+        std::string lua_script_;
+};
+
+lua_State* Lua_Filter::Lua_Filter_Impl::lua_state_ = 0;
+std::recursive_mutex Lua_Filter::Lua_Filter_Impl::mutex_;
+Lua_Filter::Lua_Filter_Impl::Static_Destructor Lua_Filter::Lua_Filter_Impl::static_destructor_;
+
+Lua_Filter::Lua_Filter(const char* filter_id, const char* lua_script):
+Filter_Base(filter_id)
+{
+    impl_ = new Lua_Filter_Impl(lua_script);
+}
+
+bool Lua_Filter::should_pass(Message& msg)
+{
+    return impl_->should_pass(msg);
+}
+
+Lua_Filter::~Lua_Filter()
+{
+    delete impl_;
 }
 
 };

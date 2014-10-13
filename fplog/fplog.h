@@ -240,6 +240,22 @@ class FPLOG_API Filter_Base
         Filter_Base();
 };
 
+class FPLOG_API Lua_Filter: public Filter_Base
+{
+    public:
+
+            Lua_Filter(const char* filter_id, const char* lua_script);
+            virtual bool should_pass(Message& msg);
+            ~Lua_Filter();
+
+    private:
+
+            Lua_Filter();
+
+            class Lua_Filter_Impl;
+            Lua_Filter_Impl* impl_;
+};
+
 //You need to explicitly state messages of which priorities you need to log by using add/remove.
 class FPLOG_API Priority_Filter: public Filter_Base
 {

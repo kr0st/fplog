@@ -1,5 +1,7 @@
 #include "utils.h"
 #include <time.h>
+#include <boost/algorithm/string.hpp>
+
 
 #ifdef _WIN32
 #include <windows.h>
@@ -300,5 +302,11 @@ size_t base64_decode(const char* source, void* dest, size_t targetlen)
 }
 
 size_t base64_encoded_length(size_t non_encoded_length) { return (non_encoded_length+2)/3*4 + 1; }
+
+std::string& escape_quotes(std::string& str)
+{
+    boost::replace_all(str, "\"", "\\\"");
+    return str;
+}
 
 };

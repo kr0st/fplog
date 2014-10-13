@@ -1,7 +1,5 @@
 
 #include <libjson/libjson.h>
-#include <lua.hpp>
-#include <boost/algorithm/string.hpp>
 #include "fplog.h"
 #include "utils.h"
 
@@ -105,6 +103,20 @@ bool filter_test()
         fplog::write(msg);
     }
 
+    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "print(fplog_message);");
+
+    fplog::add_filter(lua_filter);
+    fplog::add_filter(filter);
+
+    filter->add(fplog::Prio::alert);
+    filter->add(fplog::Prio::critical);
+    filter->add(fplog::Prio::debug);
+    filter->add(fplog::Prio::emergency);
+    filter->add(fplog::Prio::error);
+    filter->add(fplog::Prio::info);
+    filter->add(fplog::Prio::notice);
+    filter->add(fplog::Prio::warning);
+
     return true;
 }
 
@@ -116,17 +128,17 @@ void run_all_tests()
     if (!filter_test())
         printf("filter_test failed!\n");
 
-    //if (!class_logging_test())
-        //printf("class_logging_test failed!\n");
+    if (!class_logging_test())
+        printf("class_logging_test failed!\n");
 
-    //if (!send_file_test())
-        //printf("send_file_test failed!\n");
+    if (!send_file_test())
+        printf("send_file_test failed!\n");
 
-    //if (!trim_and_blob_test())
-        //printf("trim_and_blob_test failed!\n");
+    if (!trim_and_blob_test())
+        printf("trim_and_blob_test failed!\n");
 
-    //if (!input_validators_test())
-        //printf("input_validators_test failed!\n");
+    if (!input_validators_test())
+        printf("input_validators_test failed!\n");
 
     closelog();
 }
