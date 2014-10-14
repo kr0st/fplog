@@ -496,7 +496,7 @@ class Lua_Filter::Lua_Filter_Impl
             std::string log_msg_escaped(msg.as_string());
             generic_util::escape_quotes(log_msg_escaped);
 
-            const char* format = "log_msg=\"%s\"; fplog_message = json.decode(log_msg);";
+            const char* format = "log_msg=\"%s\"\nfplog_message = json.decode(log_msg)\n";
             int lua_len = log_msg_escaped.length() + 256;
             
             char* lua_script = new char[lua_len];
@@ -507,6 +507,15 @@ class Lua_Filter::Lua_Filter_Impl
 
             std::string full_script(lua_script + lua_script_);
             luaL_dostring(lua_state_, full_script.c_str());
+
+            std::string lua_error(get_lua_error());
+            if (!lua_error.empty())
+            {
+                printf("lua_err = %s\n", lua_error.c_str());
+
+                one_time_deinit();
+                one_time_init();
+            }
 
             //TODO: real implementation here - need to eval lua script result
             return true;
@@ -540,7 +549,7 @@ class Lua_Filter::Lua_Filter_Impl
             lua_state_ = luaL_newstate();
             luaL_openlibs(lua_state_);
 
-            luaL_dostring(lua_state_, "json = require(\"json\");");        
+            luaL_dostring(lua_state_, "json = require(\"json\")\n");        
 
             return (lua_state_ != 0);
         }
@@ -555,11 +564,15 @@ class Lua_Filter::Lua_Filter_Impl
         std::string get_lua_error()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
+            if (lua_type(lua_state_, 1) == LUA_TSTRING)
+            {
+                const char* status = lua_tostring(lua_state_, -1);
+                std::string err(status ? status : "");
+                lua_pop(lua_state_, 1);
+                return err;
+            }
 
-            std::string err(lua_tostring(lua_state_, -1));
-            lua_pop(lua_state_, 1);
-
-            return err;
+            return "";
         }
 
         std::string lua_script_;

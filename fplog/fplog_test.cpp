@@ -103,7 +103,7 @@ bool filter_test()
         fplog::write(msg);
     }
 
-    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "print(fplog_message);");
+    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"blah--blah\") ~= nil then filter_result = true else filter_result = false end print(filter_result)");
 
     fplog::add_filter(lua_filter);
     fplog::add_filter(filter);
