@@ -268,7 +268,9 @@ std::vector<std::string> Message::reserved_names_;
 
 /************************* fplog client API implementation *************************/
 
-class Fplog_Impl
+FPLOG_API std::vector<std::string> g_test_results_vector;
+
+class FPLOG_API Fplog_Impl
 {
     public:
 
@@ -276,7 +278,8 @@ class Fplog_Impl
         appname_("noname"),
         facility_(Facility::user),
         inited_(false),
-        own_transport_(true)
+        own_transport_(true),
+        test_mode_(false)
         {
             Message::one_time_init();
         }
@@ -335,7 +338,12 @@ class Fplog_Impl
 
             msg.set(Message::Mandatory_Fields::appname, appname_);
             if (passed_filters(msg))
-                printf("%s\n", msg.as_string().c_str());
+            {
+                if (test_mode_)
+                    g_test_results_vector.push_back(msg.as_string());
+                else
+                    printf("%s\n", msg.as_string().c_str());
+            }
         }
 
         void add_filter(Filter_Base* filter)
@@ -395,11 +403,14 @@ class Fplog_Impl
             return 0;
         }
 
+        void set_test_mode(bool mode){ g_test_results_vector.clear(); test_mode_ = mode; }
+
 
     private:
 
         bool inited_;
         bool own_transport_;
+        bool test_mode_;
         
         std::string appname_;
         std::string facility_;
@@ -436,7 +447,7 @@ class Fplog_Impl
         }
 };
 
-static Fplog_Impl g_fplog_impl;
+FPLOG_API Fplog_Impl g_fplog_impl;
 
 
 void write(Message& msg)

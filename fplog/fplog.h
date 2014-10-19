@@ -240,6 +240,10 @@ class FPLOG_API Filter_Base
         Filter_Base();
 };
 
+//From within Lua code a special variable will be accessible: fplog_message,
+//this is a log message parsed from JSON and turned into Lua tables hierarchy.
+//All fields contained in the log message are available from Lua.
+//If script decides that fplog_message should pass the filter it should set global var filter_result to true.
 class FPLOG_API Lua_Filter: public Filter_Base
 {
     public:

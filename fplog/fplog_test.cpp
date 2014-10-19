@@ -1,9 +1,21 @@
-
+#include <iostream>
 #include <libjson/libjson.h>
 #include "fplog.h"
 #include "utils.h"
 
-namespace fplog { namespace testing {
+namespace fplog { 
+    
+class FPLOG_API Fplog_Impl
+{
+    public:
+
+        void set_test_mode(bool mode);
+};
+
+FPLOG_API extern fplog::Fplog_Impl g_fplog_impl;
+FPLOG_API extern std::vector<std::string> g_test_results_vector;
+
+namespace testing {
 
 class Bar
 {
@@ -132,10 +144,19 @@ bool filter_test()
     return true;
 }
 
+void print_test_vector()
+{
+    for (auto str : fplog::g_test_results_vector)
+    {
+        std::cout << str << std::endl;
+    }
+}
+
 void run_all_tests()
 {
     initlog("fplog_test");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
+    fplog::g_fplog_impl.set_test_mode(true);
 
     if (!filter_test())
         printf("filter_test failed!\n");
@@ -152,6 +173,7 @@ void run_all_tests()
     if (!input_validators_test())
         printf("input_validators_test failed!\n");
 
+    print_test_vector();
     closelog();
 }
 
