@@ -517,8 +517,14 @@ class Lua_Filter::Lua_Filter_Impl
                 one_time_init();
             }
 
-            //TODO: real implementation here - need to eval lua script result
-            return true;
+            lua_getglobal(lua_state_, "filter_result");
+            if (lua_isboolean(lua_state_, -1))
+            {
+                bool res = lua_toboolean(lua_state_, -1);
+                return res;
+            }
+
+            return false;
         }
 
 

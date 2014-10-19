@@ -103,7 +103,7 @@ bool filter_test()
         fplog::write(msg);
     }
 
-    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"blah--blah\") ~= nil then filter_result = true else filter_result = false end print(filter_result)");
+    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
 
     fplog::add_filter(lua_filter);
     fplog::add_filter(filter);
@@ -116,6 +116,18 @@ bool filter_test()
     filter->add(fplog::Prio::info);
     filter->add(fplog::Prio::notice);
     filter->add(fplog::Prio::warning);
+
+    {
+        fplog::Message msg(fplog::Prio::info, fplog::Facility::user, "this message from Lua should not be displayed");
+        fplog::write(msg);
+    }
+
+    {
+        fplog::Message msg(fplog::Prio::notice, fplog::Facility::security, "this notice is to say hello from Lua!");
+        fplog::write(msg);
+    }
+
+    fplog::remove_filter(lua_filter);
 
     return true;
 }
