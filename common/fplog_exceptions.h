@@ -60,6 +60,16 @@ class Generic_Exception
         Generic_Exception();
 };
 
+class Connect_Failed: public Generic_Exception
+{
+    public:
+
+        Connect_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Cannot establish a connection."):
+        Generic_Exception(facility, file, line, message)
+        {
+        }
+};
+
 class Write_Failed: public Generic_Exception
 {
     public:

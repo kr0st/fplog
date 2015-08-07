@@ -3,6 +3,7 @@
 
 #include <process.h>
 #include <chrono>
+#include <mutex>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -13,6 +14,28 @@ const char* g_data_avail_condition_name = "mem_trans_data_avail";
 const char* g_buf_empty_condition_name = "mem_trans_buffer_empty";
 const char* g_condition_mutex_name = "mem_trans_cond_mutex";
 extern const size_t g_shared_mem_size = 1024;
+
+std::mutex g_test_mutex;
+bool g_test_locked = false;
+
+void grab_test_mutex()
+{
+    static size_t owner = 0;
+
+    if (!g_test_mutex.try_lock())
+        printf("owned by %u, try by %u: multi-threading FAIL!!!\n", owner, std::this_thread::get_id().hash());
+    else
+    {
+        owner = std::this_thread::get_id().hash();
+        g_test_locked = true;
+    }
+}
+
+void release_test_mutex()
+{
+    if (g_test_locked)
+        g_test_mutex.unlock();
+}
 
 void global_init()
 {
@@ -93,7 +116,6 @@ size_t Shared_Memory_Transport::get_buf_size()
 void Shared_Memory_Transport::reset()
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-    shared_mem_.truncate(g_shared_mem_size);
     
     delete mapped_mem_region_;
     mapped_mem_region_ = new boost::interprocess::mapped_region(shared_mem_, boost::interprocess::read_write);
@@ -179,6 +201,7 @@ size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size,
     memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(long long)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
+
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
 
     while (get_buf_size() != 0)
@@ -186,8 +209,8 @@ size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size,
         long long read_timestamp = 0;
         memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
 
-        //Purge buffer in case content is older than the default single operation timeout
-        if (abs(timestamp - read_timestamp) > sprot::Protocol::Timeout::Operation)
+        //Purge buffer in case content is older than the default single operation timeout x 10
+        if (abs(timestamp - read_timestamp) > 1 * sprot::Protocol::Timeout::Operation / 2)
         {
             set_buf_size(0);
             break;
@@ -200,6 +223,8 @@ size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size,
         }
     }
 
+    grab_test_mutex();
+
     unsigned char* shared = buf_;
     size_t tmp_sz = tmp.size();
     memcpy(shared, &tmp_sz, sizeof(size_t));
@@ -207,6 +232,8 @@ size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size,
 
     memcpy(shared, &(tmp[0]), tmp_sz);
     data_available_.notify_all();
+
+    release_test_mutex();
 
     return buf_size;
 }
@@ -231,16 +258,27 @@ start_read:
             buffer_empty_.notify_all();
             return 0;
         }
+    
+    grab_test_mutex();
+    size_t got_buf_size = get_buf_size();
 
-    size_t read_bytes = buf_size > get_buf_size() ? get_buf_size() : buf_size;
-    if (read_bytes <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)))
+    if (got_buf_size == 0)
+        THROW(fplog::exceptions::Incorrect_Parameter);
+
+    if (got_buf_size <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)))
         THROW(sprot::exceptions::Invalid_Frame);
+
+    size_t read_bytes = got_buf_size - (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long));
+    if (read_bytes > buf_size)
+        read_bytes = buf_size;
 
     std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
     long long current_timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
     long long read_timestamp = 0;
 
     memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
+
+    release_test_mutex();
     
     if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UID)) == 0)
     {
@@ -262,20 +300,24 @@ start_read:
             goto start_read;
         }
 
-        read_bytes -= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long));
+        grab_test_mutex();
+
         memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)]), read_bytes);
         set_buf_size(0);
+
+        release_test_mutex();
+
         buffer_empty_.notify_all();
     }
     else
     {
-        //Purge buffer in case content is older than the default single operation timeout
-        if (abs(current_timestamp - read_timestamp) > sprot::Protocol::Timeout::Operation)
+        //Purge buffer in case content is older than the default single operation timeout x 10
+        if (abs(current_timestamp - read_timestamp) > 1 * sprot::Protocol::Timeout::Operation / 2)
         {
+            grab_test_mutex();
             set_buf_size(0);
-            lock.unlock();
+            release_test_mutex();
             buffer_empty_.notify_all();
-            lock.lock();
             goto start_read;
         }
 
@@ -297,7 +339,7 @@ void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UID& chan_
 IPC::IPC()
 {
     transport_ = new IPC::Shared_Memory_IPC_Transport();
-    protocol_ = new sprot::Protocol(transport_, sprot::Protocol::Switching::Auto, g_shared_mem_size / 2, g_shared_mem_size / 3);
+    protocol_ = new sprot::Protocol(transport_, g_shared_mem_size / 2, g_shared_mem_size / 3);
 }
 
 IPC::~IPC()
@@ -310,7 +352,10 @@ IPC::~IPC()
 size_t IPC::read(void* buf, size_t buf_size, size_t timeout)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    return protocol_->read(buf, buf_size, timeout);
+    size_t bytes = protocol_->read(buf, buf_size, timeout);
+    if (bytes == 0)
+        THROW(fplog::exceptions::Read_Failed);
+    return bytes;
 }
 
 size_t IPC::write(const void* buf, size_t buf_size, size_t timeout)
@@ -321,7 +366,10 @@ size_t IPC::write(const void* buf, size_t buf_size, size_t timeout)
     if (buf_size == 0)
         return 0;
 
-    return protocol_->write(buf, buf_size, timeout);
+    size_t bytes = protocol_->write(buf, buf_size, timeout);
+    if (bytes != buf_size)
+        THROW(fplog::exceptions::Write_Failed);
+    return bytes;
 }
 
 void IPC::connect(const UID& private_channel)

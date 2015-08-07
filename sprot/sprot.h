@@ -29,128 +29,68 @@ namespace sprot
     {
         public:
 
-            //Set to manual, sprot will throw exceptions
-            //on trying to read/write in an inappropriate mode.
-            //Auto is default which will switch modes automatically,
-            //based on what request is executed - read or write.
-            struct Switching
-            {
-                enum Type
-                {
-                    Auto = 0x029A,
-                    Manual
-                };
-            };
-
-            struct Mode
-            {
-                enum Type
-                {
-                    Client = 0xA920,
-                    Server,
-                    Undefined
-                };
-            };
-
             struct Frame
             {
                 enum Type
                 {
                     ACK = 0x0a,
-                    NACK,
-                    SEQBEGIN,
-                    SEQEND,
-                    SETSEND,
-                    SETRECV,
-                    DATA,
+                    DATA_SINGLE,
+                    DATA_FIRST,
+                    DATA_LAST,
                     UNDEF //Unknown frame type.
                 };
 
                 Type type = UNDEF;
+                std::vector<unsigned char> data;
+                unsigned short sequence;
+                unsigned char crc;
+
+                static const int overhead = 6;
             };
 
             struct Timeout
             {
                 enum Type
                 {
-                    Operation = 200 //ms
+                    Operation = 300 //ms
                 };
             };
 
-            struct Data_Frame: public Frame
-            {
-                const unsigned char* data = 0;
-                size_t data_size = 0;
-                unsigned char sequence_num = 0;
-
-                Data_Frame(const unsigned char* buf, size_t size, unsigned char sequence):
-                data(buf),
-                data_size(size),
-                sequence_num(sequence)
-                {
-                    type = Frame::DATA;
-                }
-
-                Data_Frame()
-                {
-                    type = Frame::DATA;
-                }
-            };
-
-            Protocol(fplog::Transport_Interface* transport, Switching::Type switching = Switching::Auto, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
+            Protocol(fplog::Transport_Interface* transport, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
+            ~Protocol();
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
-
-            //Basically waiting means working in server mode waiting to receive a specific frame - 
-            //mode switch frame and exiting in case the frame is received or timeout reached.
-            bool wait_send_mode(size_t timeout = infinite_wait);
-            bool wait_recv_mode(size_t timeout = infinite_wait);
 
 
         private:
 
             static const size_t default_timeout = 200; //ms
 
+            unsigned char* evil_twin_;
+            size_t twin_size_;
+
             fplog::Transport_Interface* transport_;
-            Switching::Type switching_;
-            Mode::Type current_mode_;
-            bool is_sequence_;
-            std::vector<unsigned char> buf_;
-            
-            unsigned char* out_buf_;
-            size_t out_buf_sz_;
+            unsigned short sequence_num_;
+            bool terminating_;
 
-            size_t recv_buf_reserve_;
-            unsigned char sequence_num_;
             size_t MTU_;
+            size_t recv_buf_reserve_;
 
-            bool incomplete_read_;
+            unsigned char* frame_buf_;
+            std::recursive_mutex mutex_;
+
+            Frame make_frame(const Frame::Type type, unsigned char* data = 0, size_t data_length = 0);
+            Frame make_frame(const unsigned char* buf, size_t length);
+
+            Frame read_frame();
+
+            void write_frame(const Frame& frame);
+            void write_data(const void* buf, size_t buf_size, Frame::Type type = Frame::Type::DATA_SINGLE, size_t timeout = Timeout::Operation);
 
             static bool crc_check(const unsigned char* buf, size_t length);
 
-            //Returns true when more frames are needed before returning data to upper layer,
-            //false means whole data portion was received, read should stop and return data to upper layer.
-            bool on_frame(const unsigned char* buf, size_t recv_length, size_t max_capacity);
-            
-            bool on_seqbegin();
-            bool on_seqend();
-
-            bool on_setsend();
-            bool on_setrecv();
-
-            bool on_data(Data_Frame& frame);
-
-            size_t send_frame(Frame::Type type, size_t timeout = default_timeout, const unsigned char* buf = 0, size_t length = 0);
-            size_t send_data(const unsigned char* data, size_t length, size_t timeout = default_timeout);
-
-            void complete_read();
-            void reset();
-
-            Data_Frame make_data_frame(const unsigned char* buf, size_t length);
-
-            size_t read_impl(void* buf, size_t buf_size, size_t timeout = default_timeout, bool no_mode_check = false);
-            size_t write_impl(const void* buf, size_t buf_size, size_t timeout = default_timeout, bool no_mode_check = false);
+            void fill_frame_buf(const char c);
     };
 
 namespace util
@@ -174,16 +114,6 @@ namespace sprot { namespace exceptions
             Exception();
     };
 
-    class Incorrect_Mode: public Exception
-    {
-        public:
-
-            Incorrect_Mode(const char* facility, const char* file = "", int line = 0, const char* message = "Tried write in recv mode or read in send mode."):
-            Exception(facility, file, line, message)
-            {
-            }
-    };
-
     class Invalid_Frame: public Exception
     {
         public:
@@ -194,4 +124,33 @@ namespace sprot { namespace exceptions
             }
     };
 
+    class Wrong_Sequence: public Invalid_Frame
+    {
+        public:
+
+            Wrong_Sequence(const char* facility, const char* file = "", int line = 0, const char* message = "Received frame with wrong sequence number."):
+            Invalid_Frame(facility, file, line, message)
+            {
+            }
+    };
+    
+    class Wrong_Type: public Invalid_Frame
+    {
+        public:
+
+            Wrong_Type(const char* facility, const char* file = "", int line = 0, const char* message = "Got frame of unexpected type."):
+            Invalid_Frame(facility, file, line, message)
+            {
+            }
+    };
+
+    class Crc_Failed: public Invalid_Frame
+    {
+        public:
+
+            Crc_Failed(const char* facility, const char* file = "", int line = 0, const char* message = "Received a corrupted frame (CRC failure)."):
+            Invalid_Frame(facility, file, line, message)
+            {
+            }
+    };
 }};

@@ -168,7 +168,7 @@ bool N_threads_mem_transport_test()
 std::map<spipc::UID, std::vector<std::string>> g_ipc_written;
 std::map<spipc::UID, std::vector<std::string>> g_ipc_read;
 
-void writer_ipc_thread(const spipc::UID& uid)
+void writer_ipc_thread(const spipc::UID uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> ipc_written;
@@ -177,64 +177,118 @@ void writer_ipc_thread(const spipc::UID& uid)
 
     ipc.connect(uid);
 
-    for (int i = 0; i < 15000; ++i)
+    char fwriter_name[255];
+    sprintf_s(fwriter_name, "writer_%lld_%lld.txt", uid.high, uid.low);
+    FILE* fwriter = 0;
+    fopen_s(&fwriter, fwriter_name, "w");
+
+    int prefix = 0;
+
+    if (uid.high == 11223) prefix = 0;
+    if (uid.high == 34773) prefix = 3;
+    if (uid.high == 122273) prefix = 6;
+    
+    char number[100];
+
+    for (int i = 0; i < 5000; ++i)
     {
-        int rnd_sz = 1 + rand() % 1258;
+        sprintf_s(number, "%d", i);
+        int rnd_sz = 1 + rand() % 1295;
     
         std::vector<char> to_write;
         for (int j = 0; j < rnd_sz; ++j)
-            to_write.push_back(65 + rand() % 20);
+            to_write.push_back(65 + rand() % 3 + prefix);
+        to_write.push_back('_');
+        int num_len = strlen(number);
+        for (int k = 0; k < num_len; k++)
+            to_write.push_back(number[k]);
+        to_write.push_back('_');
         to_write.push_back(0);
 
         char* write_buf = &(*to_write.begin());
         //printf("Writing: %s (%d bytes)\n", write_buf, rnd_sz + 1);
+    retry_write:
 
         try
         {
-            ipc.write(write_buf, rnd_sz + 1, 1000);
+            ipc.write(write_buf, to_write.size(), 3000);
+        }
+        catch(fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
+            goto retry_write;
         }
         catch(sprot::exceptions::Exception& e)
         {
             printf("EXCEPTION in writer_ipc_thread: %s\n", e.what().c_str());
-            continue;
+            goto retry_write;
         }
             
         ipc_written.push_back(write_buf);
+
+        char newline[2] = { 0x0d, 0x0a };
+        fwrite(write_buf, to_write.size() - 1, 1, fwriter);
+        fwrite(newline, 2, 1, fwriter);
+        fflush(fwriter);
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
     g_ipc_written[uid] = ipc_written;
+    
+    fclose(fwriter);
+    printf("thread with UID [%lld/%lld] written %d values.\n", uid.high, uid.low, ipc_written.size());
 }
 
-void reader_ipc_thread(const spipc::UID& uid)
+void reader_ipc_thread(const spipc::UID uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> read_items;
 
     spipc::IPC ipc;
     ipc.connect(uid);
+    
+    char freader_name[255];
+    sprintf_s(freader_name, "reader_%lld_%lld.txt", uid.high, uid.low);
+    FILE* freader = 0;
+    fopen_s(&freader, freader_name, "w");
 
-    for (int i = 0; i < 15000; ++i)
+    for (int i = 0; i < 5000; ++i)
     {
         char read_buf[3000];
         memset(read_buf, 0, sizeof(read_buf));
-            
+    
+    retry_read:
+
         try
         {
-            ipc.read(read_buf, sizeof(read_buf), 1000);
+            ipc.read(read_buf, sizeof(read_buf), 3000);
+        }
+        catch(fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
+            goto retry_read;
         }
         catch(sprot::exceptions::Exception& e)
         {
             printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
-            continue;
+            goto retry_read;
         }
 
         read_items.push_back(read_buf);
+
+        char newline[2] = { 0x0d, 0x0a };
+        fwrite(read_buf, strlen(read_buf), 1, freader);
+        fwrite(newline, 2, 1, freader);
+        fflush(freader);
+
         //printf("Reading: %s\n", read_buf);
     }
 
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
     g_ipc_read[uid] = read_items;
+
+    fclose(freader);
+    printf("thread with UID [%lld/%lld] read %d values.\n", uid.high, uid.low, read_items.size());
 }
 
 bool N_threads_IPC_test()
@@ -245,20 +299,29 @@ bool N_threads_IPC_test()
 
     uid.high = 11223;
     uid.low = 334432;
-
     std::thread writer(writer_ipc_thread, uid);
+
+
+    uid.high = 34773;
+    uid.low = 987856;
+    std::thread writer2(writer_ipc_thread, uid);
+
+    uid.high = 122273;
+    uid.low = 67424234;
+    std::thread writer3(writer_ipc_thread, uid);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    uid.high = 11223;
+    uid.low = 334432;
     std::thread reader(reader_ipc_thread, uid);
 
     uid.high = 34773;
     uid.low = 987856;
-
-    std::thread writer2(writer_ipc_thread, uid);
     std::thread reader2(reader_ipc_thread, uid);
 
     uid.high = 122273;
     uid.low = 67424234;
-
-    std::thread writer3(writer_ipc_thread, uid);
     std::thread reader3(reader_ipc_thread, uid);
 
     writer.join();
@@ -285,7 +348,7 @@ bool N_threads_IPC_test()
             return false;
         }
     }
-    
+
     printf("IPC delivers %g messages per second.\n", read_messages * 1.0 / (end * 1.0 - begin * 1.0) * 1000);
     return true;
 }
@@ -350,7 +413,7 @@ retry:
     {
         retries++;
         delete read_buf;
-        read_buf_sz = e.get_required_size();
+        read_buf_sz = sizeof(data_5mb);
         read_buf = new char[read_buf_sz];
         goto retry;
     }
@@ -364,7 +427,7 @@ void run_all_tests()
 {
     spipc::global_init();
 
-    try
+    /*try
     {
         if (!N_threads_mem_transport_test())
             printf("N_threads_mem_transport_test failed.\n");
@@ -373,7 +436,7 @@ void run_all_tests()
     {
         printf("ERROR: N_threads_mem_transport_test failed with exception.\n");
         printf("%s\n", e.what().c_str());
-    }
+    }*/
 
     try
     {
@@ -386,7 +449,7 @@ void run_all_tests()
         printf("%s\n", e.what().c_str());
     }
 
-    try
+    /*try
     {
         if (!Buffer_Overflow_Test())
             printf("Buffer_Overflow_Test failed.\n");
@@ -395,7 +458,7 @@ void run_all_tests()
     {
         printf("ERROR: Buffer_Overflow_Test failed with exception.\n");
         printf("%s\n", e.what().c_str());
-    }
+    }*/
 
     printf("spipc tests finished OK.\n");
 }
