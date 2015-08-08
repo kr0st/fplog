@@ -56,7 +56,7 @@ namespace sprot
                 };
             };
 
-            Protocol(fplog::Transport_Interface* transport, size_t recv_buf_reserve = 3 * 1024, size_t MTU = 1024);
+            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024);
             ~Protocol();
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);

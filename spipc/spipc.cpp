@@ -339,7 +339,7 @@ void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UID& chan_
 IPC::IPC()
 {
     transport_ = new IPC::Shared_Memory_IPC_Transport();
-    protocol_ = new sprot::Protocol(transport_, g_shared_mem_size / 2, g_shared_mem_size / 3);
+    protocol_ = new sprot::Protocol(transport_, g_shared_mem_size / 3);
 }
 
 IPC::~IPC()

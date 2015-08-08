@@ -48,9 +48,8 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
-    Protocol::Protocol(fplog::Transport_Interface* transport, size_t recv_buf_reserve, size_t MTU):
+    Protocol::Protocol(fplog::Transport_Interface* transport, size_t MTU):
     transport_(transport),
-    recv_buf_reserve_(recv_buf_reserve),
     sequence_num_(0),
     MTU_(MTU),
     terminating_(false),
