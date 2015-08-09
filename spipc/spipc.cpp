@@ -6,6 +6,7 @@
 #include <mutex>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include "socket_transport.h"
 
 namespace spipc {
 
@@ -22,9 +23,7 @@ void grab_test_mutex()
 {
     static size_t owner = 0;
 
-    if (!g_test_mutex.try_lock())
-        printf("owned by %u, try by %u: multi-threading FAIL!!!\n", owner, std::this_thread::get_id().hash());
-    else
+    if (g_test_mutex.try_lock())
     {
         owner = std::this_thread::get_id().hash();
         g_test_locked = true;
@@ -50,6 +49,7 @@ void global_init()
     memset(static_cast<unsigned char*>(mapped_mem_region.get_address()), 0, g_shared_mem_size);
 }
 
+#undef max
 UID UID::from_string(std::string& str)
 {
     unsigned long long limit = std::numeric_limits<unsigned long long>::max();
@@ -176,7 +176,8 @@ class IPC::Shared_Memory_IPC_Transport: public Shared_Memory_Transport
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
-        void register_private_channel(const UID& chan_id);
+        void connect(const Params& params);
+
 
     private:
 
@@ -209,7 +210,7 @@ size_t IPC::Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size,
         long long read_timestamp = 0;
         memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
 
-        //Purge buffer in case content is older than the default single operation timeout x 10
+        //Purge buffer in case content is older than the default single operation timeout div by 2
         if (abs(timestamp - read_timestamp) > 1 * sprot::Protocol::Timeout::Operation / 2)
         {
             set_buf_size(0);
@@ -311,7 +312,7 @@ start_read:
     }
     else
     {
-        //Purge buffer in case content is older than the default single operation timeout x 10
+        //Purge buffer in case content is older than the default single operation timeout div by 2
         if (abs(current_timestamp - read_timestamp) > 1 * sprot::Protocol::Timeout::Operation / 2)
         {
             grab_test_mutex();
@@ -329,16 +330,30 @@ start_read:
 
     return read_bytes;
 }
-
-void IPC::Shared_Memory_IPC_Transport::register_private_channel(const UID& chan_id)
+void IPC::Shared_Memory_IPC_Transport::connect(const Params& params)
 {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
-    private_channel_id_ = chan_id;
+    std::string uidstr;
+
+    if (params.find("uid") == params.end())
+    {
+        if (params.find("UID") == params.end())
+        {
+            THROW(exceptions::Invalid_Uid);
+        }
+        else
+            uidstr = (*params.find("UID")).second;
+    }
+    else
+        uidstr = (*params.find("uid")).second;
+
+    UID uid;
+    private_channel_id_ = uid.from_string(uidstr);
 }
 
 IPC::IPC()
 {
-    transport_ = new IPC::Shared_Memory_IPC_Transport();
+    transport_ = new Socket_Transport();
     protocol_ = new sprot::Protocol(transport_, g_shared_mem_size / 3);
 }
 
@@ -377,11 +392,36 @@ void IPC::connect(const UID& private_channel)
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     private_channel_id_ = private_channel;
     
-    transport_->register_private_channel(private_channel_id_);
+    Params params;
+    params["uid"] = private_channel_id_.to_string(private_channel_id_);
+
+    transport_->connect(params);
 
     UID empty;
     if (private_channel == empty)
         THROW(fplog::exceptions::Incorrect_Parameter);
+}
+
+void IPC::connect(const Params& params)
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::string uidstr;
+
+    if (params.find("uid") == params.end())
+    {
+        if (params.find("UID") == params.end())
+        {
+            THROW(exceptions::Invalid_Uid);
+        }
+        else
+            uidstr = (*params.find("UID")).second;
+    }
+    else
+        uidstr = (*params.find("uid")).second;
+
+    UID uid;
+    private_channel_id_ = uid.from_string(uidstr);
+    transport_->connect(params);
 }
 
 };

@@ -136,7 +136,7 @@ class Impl
                 Thread_Data* worker = new Thread_Data();
                 
                 worker->app_name = channel.app_name;
-                worker->uid = channel.uid;
+                worker->uid = channel.uid.to_string(channel.uid);
                 worker->thread = new std::thread(&Impl::ipc_listener, this, worker);
                 
                 pool_.push_back(worker);
@@ -176,14 +176,16 @@ class Impl
             Thread_Data(): thread(0) {}
 
             std::thread* thread;
-            spipc::UID uid;
+            std::string uid;
             std::string app_name;
         };
 
         void ipc_listener(Thread_Data* data)
         {
             spipc::IPC ipc;
-            ipc.connect(data->uid);
+            spipc::IPC::Params params;
+            params["uid"] = data->uid;
+            ipc.connect(params);
 
             size_t buf_sz = 2048;
             char *buf = new char [buf_sz];

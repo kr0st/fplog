@@ -82,6 +82,7 @@ class SPIPC_API Shared_Memory_Transport: public fplog::Transport_Interface
         void set_buf_size(size_t size);
 };
 
+class Socket_Transport;
 class SPIPC_API IPC: public fplog::Transport_Interface
 {
     public:
@@ -91,6 +92,7 @@ class SPIPC_API IPC: public fplog::Transport_Interface
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
         void connect(const UID& private_channel);
+        void connect(const Params& params);
 
 
     private:
@@ -98,7 +100,7 @@ class SPIPC_API IPC: public fplog::Transport_Interface
         UID private_channel_id_;
         std::recursive_mutex mutex_;
         class Shared_Memory_IPC_Transport;
-        Shared_Memory_IPC_Transport* transport_;
+        Socket_Transport* transport_;
         sprot::Protocol* protocol_;
 };
 

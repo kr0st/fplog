@@ -184,13 +184,13 @@ void writer_ipc_thread(const spipc::UID uid)
 
     int prefix = 0;
 
-    if (uid.high == 11223) prefix = 0;
-    if (uid.high == 34773) prefix = 3;
-    if (uid.high == 122273) prefix = 6;
+    if (uid.high == 18743) prefix = 0;
+    if (uid.high == 18745) prefix = 3;
+    if (uid.high == 18747) prefix = 6;
     
     char number[100];
 
-    for (int i = 0; i < 5000; ++i)
+    for (int i = 0; i < 15000; ++i)
     {
         sprintf_s(number, "%d", i);
         int rnd_sz = 1 + rand() % 1295;
@@ -252,7 +252,7 @@ void reader_ipc_thread(const spipc::UID uid)
     FILE* freader = 0;
     fopen_s(&freader, freader_name, "w");
 
-    for (int i = 0; i < 5000; ++i)
+    for (int i = 0; i < 15000; ++i)
     {
         char read_buf[3000];
         memset(read_buf, 0, sizeof(read_buf));
@@ -297,31 +297,31 @@ bool N_threads_IPC_test()
     std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
     long long begin = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
-    uid.high = 11223;
-    uid.low = 334432;
+    uid.high = 18743;
+    uid.low = 18744;
     std::thread writer(writer_ipc_thread, uid);
 
 
-    uid.high = 34773;
-    uid.low = 987856;
+    uid.high = 18745;
+    uid.low = 18746;
     std::thread writer2(writer_ipc_thread, uid);
 
-    uid.high = 122273;
-    uid.low = 67424234;
+    uid.high = 18747;
+    uid.low = 18748;
     std::thread writer3(writer_ipc_thread, uid);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    uid.high = 11223;
-    uid.low = 334432;
+    uid.high = 18743;
+    uid.low = 18744;
     std::thread reader(reader_ipc_thread, uid);
 
-    uid.high = 34773;
-    uid.low = 987856;
+    uid.high = 18745;
+    uid.low = 18746;
     std::thread reader2(reader_ipc_thread, uid);
 
-    uid.high = 122273;
-    uid.low = 67424234;
+    uid.high = 18747;
+    uid.low = 18748;
     std::thread reader3(reader_ipc_thread, uid);
 
     writer.join();
@@ -361,8 +361,8 @@ void buffer_overflow_test_worker()
 
     spipc::IPC buffer_overflow_test;
     spipc::UID uid;
-    uid.high = 12;
-    uid.low = 21;
+    uid.high = 18743;
+    uid.low = 18744;
     buffer_overflow_test.connect(uid);
     buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
@@ -380,8 +380,8 @@ bool Buffer_Overflow_Test()
     spipc::global_init();
     spipc::IPC buffer_overflow_test;
     spipc::UID uid;
-    uid.high = 12;
-    uid.low = 21;
+    uid.high = 18743;
+    uid.low = 18744;
     buffer_overflow_test.connect(uid);
 
     std::thread worker(&buffer_overflow_test_worker);
@@ -427,7 +427,7 @@ void run_all_tests()
 {
     spipc::global_init();
 
-    /*try
+    try
     {
         if (!N_threads_mem_transport_test())
             printf("N_threads_mem_transport_test failed.\n");
@@ -436,7 +436,7 @@ void run_all_tests()
     {
         printf("ERROR: N_threads_mem_transport_test failed with exception.\n");
         printf("%s\n", e.what().c_str());
-    }*/
+    }
 
     try
     {
@@ -449,7 +449,7 @@ void run_all_tests()
         printf("%s\n", e.what().c_str());
     }
 
-    /*try
+    try
     {
         if (!Buffer_Overflow_Test())
             printf("Buffer_Overflow_Test failed.\n");
@@ -458,7 +458,7 @@ void run_all_tests()
     {
         printf("ERROR: Buffer_Overflow_Test failed with exception.\n");
         printf("%s\n", e.what().c_str());
-    }*/
+    }
 
     printf("spipc tests finished OK.\n");
 }

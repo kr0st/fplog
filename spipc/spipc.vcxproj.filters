@@ -24,9 +24,15 @@
     <ClInclude Include="spipc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="socket_transport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="spipc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="socket_transport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
