@@ -4,6 +4,7 @@
 #include <atomic>
 
 #include "spipc.h"
+#include "shared_memory_transport.h"
 
 namespace spipc { namespace testing {
 
@@ -377,7 +378,6 @@ bool Buffer_Overflow_Test()
     size_t read_buf_sz = 256 * 1024;
     char* read_buf = new char[read_buf_sz];
 
-    spipc::global_init();
     spipc::IPC buffer_overflow_test;
     spipc::UID uid;
     uid.high = 18743;
@@ -425,7 +425,7 @@ retry:
 
 void run_all_tests()
 {
-    spipc::global_init();
+    spipc::Shared_Memory_Transport::global_init();
 
     try
     {

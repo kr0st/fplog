@@ -19,14 +19,6 @@
 
 namespace spipc {
 
-extern const char* g_shared_mem_name;
-extern const char* g_data_avail_condition_name;
-extern const char* g_buf_empty_condition_name;
-extern const char* g_condition_mutex_name;
-extern const size_t g_shared_mem_size;
-
-SPIPC_API void global_init();
-
 struct SPIPC_API UID
 {
     UID(): high(0), low(0) {}
@@ -56,38 +48,11 @@ struct SPIPC_API UID
     unsigned long long low;
 };
 
-class SPIPC_API Shared_Memory_Transport: public fplog::Transport_Interface
-{
-    public:
-
-        Shared_Memory_Transport();
-        virtual ~Shared_Memory_Transport();
-
-        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
-        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
-
-
-    protected:
-        
-        boost::interprocess::shared_memory_object shared_mem_;
-        boost::interprocess::mapped_region* mapped_mem_region_;
-        unsigned char* buf_;
-
-        boost::interprocess::named_mutex condition_mutex_;
-        boost::interprocess::named_condition data_available_;
-        boost::interprocess::named_condition buffer_empty_;
-
-        void reset();
-        size_t get_buf_size();
-        void set_buf_size(size_t size);
-};
-
-class Socket_Transport;
 class SPIPC_API IPC: public fplog::Transport_Interface
 {
     public:
 
-        IPC();
+        IPC(fplog::Transport_Interface* transport = 0, size_t MTU = 1221);
         virtual ~IPC();
         virtual size_t read(void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = fplog::Transport_Interface::infinite_wait);
@@ -99,8 +64,7 @@ class SPIPC_API IPC: public fplog::Transport_Interface
 
         UID private_channel_id_;
         std::recursive_mutex mutex_;
-        class Shared_Memory_IPC_Transport;
-        Socket_Transport* transport_;
+        fplog::Transport_Interface* transport_;
         sprot::Protocol* protocol_;
 };
 

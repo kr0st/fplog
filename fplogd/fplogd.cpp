@@ -210,7 +210,7 @@ class Impl
                 }
                 catch(fplog::exceptions::Buffer_Overflow& e)
                 {
-                    buf_sz = e.get_required_size() + 1;
+                    buf_sz *= 2;
                     delete [] buf;
                     buf = new char [buf_sz];
                 }
@@ -332,7 +332,6 @@ void stop()
 
 int main()
 {
-    spipc::global_init();
     fplogd::start();
     _getch();
     fplogd::stop();
