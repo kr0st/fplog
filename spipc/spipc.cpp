@@ -48,7 +48,8 @@ UID UID::from_string(std::string& str)
 
 IPC::IPC(fplog::Transport_Interface* transport, size_t MTU)
 {
-    transport_ = transport ? transport : new Socket_Transport();
+    own_transport_ = (transport == 0);
+    transport_ = own_transport_ ? new Socket_Transport() : transport;
     protocol_ = new sprot::Protocol(transport_, MTU);
 }
 
@@ -56,7 +57,9 @@ IPC::~IPC()
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     delete protocol_;
-    delete transport_;
+    
+    if (own_transport_)
+        delete transport_;
 }
 
 size_t IPC::read(void* buf, size_t buf_size, size_t timeout)
@@ -86,7 +89,7 @@ void IPC::connect(const UID& private_channel)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     private_channel_id_ = private_channel;
-    
+
     Params params;
     params["uid"] = private_channel_id_.to_string(private_channel_id_);
 

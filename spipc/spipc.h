@@ -66,6 +66,7 @@ class SPIPC_API IPC: public fplog::Transport_Interface
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
         sprot::Protocol* protocol_;
+        bool own_transport_;
 };
 
 namespace exceptions {

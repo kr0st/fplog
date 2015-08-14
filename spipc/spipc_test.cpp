@@ -449,6 +449,8 @@ void run_all_tests()
         printf("%s\n", e.what().c_str());
     }
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
     try
     {
         if (!Buffer_Overflow_Test())

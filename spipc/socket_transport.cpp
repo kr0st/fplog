@@ -82,9 +82,24 @@ void Socket_Transport::disconnect()
     if (!connected_)
         return;
 
-    shutdown(socket_, SD_BOTH);
-    closesocket(socket_);
-    WSACleanup();
+    int res = 0;
+    if (SOCKET_ERROR == shutdown(socket_, SD_BOTH))
+    {
+        res = WSAGetLastError();
+        //TODO: do something meaningful with the error
+    }
+
+    if (SOCKET_ERROR == closesocket(socket_))
+    {
+        res = WSAGetLastError();
+        //TODO: do something meaningful with the error
+    }
+
+    if (SOCKET_ERROR == WSACleanup())
+    {
+        res = WSAGetLastError();
+        //TODO: do something meaningful with the error
+    }
 
     connected_ = false;
 }
