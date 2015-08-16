@@ -114,6 +114,14 @@ void Socket_Transport::connect(const Params& params)
 
     if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
     {
+        if (!localhost_)
+        {
+            shutdown(socket_, SD_BOTH);
+            closesocket(socket_);
+            WSACleanup();
+            THROW(fplog::exceptions::Connect_Failed);
+        }
+
         listen_addr.sin_port=htons(uid.low);
         if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
         {
@@ -240,6 +248,10 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     
     remote_addr.sin_family = AF_INET;
     remote_addr.sin_port = high_uid_ ? uid_.low : uid_.high;
+    
+    if (!localhost_)
+        remote_addr.sin_port = uid_.high;
+
     remote_addr.sin_port = htons(remote_addr.sin_port);
 
     fd_set fdset;
