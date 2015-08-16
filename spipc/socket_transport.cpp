@@ -1,6 +1,8 @@
 #include "socket_transport.h"
 #include "spipc.h"
 #include <chrono>
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std::chrono;
 
@@ -23,6 +25,49 @@ void Socket_Transport::connect(const Params& params)
     }
     else
         uidstr = (*params.find("uid")).second;
+
+    localhost_ = true;
+    auto get_ip = [this](const std::string& ip)
+    {
+        int count = 0; 
+        unsigned char addr[4];
+
+        try
+        {
+            boost::char_separator<char> sep(".");
+            boost::tokenizer<boost::char_separator<char>> tok(ip, sep);
+
+            for(boost::tokenizer<boost::char_separator<char>>::iterator it = tok.begin(); it != tok.end(); ++it)
+            {
+                if (count >= 4)
+                    THROW(fplog::exceptions::Incorrect_Parameter);
+                std::string token(*it);
+                unsigned int byte = boost::lexical_cast<unsigned int>(token);
+                if (byte > 255)
+                    THROW(fplog::exceptions::Incorrect_Parameter);
+                addr[count] = byte;
+                count++;
+            }
+        }
+        catch(boost::exception& e)
+        {
+            THROW(fplog::exceptions::Incorrect_Parameter);
+        }
+
+        memcpy(ip_, addr, sizeof(ip_));
+    };
+
+    if (params.find("ip") != params.end())
+    {
+        get_ip(params.find("ip")->second);
+        localhost_ = false;
+    }
+
+    if (params.find("IP") != params.end())
+    {
+        get_ip(params.find("IP")->second);
+        localhost_ = false;
+    }
 
     UID uid;
     uid.from_string(uidstr);
@@ -51,11 +96,21 @@ void Socket_Transport::connect(const Params& params)
     sockaddr_in listen_addr;
     listen_addr.sin_family=AF_INET;
     listen_addr.sin_port=htons(uid.high);
-
-    listen_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
-    listen_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
-    listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
-    listen_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
+    
+    if (localhost_)
+    {
+        listen_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
+        listen_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
+        listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
+        listen_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
+    }
+    else
+    {
+        listen_addr.sin_addr.S_un.S_un_b.s_b1 = 0;
+        listen_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
+        listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
+        listen_addr.sin_addr.S_un.S_un_b.s_b4 = 0;
+    }
 
     if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
     {
@@ -147,6 +202,10 @@ retry:
         if ((remote_addr.sin_port != uid_.high) && (remote_addr.sin_port != uid_.low))
             goto retry;
 
+        if (!localhost_)
+            if (memcmp(&(remote_addr.sin_addr.S_un.S_un_b), ip_, sizeof(ip_)) != 0)
+                goto retry;
+
         return res;
     }
     else
@@ -163,11 +222,22 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 
     sockaddr_in remote_addr;
     int addr_len = sizeof(remote_addr);
+
+    if (localhost_)
+    {
+        remote_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
+        remote_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
+        remote_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
+        remote_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
+    }
+    else
+    {
+        remote_addr.sin_addr.S_un.S_un_b.s_b1 = ip_[0];
+        remote_addr.sin_addr.S_un.S_un_b.s_b2 = ip_[1];
+        remote_addr.sin_addr.S_un.S_un_b.s_b3 = ip_[2];
+        remote_addr.sin_addr.S_un.S_un_b.s_b4 = ip_[3];
+    }
     
-    remote_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
-    remote_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
-    remote_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
-    remote_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
     remote_addr.sin_family = AF_INET;
     remote_addr.sin_port = high_uid_ ? uid_.low : uid_.high;
     remote_addr.sin_port = htons(remote_addr.sin_port);

@@ -35,6 +35,8 @@ class SPIPC_API Socket_Transport: public fplog::Transport_Interface
         std::recursive_mutex mutex_;
         UID uid_;
         bool high_uid_;
+        unsigned char ip_[4];
+        bool localhost_;
 };
 
 };
