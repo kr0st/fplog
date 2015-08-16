@@ -69,6 +69,10 @@ void Socket_Transport::connect(const Params& params)
         localhost_ = false;
     }
 
+    const unsigned char localhost[4] = {127, 0, 0, 1};
+    if (memcmp(ip_, localhost, sizeof(localhost)) == 0)
+        localhost_ = true;
+
     UID uid;
     uid.from_string(uidstr);
 

@@ -18,6 +18,7 @@
 
 static char* g_lock_file_name = ".fplogd_lock";
 static char* g_config_file_name = "fplogd.ini";
+static char* g_config_file_section_name = "channels";
 
 static std::string get_home_dir()
 {
@@ -95,6 +96,9 @@ std::vector<Channel_Data> get_registered_channels()
     for (auto& section: pt)
     {
         Channel_Data data;
+
+        if (section.first.find(g_config_file_section_name) == std::string::npos)
+            continue;
 
         for (auto& key: section.second)
         {
