@@ -9,6 +9,7 @@ class Transport_Interface
 {
     public:
 
+        typedef std::pair<std::string, std::string> Param;
         typedef std::map<std::string, std::string> Params;
         
         static Params empty_params;
@@ -21,6 +22,13 @@ class Transport_Interface
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait) = 0;
 
         virtual ~Transport_Interface(){};
+};
+
+class Transport_Factory
+{
+    public:
+
+        virtual Transport_Interface* create(const Transport_Interface::Params& params) = 0;
 };
 
 };

@@ -3,7 +3,9 @@
 
 #include <map>
 #include <thread>
+#include <queue>
 #include <lua.hpp>
+#include <spipc/socket_transport.h>
 
 
 namespace fplog
@@ -279,9 +281,22 @@ class FPLOG_API Fplog_Impl
         facility_(Facility::user),
         inited_(false),
         own_transport_(true),
-        test_mode_(false)
+        test_mode_(false),
+        stopping_(false),
+        transport_(0),
+        mq_reader_(&Fplog_Impl::mq_reader, this)
         {
             Message::one_time_init();
+        }
+
+        ~Fplog_Impl()
+        {
+            stopping_ = true;
+
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            if (inited_ && own_transport_)
+                delete transport_;
         }
 
         const char* get_facility()
@@ -302,7 +317,7 @@ class FPLOG_API Fplog_Impl
                 add_filter(filter);
         }
 
-        void initlog(const char* appname, fplog::Transport_Interface* transport)
+        void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             
@@ -322,6 +337,13 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
+                transport_ = new spipc::Socket_Transport();
+
+                fplog::Transport_Interface::Params params;
+                params["uid"] = uid;
+
+                transport_->connect(params);
+                inited_ = true;
             }
         }
 
@@ -335,6 +357,8 @@ class FPLOG_API Fplog_Impl
         void write(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
+            if (stopping_)
+                return;
 
             msg.set(Message::Mandatory_Fields::appname, appname_);
             if (passed_filters(msg))
@@ -342,7 +366,7 @@ class FPLOG_API Fplog_Impl
                 if (test_mode_)
                     g_test_results_vector.push_back(msg.as_string());
                 else
-                    printf("%s\n", msg.as_string().c_str());
+                    mq_.push(new std::string(msg.as_string()));
             }
         }
 
@@ -411,9 +435,13 @@ class FPLOG_API Fplog_Impl
         bool inited_;
         bool own_transport_;
         bool test_mode_;
-        
+        volatile bool stopping_;
+
         std::string appname_;
         std::string facility_;
+
+        std::queue<std::string*> mq_;
+        std::thread mq_reader_;
 
         struct Filter_Mapping_Entry
         {
@@ -425,6 +453,50 @@ class FPLOG_API Fplog_Impl
 
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
+        
+        void mq_reader()
+        {
+            while(true)
+            {
+                
+                std::string* str = 0;
+
+                {
+                    std::lock_guard<std::recursive_mutex> lock(mutex_);
+                
+                    if (!mq_.empty() && transport_)
+                    {
+                        str = mq_.front();
+                        mq_.pop();
+                    }
+                }
+
+                int retries = 5;
+                std::auto_ptr<std::string> str_ptr(str);
+
+            retry:
+
+                try
+                {
+                    if (str)
+                        transport_->write(str->c_str(), str->size(), 200);
+                    else
+                    {
+                        if (stopping_)
+                            return;
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    }
+                }
+                catch(fplog::exceptions::Generic_Exception)
+                {
+                    retries--;
+                    if (retries >= 0)
+                        goto retry;
+                    else
+                        THROW(fplog::exceptions::Write_Failed);
+                }
+            }
+        }
 
         bool passed_filters(Message& msg)
         {
@@ -455,9 +527,9 @@ void write(Message& msg)
     g_fplog_impl.write(msg);
 }
 
-void initlog(const char* appname, fplog::Transport_Interface* transport)
+void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
 {
-    return g_fplog_impl.initlog(appname, transport);
+    return g_fplog_impl.initlog(appname, uid, transport);
 }
 
 void openlog(const char* facility, Filter_Base* filter)

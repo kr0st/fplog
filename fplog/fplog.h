@@ -279,7 +279,7 @@ class FPLOG_API Priority_Filter: public Filter_Base
 };
 
 //One time per application call.
-FPLOG_API void initlog(const char* appname, fplog::Transport_Interface* transport = 0);
+FPLOG_API void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport = 0);
 
 //Mandatory call from every thread that wants to log some data. Done to increase flexibility:
 //each thread will have its own filters configuration and can decide independently which stuff to log.

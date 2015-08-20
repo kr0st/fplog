@@ -4,9 +4,20 @@
 #include <functional> 
 #include <cctype>
 #include <locale>
+#include <algorithm>
 
 namespace generic_util
 {
+
+static inline bool find_str_no_case(const std::string& search_where, const std::string& search_what)
+{
+  auto it = std::search(
+    search_where.begin(), search_where.end(),
+    search_what.begin(), search_what.end(),
+    [](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+  );
+  return (it != search_where.end() );
+}
 
 //Returns difference in minutes from UTC
 //Example: for UTC+3 function returns 180

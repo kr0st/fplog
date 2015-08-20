@@ -8,10 +8,8 @@ namespace fplogd {
     
 typedef void (*Start_Stop_Notification) (void);
 
-//Could be hanging for 12 seconds in case service is already running,
 //better to subscribe for notification.
 bool is_started();
-std::string get_lock_file_name();
 
 void notify_when_started(Start_Stop_Notification callback);
 void notify_when_stopped(Start_Stop_Notification callback);

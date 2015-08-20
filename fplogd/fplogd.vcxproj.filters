@@ -21,9 +21,15 @@
     <ClInclude Include="fplogd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Transport_Factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fplogd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transport_Factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #include "targetver.h"
 #include "fplogd.h"
+#include "Transport_Factory.h"
 
 #include <stdio.h>
 #include <conio.h>
@@ -12,13 +13,48 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+
 #ifdef WIN32
+#include <windows.h>
+#include <tlhelp32.h>
 #include <Shlobj.h>
 #endif
 
-static char* g_lock_file_name = ".fplogd_lock";
+#ifdef WIN32
+static char* g_process_name = "fplogd.exe";
+#else
+static char* g_process_name = "fplogd";
+#endif
+
 static char* g_config_file_name = "fplogd.ini";
-static char* g_config_file_section_name = "channels";
+static char* g_config_file_channels_section_name = "channels";
+static char* g_config_file_transport_section_name = "transport";
+
+/*!
+\brief Check if a process is running
+\param [in] processName Name of process to check if is running
+\returns \c True if the process is running, or \c False if the process is not running
+*/
+bool IsProcessRunning(const char *processName)
+{
+#ifdef WIN32
+    bool exists = false;
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry))
+        while (Process32Next(snapshot, &entry))
+            if (!_stricmp(entry.szExeFile, processName))
+                exists = true;
+
+    CloseHandle(snapshot);
+    return exists;
+#else
+    return false;
+#endif
+}
 
 static std::string get_home_dir()
 {
@@ -44,19 +80,7 @@ namespace fplogd {
 
 bool is_started()
 {
-    file_lock flock(get_lock_file_name().c_str());
-    if (flock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(12)))
-    {
-        flock.unlock();
-        return false;
-    }
-
-    return true;
-}
-
-std::string get_lock_file_name()
-{
-    return (get_home_dir() + std::string(g_lock_file_name));
+    return IsProcessRunning(g_process_name);
 }
 
 class Notification_Helper
@@ -85,19 +109,44 @@ void notify_when_stopped(Start_Stop_Notification callback)
     notify_when_stopped<Notification_Helper>(&Notification_Helper::start_stop_notification, helper);
 }
 
+fplog::Transport_Interface::Params get_log_transort_config()
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+    fplog::Transport_Interface::Params res;
+
+    std::string home(get_home_dir());
+    read_ini(home + g_config_file_name, pt);
+
+    for (auto& section: pt)
+    {
+        if (section.first.find(g_config_file_transport_section_name) == std::string::npos)
+            continue;
+
+        for (auto& key: section.second)
+        {
+            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+            res.insert(param);
+        }
+    }
+
+    return res;
+}
+
 std::vector<Channel_Data> get_registered_channels()
 {
     using boost::property_tree::ptree;
     ptree pt;
     std::vector<Channel_Data> res;
 
-    read_ini(get_home_dir() + g_config_file_name, pt);
+    std::string home(get_home_dir());
+    read_ini(home + g_config_file_name, pt);
 
     for (auto& section: pt)
     {
         Channel_Data data;
 
-        if (section.first.find(g_config_file_section_name) == std::string::npos)
+        if (section.first.find(g_config_file_channels_section_name) == std::string::npos)
             continue;
 
         for (auto& key: section.second)
@@ -323,8 +372,15 @@ static Impl g_impl;
 
 void start()
 {
-    g_impl.set_log_transport(new Console_Output());
-    g_impl.start();
+    Transport_Factory factory;
+    fplog::Transport_Interface::Params params(get_log_transort_config());
+    fplog::Transport_Interface* trans = factory.create(params);
+    if (trans)
+    {
+        trans->connect(params);
+        g_impl.set_log_transport(trans);
+        g_impl.start();
+    }
 }
 
 void stop()

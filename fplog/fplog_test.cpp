@@ -154,7 +154,7 @@ void print_test_vector()
 
 void run_all_tests()
 {
-    initlog("fplog_test");
+    initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     fplog::g_fplog_impl.set_test_mode(true);
 
