@@ -168,7 +168,8 @@ class Impl
         should_stop_(false),
         log_transport_(0),
         overload_checker_(&Impl::overload_prevention, this),
-        mq_reader_(&Impl::mq_reader, this)
+        mq_reader_(&Impl::mq_reader, this),
+        protocol_(0)
         {
         };
 
@@ -176,6 +177,9 @@ class Impl
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             log_transport_ = transport;
+            if (protocol_)
+                delete protocol_;
+            protocol_ = new sprot::Protocol(log_transport_);
         }
 
         void start()
@@ -218,6 +222,7 @@ class Impl
                 }
             } while (str);
 
+            delete protocol_;
             delete log_transport_;
         }
 
@@ -336,8 +341,8 @@ class Impl
                     mq_.pop();
 
                     //TODO: exception handling!
-                    if (log_transport_)
-                        log_transport_->write(str->c_str(), str->size() + 1, 200);
+                    if (log_transport_ && protocol_)
+                        protocol_->write(str->c_str(), str->size() + 1, 200);
                 }
                 else
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -353,19 +358,7 @@ class Impl
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
         fplog::Transport_Interface* log_transport_;
-};
-
-class Console_Output: public fplog::Transport_Interface
-{
-    public:
-
-        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) { return 0; }
-        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
-        {
-            if (buf && (buf_size > 0))
-                printf("%s\n", buf);
-            return buf_size;
-        }
+        sprot::Protocol* protocol_;
 };
 
 static Impl g_impl;
