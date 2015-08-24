@@ -152,6 +152,59 @@ void print_test_vector()
     }
 }
 
+void manual_test()
+{
+    initlog("fplog_test", "18749_18750");
+    openlog(Facility::security, new Priority_Filter("prio_filter"));
+    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+    if (filter)
+        filter->add(fplog::Prio::debug);
+
+    std::string str;
+    printf("Type log message to send. Input quit to exit.\n");
+    while (str != "quit")
+    {
+        try
+        {
+            std::cin >> str;
+            fplog::write(FPL_TRACE("%s", str.c_str()));
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION: %s\n", e.what().c_str());
+        }
+    }
+    closelog();
+}
+
+void spam_test()
+{
+    initlog("fplog_test", "18749_18750");
+    openlog(Facility::security, new Priority_Filter("prio_filter"));
+    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+    if (filter)
+        filter->add(fplog::Prio::debug);
+
+    std::string str;
+    printf("Flooding fplogd with messages - each with incremental number.\n");
+    unsigned long num = 0;
+
+    while (true)
+    {
+        try
+        {
+            num++;
+            str = std::to_string(num);
+            fplog::write(FPL_TRACE("Next number is %s", str.c_str()));
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION: %s\n", e.what().c_str());
+        }
+    }
+    closelog();
+}
+
 void run_all_tests()
 {
     initlog("fplog_test", "18749_18750");
@@ -181,6 +234,8 @@ void run_all_tests()
 
 int main()
 {
-    fplog::testing::run_all_tests();
+    //fplog::testing::run_all_tests();
+    //fplog::testing::manual_test();
+    fplog::testing::spam_test();
     return 0;
 }

@@ -59,8 +59,8 @@ namespace sprot
             Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024);
             ~Protocol();
 
-            size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
-            size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
+            virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
+            virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
 
         private:

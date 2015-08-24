@@ -6,6 +6,7 @@
 #include <queue>
 #include <lua.hpp>
 #include <spipc/socket_transport.h>
+#include <sprot/sprot.h>
 
 
 namespace fplog
@@ -284,7 +285,7 @@ class FPLOG_API Fplog_Impl
         test_mode_(false),
         stopping_(false),
         transport_(0),
-        mq_reader_(&Fplog_Impl::mq_reader, this)
+        mq_reader_(0)
         {
             Message::one_time_init();
         }
@@ -295,6 +296,8 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
+            delete mq_reader_;
+            delete protocol_;
             if (inited_ && own_transport_)
                 delete transport_;
         }
@@ -320,6 +323,9 @@ class FPLOG_API Fplog_Impl
         void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            if (!mq_reader_)
+                mq_reader_ = new std::thread(&Fplog_Impl::mq_reader, this);
             
             if (inited_)
                 return;
@@ -343,6 +349,8 @@ class FPLOG_API Fplog_Impl
                 params["uid"] = uid;
 
                 transport_->connect(params);
+                protocol_ = new sprot::Protocol(transport_);
+
                 inited_ = true;
             }
         }
@@ -441,7 +449,7 @@ class FPLOG_API Fplog_Impl
         std::string facility_;
 
         std::queue<std::string*> mq_;
-        std::thread mq_reader_;
+        std::thread* mq_reader_;
 
         struct Filter_Mapping_Entry
         {
@@ -453,6 +461,7 @@ class FPLOG_API Fplog_Impl
 
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
+        sprot::Protocol* protocol_;
         
         void mq_reader()
         {
@@ -479,7 +488,7 @@ class FPLOG_API Fplog_Impl
                 try
                 {
                     if (str)
-                        transport_->write(str->c_str(), str->size(), 200);
+                        protocol_->write(str->c_str(), str->size(), 200);
                     else
                     {
                         if (stopping_)

@@ -275,7 +275,7 @@ class Impl
                 catch(fplog::exceptions::Generic_Exception&)
                 {
                     //TODO: handle exceptions (send special log message to queue originating from fplog)
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
 
                 {
@@ -328,21 +328,44 @@ class Impl
         {
             while(true)
             {
+                std::string* str = 0;
+
                 {
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     if (should_stop_)
                         return;
+
+                    if (!mq_.empty())
+                    {
+                        str = mq_.front();
+                        mq_.pop();
+                    }
                 }
 
-                if (!mq_.empty())
+                if (str)
                 {
-                    std::string* str = mq_.front();
                     std::auto_ptr<std::string> str_ptr(str);
-                    mq_.pop();
-
                     //TODO: exception handling!
-                    if (log_transport_ && protocol_)
-                        protocol_->write(str->c_str(), str->size() + 1, 200);
+                    int retries = 5;
+
+                retry:
+
+                    try
+                    {
+                        if (log_transport_ && protocol_)
+                            protocol_->write(str->c_str(), str->size() + 1, 200);
+                    }
+                    catch(fplog::exceptions::Generic_Exception& e)
+                    {
+                        printf("%s\n", e.what().c_str());
+                        if (retries <= 0)
+                            exit(1);
+                        else
+                        {
+                            retries--;
+                            goto retry;
+                        }
+                    }
                 }
                 else
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));

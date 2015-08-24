@@ -204,10 +204,24 @@ class Impl
 
                 try
                 {
+                    static std::string old_str;
+
                     protocol.read(buf, buf_sz - 1, 1000);
 
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    
+                    std::string new_str(buf);
+                    
+                    //TODO: this is for duplicates testing only, to rework
+                    if (old_str.find(new_str) != std::string::npos)
+                    {
+                        printf("!!! DUPLICATE !!!\n");
+                        continue;
+                    }
+
                     mq_.push(new std::string(buf));
+
+                    old_str = new_str;
 
                     if (buf_sz > 2048)
                     {
@@ -225,7 +239,7 @@ class Impl
                 catch(fplog::exceptions::Generic_Exception&)
                 {
                     //TODO: handle exceptions (send special log message to queue originating from fplog)
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
 
                 {
@@ -343,11 +357,11 @@ class Console_Output: public fplog::Transport_Interface
 };
 
 static Impl g_impl;
+static Console_Output g_storage;
 
 void start()
 {
-    Console_Output storage;
-    g_impl.set_log_storage(&storage);
+    g_impl.set_log_storage(&g_storage);
     g_impl.start();
 }
 

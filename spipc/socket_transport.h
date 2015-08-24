@@ -18,11 +18,11 @@ class SPIPC_API Socket_Transport: public fplog::Transport_Interface
 {
     public:
 
-        void connect(const Params& params);
-        void disconnect();
+        virtual void connect(const Params& params);
+        virtual void disconnect();
 
-        size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
-        size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
         Socket_Transport();
         ~Socket_Transport();
