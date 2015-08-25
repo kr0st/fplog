@@ -235,7 +235,7 @@ void run_all_tests()
 int main()
 {
     //fplog::testing::run_all_tests();
-    //fplog::testing::manual_test();
-    fplog::testing::spam_test();
+    fplog::testing::manual_test();
+    //fplog::testing::spam_test();
     return 0;
 }

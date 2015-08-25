@@ -96,6 +96,8 @@ class FPLOG_API Message
                                             //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
                                             //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
             static const char* warning; //contains warning for the user in case there was an issue with this specific log message
+            static const char* sequence; //sequence number that allows to prevent duplicate messages and also to tell
+                                         //which message was first even if timestamps are the same
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);

@@ -1,6 +1,6 @@
 #include "fplog.h"
 #include "utils.h"
-
+#include "shared_sequence_number.h"
 #include <map>
 #include <thread>
 #include <queue>
@@ -46,6 +46,8 @@ const char* Message::Optional_Fields::/*the*/blob = "blob"; //used when attachin
                                                             //like this: "blob_name":{ "blob":"xckjhKJSHDKDSdJKShdsdsgr=" }
                                                             //where "xckjhKJSHDKDSdJKShdsdsgr=" is base64 encoded binary object
 const char* Message::Optional_Fields::warning = "warning"; //contains warning for the user in case there was an issue with this specific log message
+const char* Message::Optional_Fields::sequence = "sequence"; //sequence number that allows to prevent duplicate messages and also to tell
+                                                             //which message was first even if timestamps are the same
 
 Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
@@ -371,6 +373,8 @@ class FPLOG_API Fplog_Impl
             msg.set(Message::Mandatory_Fields::appname, appname_);
             if (passed_filters(msg))
             {
+                msg.add(Message::Optional_Fields::sequence, (long long)sequence_.read());
+
                 if (test_mode_)
                     g_test_results_vector.push_back(msg.as_string());
                 else
@@ -440,6 +444,7 @@ class FPLOG_API Fplog_Impl
 
     private:
 
+        Shared_Sequence_Number sequence_;
         bool inited_;
         bool own_transport_;
         bool test_mode_;
@@ -480,7 +485,6 @@ class FPLOG_API Fplog_Impl
                     }
                 }
 
-                int retries = 5;
                 std::auto_ptr<std::string> str_ptr(str);
 
             retry:
@@ -498,11 +502,8 @@ class FPLOG_API Fplog_Impl
                 }
                 catch(fplog::exceptions::Generic_Exception)
                 {
-                    retries--;
-                    if (retries >= 0)
-                        goto retry;
-                    else
-                        THROW(fplog::exceptions::Write_Failed);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    goto retry;
                 }
             }
         }

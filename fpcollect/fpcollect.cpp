@@ -305,7 +305,6 @@ class Impl
                     }
                 }
 
-                int retries = 5;
                 std::auto_ptr<std::string> str_ptr(str);
 
             retry:
@@ -323,11 +322,8 @@ class Impl
                 }
                 catch(fplog::exceptions::Generic_Exception)
                 {
-                    retries--;
-                    if (retries >= 0)
-                        goto retry;
-                    else
-                        THROW(fplog::exceptions::Write_Failed);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    goto retry;
                 }
             }
         }
@@ -356,8 +352,58 @@ class Console_Output: public fplog::Transport_Interface
         }
 };
 
+class Measure_Performance: public fplog::Transport_Interface
+{
+    public:
+
+        Measure_Performance():
+        first_write_(true),
+        counter_(0)
+        {
+        }
+
+        virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) { return 0; }
+        virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
+        {
+            if (!buf || (buf_size <= 0))
+                return 0;
+            
+            if (first_write_)
+            {
+                std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+                sys_time_absolute_ = (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
+                first_write_ = false;
+            }
+
+            counter_++;
+
+            if (counter_ % 2500 == 0)
+            {
+                //Perf monitoring point
+                std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
+
+                unsigned long long elapsed = (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count() - sys_time_absolute_;
+                if (elapsed == 0)
+                    return buf_size;
+                unsigned long long mps = counter_ / elapsed;
+                
+                printf("Speed = %llu messages per second.\n", mps);
+            }
+            
+            return buf_size;
+        }
+
+
+    private:
+
+        unsigned long long counter_;
+        bool first_write_;
+        unsigned long long sys_time_absolute_;
+};
+
 static Impl g_impl;
 static Console_Output g_storage;
+//static Measure_Performance g_storage;
 
 void start()
 {
