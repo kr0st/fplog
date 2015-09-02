@@ -21,12 +21,21 @@
     <ClInclude Include="fpcollect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mongo_Storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport_Factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fpcollect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fplogd\Transport_Factory.cpp">
+    <ClCompile Include="Mongo_Storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transport_Factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

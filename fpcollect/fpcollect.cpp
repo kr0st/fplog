@@ -1,6 +1,14 @@
 #include "targetver.h"
+
+#ifdef WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <tlhelp32.h>
+#include <Shlobj.h>
+#endif
+
 #include "fpcollect.h"
-#include <fplogd/Transport_Factory.h>
+#include "Transport_Factory.h"
 #include <stdio.h>
 #include <conio.h>
 #include <queue>
@@ -12,12 +20,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
-
-#ifdef WIN32
-#include <windows.h>
-#include <tlhelp32.h>
-#include <Shlobj.h>
-#endif
+#include <mongo/client/dbclient.h>
 
 #ifdef WIN32
 static char* g_process_name = "fpcollect.exe";
@@ -174,7 +177,7 @@ class Impl
 
         void fplogd_listener(Thread_Data* data)
         {
-            fplogd::Transport_Factory factory;
+            fpcollect::Transport_Factory factory;
             fplog::Transport_Interface* transport = factory.create(data->params);
 
             //TODO: notify somehow that one of the connections is not working
@@ -312,7 +315,7 @@ class Impl
                 try
                 {
                     if (str)
-                        storage_->write(str->c_str(), str->size(), 200);
+                        storage_->write(str->c_str(), str->size()+1, 200);
                     else
                     {
                         if (should_stop_)
@@ -402,18 +405,30 @@ class Measure_Performance: public fplog::Transport_Interface
 };
 
 static Impl g_impl;
-static Console_Output g_storage;
 //static Measure_Performance g_storage;
+static fplog::Transport_Interface* g_storage = 0;
 
 void start()
 {
-    g_impl.set_log_storage(&g_storage);
+    //g_impl.set_log_storage(&g_storage);
+    fplog::Transport_Interface::Params params(fpcollect::get_log_storage_config());
+    
+    fpcollect::Transport_Factory factory;
+    g_storage = factory.create(params);
+    g_storage->connect(params);
+
+    if (!g_storage)
+        THROWM(fplog::exceptions::Incorrect_Parameter, "Failed to load storage config from ini file.");
+
+    g_impl.set_log_storage(g_storage);
+
     g_impl.start();
 }
 
 void stop()
 {
     g_impl.stop();
+    delete g_storage;
 }
 
 };
