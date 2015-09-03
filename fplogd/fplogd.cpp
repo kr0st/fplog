@@ -7,6 +7,7 @@
 #include <queue>
 #include <mutex>
 #include <fplog_exceptions.h>
+#include <utils.h>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/thread/thread_time.hpp>
@@ -15,6 +16,8 @@
 
 
 #ifdef WIN32
+#include <WinSock2.h>
+#include <Ws2tcpip.h>
 #include <windows.h>
 #include <tlhelp32.h>
 #include <Shlobj.h>
@@ -29,6 +32,7 @@ static char* g_process_name = "fplogd";
 static char* g_config_file_name = "fplogd.ini";
 static char* g_config_file_channels_section_name = "channels";
 static char* g_config_file_transport_section_name = "transport";
+static char* g_config_file_misc_section_name = "misc";
 
 /*!
 \brief Check if a process is running
@@ -72,6 +76,35 @@ static std::string get_home_dir()
 #else
     return "~/";
 #endif
+}
+
+void GetPrimaryIp(char* buffer, size_t buflen) 
+{
+    assert(buflen >= 16);
+
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    assert(sock != -1);
+
+    const char* kGoogleDnsIp = "8.8.8.8";
+    uint16_t kDnsPort = 53;
+    struct sockaddr_in serv;
+    memset(&serv, 0, sizeof(serv));
+    serv.sin_family = AF_INET;
+    serv.sin_addr.s_addr = inet_addr(kGoogleDnsIp);
+    serv.sin_port = htons(kDnsPort);
+
+    int err = connect(sock, (const sockaddr*) &serv, sizeof(serv));
+    assert(err != -1);
+
+    sockaddr_in name;
+    int namelen = sizeof(name);
+    err = getsockname(sock, (sockaddr*) &name, &namelen);
+    assert(err != -1);
+
+    const char* p = InetNtopA(AF_INET, &name.sin_addr, buffer, buflen);
+    assert(p);
+
+    closesocket(sock);
 }
 
 using namespace boost::interprocess;
@@ -121,6 +154,30 @@ fplog::Transport_Interface::Params get_log_transort_config()
     for (auto& section: pt)
     {
         if (section.first.find(g_config_file_transport_section_name) == std::string::npos)
+            continue;
+
+        for (auto& key: section.second)
+        {
+            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+            res.insert(param);
+        }
+    }
+
+    return res;
+}
+
+fplog::Transport_Interface::Params get_misc_config()
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+    fplog::Transport_Interface::Params res;
+
+    std::string home(get_home_dir());
+    read_ini(home + g_config_file_name, pt);
+
+    for (auto& section: pt)
+    {
+        if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
             continue;
 
         for (auto& key: section.second)
@@ -187,6 +244,40 @@ class Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             should_stop_ = false;
 
+            fplog::Transport_Interface::Params misc(get_misc_config());
+            for (auto& param : misc)
+            {
+                if (generic_util::find_str_no_case(param.first, "hostname"))
+                {
+                    hostname_ = "auto";
+
+                    if (generic_util::find_str_no_case(param.second, "auto"))
+                    {
+                        char ip_str[255], comp_name[255];
+                        memset(ip_str, 0, sizeof(ip_str));
+                        memset(comp_name, 0, sizeof(comp_name));
+
+                        GetPrimaryIp(ip_str, sizeof(ip_str));
+                        unsigned long name_len = sizeof(comp_name);
+                        GetComputerNameA(comp_name, &name_len);
+
+                        if (std::string(ip_str).empty() && std::string(comp_name).empty())
+                        {
+                            THROWM(fplog::exceptions::Incorrect_Parameter, "Cannot resolve hostname, please set it manually in ini file.");
+                        }
+                        else
+                            hostname_ = std::string(comp_name) + "/" + std::string(ip_str);
+                    }
+                    else
+                        hostname_ = param.second;
+
+                    if (hostname_.compare("auto") == 0)
+                    {
+                        THROWM(fplog::exceptions::Incorrect_Parameter, "Cannot resolve hostname, please set it manually in ini file.");
+                    }
+                }
+            }
+
             std::vector<Channel_Data> channels(get_registered_channels());
             for each (auto channel in channels)
             {
@@ -228,6 +319,8 @@ class Impl
 
 
     private:
+
+        std::string hostname_;
 
         struct Thread_Data
         {
@@ -324,6 +417,22 @@ class Impl
             }
         }
 
+        void append_hostname(std::string* str)
+        {
+            if (!str)
+                return;
+
+            //Hackish way of adding json representation of hostname to the log message.
+            int pos = str->rfind('}');
+            if ((pos > 0) && (pos != std::string::npos))
+            {
+                (*str)[pos] = ',';
+                (*str) += "\"hostname\":\"";
+                (*str) += hostname_;
+                (*str) += "\"}";
+            }
+        }
+
         void mq_reader()
         {
             while(true)
@@ -347,6 +456,8 @@ class Impl
                     std::auto_ptr<std::string> str_ptr(str);
                     //TODO: exception handling!
                     int retries = 5;
+                    
+                    append_hostname(str);
 
                 retry:
 
