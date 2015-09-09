@@ -359,7 +359,7 @@ class Impl
                         buf = new char [buf_sz];
                     }
                 }
-                catch(fplog::exceptions::Buffer_Overflow& e)
+                catch(fplog::exceptions::Buffer_Overflow&)
                 {
                     buf_sz *= 2;
                     delete [] buf;

@@ -21,6 +21,12 @@ class Mongo_Init
         }
 };
 
+Mongo_Storage::~Mongo_Storage()
+{
+    disconnect();
+    delete connection_;
+}
+
 void Mongo_Storage::connect(const Params& params)
 {
     try
@@ -41,7 +47,7 @@ void Mongo_Storage::connect(const Params& params)
         }
 
         if (ip.empty())
-            THROW(fplog::exceptions::Connect_Failed, "IP not provided.");
+            THROWM(fplog::exceptions::Connect_Failed, "IP not provided.");
 
         if (port.empty())
             port = "27017"; //default
@@ -58,7 +64,7 @@ void Mongo_Storage::connect(const Params& params)
     }
     catch (mongo::DBException& e)
     {
-        THROW(fplog::exceptions::Connect_Failed, e.what());
+        THROWM(fplog::exceptions::Connect_Failed, e.what());
     }
 }
 
@@ -72,7 +78,7 @@ size_t Mongo_Storage::write(const void* buf, size_t buf_size, size_t timeout)
         return 0;
 
     if (((const char*)buf)[buf_size - 1] != 0)
-        THROW(fplog::exceptions::Write_Failed, "Only null-terminated strings are supported by the storage.");
+        THROWM(fplog::exceptions::Write_Failed, "Only null-terminated strings are supported by the storage.");
 
     try
     {
@@ -81,8 +87,10 @@ size_t Mongo_Storage::write(const void* buf, size_t buf_size, size_t timeout)
     }
     catch (mongo::DBException& e)
     {
-        THROW(fplog::exceptions::Write_Failed, e.what());
+        THROWM(fplog::exceptions::Write_Failed, e.what());
     }
+
+    return buf_size;
 }
 
 };

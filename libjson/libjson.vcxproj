@@ -70,12 +70,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>JSON_DEBUG;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;JSON_DEBUG;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <PreBuildEvent>
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
@@ -88,11 +89,12 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <PreBuildEvent>
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
@@ -106,11 +108,12 @@
       <AdditionalOptions>-ffast-math %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MinSpace</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;DJSON_LESS_MEMORY;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;DJSON_LESS_MEMORY;%(PreprocessorDefinitions);JSON_EXPORT</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>

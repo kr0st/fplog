@@ -82,7 +82,7 @@ namespace sprot
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
         int full_retries = 5;
-        int bytes_read = 0;
+        size_t bytes_read = 0;
         unsigned char* ptr = (unsigned char*)buf;
     
     full_read_retry:
@@ -114,7 +114,7 @@ namespace sprot
                     recv_frame = read_frame();
                     break;
                 }
-                catch (sprot::exceptions::Wrong_Sequence& e)
+                catch (sprot::exceptions::Wrong_Sequence&)
                 {
                     if (full_retries == 0)
                         THROW(fplog::exceptions::Read_Failed);
@@ -122,7 +122,7 @@ namespace sprot
                     full_retries--;
                     return false;
                 }
-                catch (fplog::exceptions::Generic_Exception& e)
+                catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (full_retries == 0)
                         THROW(fplog::exceptions::Read_Failed);
@@ -184,7 +184,7 @@ namespace sprot
                     write_frame(send_frame);
                     break;
                 }
-                catch (fplog::exceptions::Generic_Exception& e)
+                catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (retry_count == 0)
                         THROW(fplog::exceptions::Read_Failed);
@@ -303,9 +303,9 @@ namespace sprot
             {
                 check_time_out();
 
-                int to_copy = (bytes_left < MTU_) ? bytes_left : MTU_;
+                int to_copy = (bytes_left < (int)MTU_) ? bytes_left : (int)MTU_;
 
-                if (bytes_left <= MTU_)
+                if (bytes_left <= (int)MTU_)
                     write_data(ptr, to_copy, Frame::DATA_LAST);
                 else
                     if (bytes_left == buf_size)
@@ -318,7 +318,7 @@ namespace sprot
                 bytes_left = buf_size - copied;
             }
         }
-        catch(fplog::exceptions::Generic_Exception& e)
+        catch(fplog::exceptions::Generic_Exception&)
         {
             if (full_retries == 0)
                 THROW(fplog::exceptions::Write_Failed);
@@ -401,7 +401,7 @@ namespace sprot
                 write_frame(send_frame);
                 break;
             }
-            catch (fplog::exceptions::Generic_Exception& e)
+            catch (fplog::exceptions::Generic_Exception&)
             {
                 if (retry_count == 0)
                     THROW(fplog::exceptions::Write_Failed);
@@ -425,11 +425,11 @@ namespace sprot
                     recv_frame = read_frame();
                     break;
                 }
-                catch (sprot::exceptions::Wrong_Sequence& e)
+                catch (sprot::exceptions::Wrong_Sequence&)
                 {
                     return false;
                 }
-                catch (fplog::exceptions::Generic_Exception& e)
+                catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (retry_count == 0)
                         THROW(fplog::exceptions::Read_Failed);
@@ -462,7 +462,7 @@ namespace sprot
                 sequence_num_++;
                 break;
             }
-            catch (fplog::exceptions::Generic_Exception& e)
+            catch (fplog::exceptions::Generic_Exception&)
             {
                 if (retry_count == 0)
                     THROW(fplog::exceptions::Write_Failed);
@@ -481,7 +481,7 @@ namespace sprot
             THROW(fplog::exceptions::Buffer_Overflow);
 
         frame.data.reserve(data_length);
-        for (auto i = 0; i < data_length; ++i)
+        for (size_t i = 0; i < data_length; ++i)
             frame.data.push_back(data[i]);
         frame.sequence = sequence_num_;
 

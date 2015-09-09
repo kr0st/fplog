@@ -49,7 +49,7 @@ void Socket_Transport::connect(const Params& params)
                 count++;
             }
         }
-        catch(boost::exception& e)
+        catch(boost::exception&)
         {
             THROW(fplog::exceptions::Incorrect_Parameter);
         }
@@ -99,7 +99,7 @@ void Socket_Transport::connect(const Params& params)
 
     sockaddr_in listen_addr;
     listen_addr.sin_family=AF_INET;
-    listen_addr.sin_port=htons(uid.high);
+    listen_addr.sin_port=htons((u_short)uid.high);
     
     if (localhost_)
     {
@@ -126,7 +126,7 @@ void Socket_Transport::connect(const Params& params)
             THROW(fplog::exceptions::Connect_Failed);
         }
 
-        listen_addr.sin_port=htons(uid.low);
+        listen_addr.sin_port=htons((u_short)uid.low);
         if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
         {
             shutdown(socket_, SD_BOTH);
@@ -251,10 +251,10 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     }
     
     remote_addr.sin_family = AF_INET;
-    remote_addr.sin_port = high_uid_ ? uid_.low : uid_.high;
+    remote_addr.sin_port = (u_short)(high_uid_ ? uid_.low : uid_.high);
     
     if (!localhost_)
-        remote_addr.sin_port = uid_.high;
+        remote_addr.sin_port = (u_short)uid_.high;
 
     remote_addr.sin_port = htons(remote_addr.sin_port);
 

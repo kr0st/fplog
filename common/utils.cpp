@@ -284,7 +284,7 @@ size_t base64_decode(const char* source, void* dest, size_t targetlen)
         tmplen = _base64_decode_triple(quadruple, (unsigned char*)tmpresult);
 
         /* check if the fit in the result buffer */
-        if (targetlen < tmplen)
+        if ((int)targetlen < tmplen)
         {
             free(src);
             return -1;
