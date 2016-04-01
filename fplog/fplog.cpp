@@ -362,7 +362,7 @@ class FPLOG_API Fplog_Impl
         void closelog()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-			std::map<unsigned long long, Filter_Map> empty_map;
+            std::map<unsigned long long, Filter_Map> empty_map;
             thread_filters_table_.swap(empty_map);
         }
 
@@ -395,10 +395,10 @@ class FPLOG_API Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-			Filter_Map filters = thread_filters_table_[std::this_thread::get_id().hash()];
-			filters[filter_id] = filter;
+            Filter_Map filters = thread_filters_table_[std::this_thread::get_id().hash()];
+            filters[filter_id] = filter;
 
-			thread_filters_table_[std::this_thread::get_id().hash()] = filters;
+            thread_filters_table_[std::this_thread::get_id().hash()] = filters;
         }
 
         void remove_filter(Filter_Base* filter)
@@ -408,9 +408,9 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
-			
-			std::string filter_id(filter->get_id());
+            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+
+            std::string filter_id(filter->get_id());
             if (!filter_id.empty())
             {
                 filters.erase(filters.find(filter_id));
@@ -430,7 +430,7 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
             std::map<std::string, Filter_Base*>::iterator found(filters.find(filter_id_trimmed));
             if (found != filters.end())
                 return found->second;
@@ -457,7 +457,7 @@ class FPLOG_API Fplog_Impl
 
 		Filter_Map filter_id_ptr_map;
 
-		std::map<unsigned long long, Filter_Map> thread_filters_table_;
+        std::map<unsigned long long, Filter_Map> thread_filters_table_;
 
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
@@ -506,14 +506,14 @@ class FPLOG_API Fplog_Impl
         bool passed_filters(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
             
             if (filters.size() == 0)
                 return false;
 
             bool should_pass = true;
 
-			for (std::map<std::string, Filter_Base*>::iterator it = filters.begin(); it != filters.end(); ++it)
+            for (std::map<std::string, Filter_Base*>::iterator it = filters.begin(); it != filters.end(); ++it)
             {
                 should_pass = (should_pass && it->second->should_pass(msg));
                 if (!should_pass)
