@@ -393,9 +393,8 @@ class FPLOG_API Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+			Filter_Mapping_Entry mapping = thread_filters_table_[std::this_thread::get_id().hash()];
             mapping.filter_id_ptr_map[filter_id] = filter;
-            mapping.filter_ptr_id_map[filter] = filter_id;
 
             thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
         }
@@ -408,11 +407,10 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
-            std::string filter_id(mapping.filter_ptr_id_map[filter]);
-
+			
+			std::string filter_id(filter->get_id());
             if (!filter_id.empty())
             {
-                mapping.filter_ptr_id_map.erase(mapping.filter_ptr_id_map.find(filter));
                 mapping.filter_id_ptr_map.erase(mapping.filter_id_ptr_map.find(filter_id));
 
                 thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
@@ -458,7 +456,6 @@ class FPLOG_API Fplog_Impl
 
         struct Filter_Mapping_Entry
         {
-            std::map<Filter_Base*, std::string> filter_ptr_id_map;
             std::map<std::string, Filter_Base*> filter_id_ptr_map;
         };
 
@@ -513,14 +510,14 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
             
-            if (mapping.filter_ptr_id_map.size() == 0)
+            if (mapping.filter_id_ptr_map.size() == 0)
                 return false;
 
             bool should_pass = true;
 
-            for (std::map<Filter_Base*, std::string>::iterator it = mapping.filter_ptr_id_map.begin(); it != mapping.filter_ptr_id_map.end(); ++it)
+			for (std::map<std::string, Filter_Base*>::iterator it = mapping.filter_id_ptr_map.begin(); it != mapping.filter_id_ptr_map.end(); ++it)
             {
-                should_pass = (should_pass && it->first->should_pass(msg));
+                should_pass = (should_pass && it->second->should_pass(msg));
                 if (!should_pass)
                     break;
             }
