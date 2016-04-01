@@ -12,6 +12,8 @@
 namespace fplog
 {
 
+typedef std::map<std::string, Filter_Base*> Filter_Map;
+
 const char* Prio::emergency = "emergency"; //system is unusable
 const char* Prio::alert = "alert"; //action must be taken immediately
 const char* Prio::critical = "critical"; //critical conditions
@@ -360,8 +362,8 @@ class FPLOG_API Fplog_Impl
         void closelog()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            std::map<unsigned long long, Filter_Mapping_Entry> empty_table;
-            thread_filters_table_.swap(empty_table);
+			std::map<unsigned long long, Filter_Map> empty_map;
+            thread_filters_table_.swap(empty_map);
         }
 
         void write(Message& msg)
@@ -393,10 +395,10 @@ class FPLOG_API Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-			Filter_Mapping_Entry mapping = thread_filters_table_[std::this_thread::get_id().hash()];
-            mapping.filter_id_ptr_map[filter_id] = filter;
+			Filter_Map filters = thread_filters_table_[std::this_thread::get_id().hash()];
+			filters[filter_id] = filter;
 
-            thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
+			thread_filters_table_[std::this_thread::get_id().hash()] = filters;
         }
 
         void remove_filter(Filter_Base* filter)
@@ -406,14 +408,13 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
 			
 			std::string filter_id(filter->get_id());
             if (!filter_id.empty())
             {
-                mapping.filter_id_ptr_map.erase(mapping.filter_id_ptr_map.find(filter_id));
-
-                thread_filters_table_[std::this_thread::get_id().hash()] = mapping;
+                filters.erase(filters.find(filter_id));
+                thread_filters_table_[std::this_thread::get_id().hash()] = filters;
             }
         }
 
@@ -429,9 +430,9 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
-            std::map<std::string, Filter_Base*>::iterator found(mapping.filter_id_ptr_map.find(filter_id_trimmed));
-            if (found != mapping.filter_id_ptr_map.end())
+			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+            std::map<std::string, Filter_Base*>::iterator found(filters.find(filter_id_trimmed));
+            if (found != filters.end())
                 return found->second;
 
             return 0;
@@ -454,12 +455,9 @@ class FPLOG_API Fplog_Impl
         std::queue<std::string*> mq_;
         std::thread* mq_reader_;
 
-        struct Filter_Mapping_Entry
-        {
-            std::map<std::string, Filter_Base*> filter_id_ptr_map;
-        };
+		Filter_Map filter_id_ptr_map;
 
-        std::map<unsigned long long, Filter_Mapping_Entry> thread_filters_table_;
+		std::map<unsigned long long, Filter_Map> thread_filters_table_;
 
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
@@ -508,14 +506,14 @@ class FPLOG_API Fplog_Impl
         bool passed_filters(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Filter_Mapping_Entry mapping(thread_filters_table_[std::this_thread::get_id().hash()]);
+			Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
             
-            if (mapping.filter_id_ptr_map.size() == 0)
+            if (filters.size() == 0)
                 return false;
 
             bool should_pass = true;
 
-			for (std::map<std::string, Filter_Base*>::iterator it = mapping.filter_id_ptr_map.begin(); it != mapping.filter_id_ptr_map.end(); ++it)
+			for (std::map<std::string, Filter_Base*>::iterator it = filters.begin(); it != filters.end(); ++it)
             {
                 should_pass = (should_pass && it->second->should_pass(msg));
                 if (!should_pass)
