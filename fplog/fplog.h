@@ -285,6 +285,7 @@ FPLOG_API void initlog(const char* appname, const char* uid, fplog::Transport_In
 
 //Mandatory call from every thread that wants to log some data. Done to increase flexibility:
 //each thread will have its own filters configuration and can decide independently which stuff to log.
+//Each filter within one thread must have unique id.
 FPLOG_API void openlog(const char* facility, Filter_Base* filter = 0);
 
 //Optional but advised to call from each thread that logs data right before stopping and exiting the thread.
