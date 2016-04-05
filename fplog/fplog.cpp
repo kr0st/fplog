@@ -283,7 +283,6 @@ class FPLOG_API Fplog_Impl
 
         Fplog_Impl():
         appname_("noname"),
-        facility_(Facility::user),
         inited_(false),
         own_transport_(true),
         test_mode_(false),
@@ -308,7 +307,7 @@ class FPLOG_API Fplog_Impl
 
         const char* get_facility()
         {
-            return facility_.c_str();
+            return thread_log_settings_table_[std::this_thread::get_id().hash()].facility_.c_str();
         }
 
         void openlog(const char* facility, Filter_Base* filter)
@@ -316,7 +315,7 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             if (facility)
-                facility_ = facility;
+                thread_log_settings_table_[std::this_thread::get_id().hash()].facility_ = facility;
             else
                 return;
 
@@ -362,8 +361,8 @@ class FPLOG_API Fplog_Impl
         void closelog()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            std::map<unsigned long long, Filter_Map> empty_map;
-            thread_filters_table_.swap(empty_map);
+            std::map<unsigned long long, Logger_Settings> empty_map;
+            thread_log_settings_table_.swap(empty_map);
         }
 
         void write(Message& msg)
@@ -395,10 +394,10 @@ class FPLOG_API Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Filter_Map filters = thread_filters_table_[std::this_thread::get_id().hash()];
-            filters[filter_id] = filter;
+            Logger_Settings settings = Logger_Settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            settings.filter_id_ptr_map[filter_id] = filter;
 
-            thread_filters_table_[std::this_thread::get_id().hash()] = filters;
+            thread_log_settings_table_[std::this_thread::get_id().hash()] = settings;
         }
 
         void remove_filter(Filter_Base* filter)
@@ -408,13 +407,13 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
 
             std::string filter_id(filter->get_id());
             if (!filter_id.empty())
             {
-                filters.erase(filters.find(filter_id));
-                thread_filters_table_[std::this_thread::get_id().hash()] = filters;
+                settings.filter_id_ptr_map.erase(settings.filter_id_ptr_map.find(filter_id));
+                thread_log_settings_table_[std::this_thread::get_id().hash()] = settings;
             }
         }
 
@@ -430,9 +429,9 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
-            std::map<std::string, Filter_Base*>::iterator found(filters.find(filter_id_trimmed));
-            if (found != filters.end())
+            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            std::map<std::string, Filter_Base*>::iterator found(settings.filter_id_ptr_map.find(filter_id_trimmed));
+            if (found != settings.filter_id_ptr_map.end())
                 return found->second;
 
             return 0;
@@ -450,14 +449,18 @@ class FPLOG_API Fplog_Impl
         volatile bool stopping_;
 
         std::string appname_;
-        std::string facility_;
 
         std::queue<std::string*> mq_;
         std::thread* mq_reader_;
 
-		Filter_Map filter_id_ptr_map;
+        struct Logger_Settings
+        {
+            Logger_Settings() : facility_(Facility::user) {}
+            Filter_Map filter_id_ptr_map;
+            std::string facility_;
+        };
 
-        std::map<unsigned long long, Filter_Map> thread_filters_table_;
+        std::map<unsigned long long, Logger_Settings> thread_log_settings_table_;
 
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
@@ -506,14 +509,14 @@ class FPLOG_API Fplog_Impl
         bool passed_filters(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Filter_Map filters(thread_filters_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
             
-            if (filters.size() == 0)
+            if (settings.filter_id_ptr_map.size() == 0)
                 return false;
 
             bool should_pass = true;
 
-            for (std::map<std::string, Filter_Base*>::iterator it = filters.begin(); it != filters.end(); ++it)
+            for (std::map<std::string, Filter_Base*>::iterator it = settings.filter_id_ptr_map.begin(); it != settings.filter_id_ptr_map.end(); ++it)
             {
                 should_pass = (should_pass && it->second->should_pass(msg));
                 if (!should_pass)
