@@ -307,6 +307,7 @@ class FPLOG_API Fplog_Impl
 
         const char* get_facility()
         {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
             return thread_log_settings_table_[std::this_thread::get_id().hash()].facility_.c_str();
         }
 
