@@ -2,6 +2,9 @@
 #include <libjson/libjson.h>
 #include "fplog.h"
 #include "utils.h"
+#include <chrono>
+#include <conio.h>
+#include <windows.h>
 
 namespace fplog { 
     
@@ -115,7 +118,9 @@ bool filter_test()
         fplog::write(msg);
     }
 
-    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
+   // Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
+
+	Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");
 
     fplog::add_filter(lua_filter);
     fplog::add_filter(filter);
@@ -151,6 +156,147 @@ void print_test_vector()
         std::cout << str << std::endl;
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+std::vector<std::string> string_vector = {
+    "hghggj",
+    "poi5467",
+    "DFBNMmrfufmk",
+    "123098454",
+    "mnHJK3",
+    "A",
+    "a",
+    "asdHRSEDHBHMKJKLLKLA",
+    "hdkflhajklsjkllfcjkawklnhdnjhymkujsduunkudnkuynuynwsyybmajybjsu6t5rbh54bqat4bh54vqagt4vgtwsy56bsuz7drjnytvbsg",
+    "jkldfglkjasfkljdfhiuw4t687436nmdghjlasrljn;xsifdhrdnrtyhipd" };
+
+void random_message()
+{
+    std::string str = string_vector[rand() % 10];
+
+    int x = rand() % 2000;
+    if (x % 10 == 0)
+    {
+        fplog::write(FPL_TRACE("%s", str.c_str()));
+    }
+    else if (x % 6 == 0)
+    {
+        fplog::write(FPL_ERROR("%s", str.c_str()));
+    }
+    else if (x % 7 == 0)
+    {
+        fplog::write(FPL_WARN("%s", str.c_str()));
+    }
+    else
+    {
+        fplog::write(FPL_INFO("%s", str.c_str()));
+    }
+}
+
+void performance_test()
+{
+    int circle_count = 10;
+    int message_count = 100000;
+
+    using namespace std::chrono;
+    initlog("fplog_test", "18749_18750");
+    openlog(Facility::security, new Priority_Filter("prio_filter")); 
+    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+    
+    if (filter)
+       filter->add(fplog::Prio::debug);
+
+    std::cout << "Priority filter " << std::endl;
+
+    int duration_sum = 0;
+
+    for (int j = 0; j < circle_count; j++){
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        for (int i = 0; i < message_count; i++) {
+            try
+            {
+                random_message();
+            }
+            catch (fplog::exceptions::Generic_Exception& e)
+            {
+                printf("EXCEPTION: %s\n", e.what().c_str());
+            }
+        }
+ 
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+
+        auto duration = duration_cast<microseconds>(t2 - t1).count();
+
+        std::cout << "Duration of " << j << " iteration: " << duration << " microseconds" <<std::endl;
+
+        closelog();
+        duration_sum += duration;
+
+    }
+
+    auto final_duration = ((duration_sum + 500) / 1000000);
+    double result = message_count / final_duration;
+
+    std::cout << "Duration of 10 iteration with " << message_count << " messages, are done in: " << final_duration << " seconds" << std::endl;
+    std::cout << result << " messages per second " << std::endl;
+  
+    
+    std::cout << "Lua filter " << std::endl;
+
+    int duration_sum1 = 0;
+
+    for (int j = 0; j < circle_count; j++){
+ 
+        openlog(Facility::security);
+        Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");         //local clock = os.clock function sleep() local i = 0 while i < 250000000 do i = i + 1 end end sleep() 
+        fplog::add_filter(lua_filter);
+
+        high_resolution_clock::time_point t3 = high_resolution_clock::now();
+
+        for (int i = 0; i < message_count; i++) {
+
+            try
+            {
+                std::string str = "Hello";
+                fplog::write(FPL_TRACE("%s", str.c_str()));
+               // random_message();
+            }
+            catch (fplog::exceptions::Generic_Exception& e)
+            {
+                printf("EXCEPTION: %s\n", e.what().c_str());
+            }
+        }
+        high_resolution_clock::time_point t4 = high_resolution_clock::now();
+
+        auto duration1 = duration_cast<microseconds>(t4 - t3).count();
+        std::cout << "Duration of " << j << " iteration: " << duration1 << " microseconds" << std::endl;
+
+        fplog::remove_filter(lua_filter);
+        closelog();
+
+        duration_sum1 += duration1;
+    }
+
+    auto final_duration1 = ((duration_sum1 + 500) / 1000000);
+    double result1 = message_count / final_duration1;
+    std::cout << result1 << " messages per second " << std::endl;
+
+
+    std::cout << "Duration of 10 iteration with " << message_count << " messages, are done in: " << final_duration1 << " seconds" << std::endl;
+
+    if (final_duration < final_duration1)
+    {
+        std::cout << "Priority filter is faster than Lua for " << 100 -((final_duration * 100) / final_duration1) << "%" << std::endl;
+    }
+    else {
+        std::cout << "Lua filter is faster than Priority for " << 100 - ((final_duration1 * 100) / final_duration) << "%" << std::endl;
+    }
+
+
+    _getch();
+}
+
 
 void manual_test()
 {
@@ -235,7 +381,8 @@ void run_all_tests()
 int main()
 {
     //fplog::testing::run_all_tests();
-    fplog::testing::manual_test();
+  // fplog::testing::manual_test();
+     fplog::testing::performance_test();
     //fplog::testing::spam_test();
     return 0;
 }
