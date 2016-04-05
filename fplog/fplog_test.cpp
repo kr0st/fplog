@@ -2,6 +2,8 @@
 #include <libjson/libjson.h>
 #include "fplog.h"
 #include "utils.h"
+#include <thread>
+#include <conio.h>
 
 namespace fplog { 
     
@@ -230,6 +232,35 @@ void run_all_tests()
     closelog();
 }
 
+void start_thread(const char *facility)
+{
+    openlog(facility);
+    Priority_Filter *priority_filter = new Priority_Filter("prio_filter");
+    priority_filter->add(fplog::Prio::debug);
+    fplog::add_filter(priority_filter);
+
+    fplog::write(FPL_TRACE(facility));
+
+    closelog();
+}
+
+void multithreading_test()
+{
+    initlog("fplog_test", "18749_18750");
+    std::vector<std::thread> threads;
+   
+    threads.push_back(std::thread(start_thread, Facility::user));
+
+    threads.push_back(std::thread(start_thread, Facility::system));
+
+    _getch();
+
+    for (std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it)
+    {
+        it->join();
+    }
+}
+
 }};
 
 int main()
@@ -237,5 +268,6 @@ int main()
     //fplog::testing::run_all_tests();
     fplog::testing::manual_test();
     //fplog::testing::spam_test();
+    //fplog::testing::multithreading_test();
     return 0;
 }
