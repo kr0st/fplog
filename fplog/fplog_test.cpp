@@ -164,7 +164,7 @@ std::vector<std::string> string_vector = {
     "poi5467",
     "DFBNMmrfufmk",
     "123098454",
-    "mnHJK3",
+    "hello",
     "A",
     "a",
     "asdHRSEDHBHMKJKLLKLA",
@@ -197,21 +197,24 @@ void random_message()
 void performance_test()
 {
     int circle_count = 10;
-    int message_count = 100000;
+    int message_count = 10000;
 
     using namespace std::chrono;
     initlog("fplog_test", "18749_18750");
-    openlog(Facility::security, new Priority_Filter("prio_filter")); 
-    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
-    
-    if (filter)
-       filter->add(fplog::Prio::debug);
+
 
     std::cout << "Priority filter " << std::endl;
 
-    int duration_sum = 0;
+    double duration_sum = 0;
 
     for (int j = 0; j < circle_count; j++){
+
+        openlog(Facility::security, new Priority_Filter("prio_filter"));
+        Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+
+        if (filter)
+            filter->add(fplog::Prio::debug);
+
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
         for (int i = 0; i < message_count; i++) {
             try
@@ -228,14 +231,14 @@ void performance_test()
 
         auto duration = duration_cast<microseconds>(t2 - t1).count();
 
-        std::cout << "Duration of " << j << " iteration: " << duration << " microseconds" <<std::endl;
+        std::cout << "Duration of " << j << " iterations: " << duration << " microseconds" <<std::endl;
 
         closelog();
         duration_sum += duration;
 
     }
 
-    auto final_duration = ((duration_sum + 500) / 1000000);
+    auto final_duration = (double)((duration_sum + 500) / 1000000);
     double result = message_count / final_duration;
 
     std::cout << "Duration of 10 iteration with " << message_count << " messages, are done in: " << final_duration << " seconds" << std::endl;
@@ -244,7 +247,7 @@ void performance_test()
     
     std::cout << "Lua filter " << std::endl;
 
-    int duration_sum1 = 0;
+    double duration_sum1 = 0;
 
     for (int j = 0; j < circle_count; j++){
  
@@ -258,9 +261,7 @@ void performance_test()
 
             try
             {
-                std::string str = "Hello";
-                fplog::write(FPL_TRACE("%s", str.c_str()));
-               // random_message();
+                random_message();
             }
             catch (fplog::exceptions::Generic_Exception& e)
             {
@@ -270,7 +271,7 @@ void performance_test()
         high_resolution_clock::time_point t4 = high_resolution_clock::now();
 
         auto duration1 = duration_cast<microseconds>(t4 - t3).count();
-        std::cout << "Duration of " << j << " iteration: " << duration1 << " microseconds" << std::endl;
+        std::cout << "Duration of " << j << " iterations: " << duration1 << " microseconds" << std::endl;
 
         fplog::remove_filter(lua_filter);
         closelog();
@@ -278,8 +279,10 @@ void performance_test()
         duration_sum1 += duration1;
     }
 
-    auto final_duration1 = ((duration_sum1 + 500) / 1000000);
+    auto final_duration1 = (double)((duration_sum1 + 500) / 1000000);
+    
     double result1 = message_count / final_duration1;
+   
     std::cout << result1 << " messages per second " << std::endl;
 
 
@@ -287,12 +290,12 @@ void performance_test()
 
     if (final_duration < final_duration1)
     {
-        std::cout << "Priority filter is faster than Lua for " << 100 -((final_duration * 100) / final_duration1) << "%" << std::endl;
+        std::cout << "Priority filter is faster than Lua for " << (final_duration1 * 100) / final_duration << "%" << std::endl;
     }
     else {
-        std::cout << "Lua filter is faster than Priority for " << 100 - ((final_duration1 * 100) / final_duration) << "%" << std::endl;
-    }
+        std::cout << "Lua filter is faster than Priority for " << (final_duration * 100) / final_duration1 << "%" << std::endl;
 
+    }
 
     _getch();
 }
