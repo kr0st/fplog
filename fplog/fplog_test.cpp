@@ -3,8 +3,7 @@
 #include "fplog.h"
 #include "utils.h"
 #include <chrono>
-#include <conio.h>
-#include <windows.h>
+
 
 namespace fplog { 
     
@@ -118,9 +117,7 @@ bool filter_test()
         fplog::write(msg);
     }
 
-   // Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
-
-	Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");
+    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
 
     fplog::add_filter(lua_filter);
     fplog::add_filter(filter);
