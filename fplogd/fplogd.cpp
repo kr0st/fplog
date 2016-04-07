@@ -1,6 +1,9 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include "targetver.h"
 #include "fplogd.h"
 #include "Transport_Factory.h"
+#include "Queue_Controller.h"
 
 #include <stdio.h>
 #include <conio.h>
@@ -307,7 +310,7 @@ class Impl
 
                 if (!mq_.empty())
                 {
-                    str = mq_.front();
+                    mq_.front(str);
                     mq_.pop();
                     delete str;
                 }
@@ -331,6 +334,7 @@ class Impl
             std::string app_name;
         };
 
+
         void ipc_listener(Thread_Data* data)
         {
             spipc::IPC ipc;
@@ -350,14 +354,15 @@ class Impl
                     ipc.read(buf, buf_sz - 1, 1000);
 
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
-                    mq_.push(new std::string(buf));
 
-                    if (buf_sz > 2048)
-                    {
-                        buf_sz = 2048;
-                        delete [] buf;
-                        buf = new char [buf_sz];
-                    }
+                        mq_.push(new std::string(buf));
+
+                        if (buf_sz > 2048)
+                        {
+                            buf_sz = 2048;
+                            delete[] buf;
+                            buf = new char[buf_sz];
+                        }
                 }
                 catch(fplog::exceptions::Buffer_Overflow&)
                 {
@@ -443,10 +448,10 @@ class Impl
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     if (should_stop_)
                         return;
-
-                    if (!mq_.empty())
+                    
+                   if (!mq_.empty())
                     {
-                        str = mq_.front();
+                        mq_.front(str);
                         mq_.pop();
                     }
                 }
@@ -484,7 +489,7 @@ class Impl
         }
 
         std::recursive_mutex mutex_;
-        std::queue<std::string*> mq_;
+        Queue_Controller mq_;
 
         std::thread overload_checker_;
         std::thread mq_reader_;
