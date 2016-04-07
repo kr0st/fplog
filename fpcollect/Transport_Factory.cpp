@@ -1,8 +1,7 @@
 #include "Transport_Factory.h"
 #include <spipc/Socket_Transport.h>
 #include <utils.h>
-//#include "Mongo_Storage.h"
-#include "Mongo_stub.h"
+#include "Mongo_Storage.h"
 
 namespace fpcollect {
 
@@ -19,7 +18,7 @@ fplog::Transport_Interface* Transport_Factory::create(const fplog::Transport_Int
 
             if (generic_util::find_str_no_case(param.second, "mongo"))
             {
-                return new fpcollect::Mongo_stub();
+                return new fpcollect::Mongo_Storage();
             }
         }
     }

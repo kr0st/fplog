@@ -120,14 +120,12 @@ copy $(OutDir)\..\boost\stage\lib\boost_regex*.dll ..\Stage\</Command>
   <ItemGroup>
     <ClInclude Include="fpcollect.h" />
     <ClInclude Include="Mongo_Storage.h" />
-    <ClInclude Include="Mongo_stub.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Transport_Factory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fpcollect.cpp" />
     <ClCompile Include="Mongo_Storage.cpp" />
-    <ClCompile Include="Mongo_stub.cpp" />
     <ClCompile Include="Transport_Factory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
