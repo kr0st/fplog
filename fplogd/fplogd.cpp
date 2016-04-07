@@ -1,7 +1,10 @@
 #include "targetver.h"
 #include "fplogd.h"
+#include "..\fplog\fplog.h"
+#include <libjson/libjson.h>
 #include "Transport_Factory.h"
 
+#include <fstream> 
 #include <stdio.h>
 #include <conio.h>
 #include <queue>
@@ -33,6 +36,7 @@ static char* g_config_file_name = "fplogd.ini";
 static char* g_config_file_channels_section_name = "channels";
 static char* g_config_file_transport_section_name = "transport";
 static char* g_config_file_misc_section_name = "misc";
+static char* g_config_file_file_path_section_name = "file_path";
 
 /*!
 \brief Check if a process is running
@@ -216,6 +220,29 @@ std::vector<Channel_Data> get_registered_channels()
 
     return res;
 }
+
+std::string get_log_error_file_path()
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+    std::string res = "";
+
+    std::string home(get_home_dir());
+    read_ini(home + g_config_file_name, pt);
+
+    for (auto& section : pt)
+    {
+        if (section.first.find(g_config_file_file_path_section_name) == std::string::npos)
+            continue;
+
+        for (auto& key : section.second)
+        {
+            res = key.second.get_value<std::string>() + "\\";
+        }
+    }
+    return res;
+}
+
 
 class Impl
 {
@@ -435,6 +462,7 @@ class Impl
 
         void mq_reader()
         {
+            std::string file_path = get_log_error_file_path();
             while(true)
             {
                 std::string* str = 0;
@@ -443,18 +471,15 @@ class Impl
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     if (should_stop_)
                         return;
-
                     if (!mq_.empty())
                     {
                         str = mq_.front();
-                        mq_.pop();
                     }
                 }
 
                 if (str)
                 {
                     std::auto_ptr<std::string> str_ptr(str);
-                    //TODO: exception handling!
                     int retries = 5;
                     
                     append_hostname(str);
@@ -464,13 +489,49 @@ class Impl
                     try
                     {
                         if (log_transport_ && protocol_)
+                        {
                             protocol_->write(str->c_str(), str->size() + 1, 200);
+                            mq_.pop();
+                        } 
+                        else
+                        {
+                            THROW(fplog::exceptions::Transport_Missing);
+                        }
                     }
                     catch(fplog::exceptions::Generic_Exception& e)
                     {
-                        printf("%s\n", e.what().c_str());
-                        if (retries <= 0)
-                            exit(1);
+                        if (retries <= 0) {
+                            fplog::Message error_msg = FPL_ERROR(std::string("Error: " + e.what() + " Log message:" + *str).c_str()).set(fplog::Message::Mandatory_Fields::appname, "fplogd").add(fplog::Message::Optional_Fields::sequence, 0);
+                            std::string error_str = error_msg.as_string();
+                            append_hostname(&error_str);
+
+                            int retries_error = 5;
+
+                        retry_error:
+
+                            try
+                            {
+                                protocol_->write(error_str.c_str(), error_str.size() + 1, 200);
+                                mq_.pop();
+                            }
+                            catch (fplog::exceptions::Generic_Exception& e)
+                            {
+                                if (retries_error <= 0){
+                                    std::ofstream file(file_path + "fplogd.log", std::ios::app);
+                                    if (file.is_open())
+                                    {
+                                        file << error_str + "\n";
+                                        file.close();
+                                        mq_.pop();
+                                    }
+                                }
+                                else
+                                {
+                                    retries_error--;
+                                    goto retry_error;
+                                }
+                            }
+                        }
                         else
                         {
                             retries--;

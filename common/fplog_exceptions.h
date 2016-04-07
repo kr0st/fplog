@@ -138,4 +138,14 @@ class Timeout: public Generic_Exception
         }
 };
 
+class Transport_Missing : public Generic_Exception
+{
+public:
+
+    Transport_Missing(const char* facility, const char* file = "", int line = 0, const char* message = "Transport or protocol is missing.") :
+        Generic_Exception(facility, file, line, message)
+    {
+    }
+};
+
 }};
