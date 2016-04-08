@@ -354,15 +354,15 @@ class Impl
                     ipc.read(buf, buf_sz - 1, 1000);
 
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
+                    
+                    mq_.push(new std::string(buf));
 
-                        mq_.push(new std::string(buf));
-
-                        if (buf_sz > 2048)
-                        {
-                            buf_sz = 2048;
-                            delete[] buf;
-                            buf = new char[buf_sz];
-                        }
+                    if (buf_sz > 2048)
+                    {
+                        buf_sz = 2048;
+                        delete[] buf;
+                        buf = new char[buf_sz];
+                    }
                 }
                 catch(fplog::exceptions::Buffer_Overflow&)
                 {
