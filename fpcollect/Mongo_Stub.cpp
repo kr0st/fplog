@@ -1,4 +1,4 @@
-#include "Mongo_stub.h"
+#include "Mongo_Stub.h"
 #include <common/fplog_exceptions.h>
 
 #ifdef _WIN32
@@ -21,13 +21,13 @@ namespace fpcollect {
         }
     };
 
-    Mongo_stub::~Mongo_stub()
+    Mongo_Stub::~Mongo_Stub()
     {
         /*disconnect();
         delete connection_;*/
     }
 
-    void Mongo_stub::connect(const Params& params)
+    void Mongo_Stub::connect(const Params& params)
     {
         /*
         try
@@ -69,11 +69,11 @@ namespace fpcollect {
         }	*/
     }
 
-    void Mongo_stub::disconnect()
+    void Mongo_Stub::disconnect()
     {
     }
 
-    size_t Mongo_stub::write(const void* buf, size_t buf_size, size_t timeout)
+    size_t Mongo_Stub::write(const void* buf, size_t buf_size, size_t timeout)
     {
         /*
         if (!buf || (buf_size == 0))

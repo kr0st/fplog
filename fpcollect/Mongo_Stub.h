@@ -8,11 +8,11 @@ namespace mongo {
 
 namespace fpcollect {
 
-    class Mongo_stub : public fplog::Transport_Interface
+    class Mongo_Stub : public fplog::Transport_Interface
     {
     public:
 
-        Mongo_stub() : connection_(0) {}
+        Mongo_Stub() : connection_(0) {}
 
         void connect(const Params& params);
         void disconnect();
@@ -21,7 +21,7 @@ namespace fpcollect {
         size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait) { return 0; };
         size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
 
-        virtual ~Mongo_stub();
+        virtual ~Mongo_Stub();
 
 
     private:
