@@ -501,7 +501,7 @@ class Impl
                     catch(fplog::exceptions::Generic_Exception& e)
                     {
                         if (retries <= 0) {
-                            fplog::Message error_msg = FPL_ERROR(std::string("Error: " + e.what() + " Log message:" + *str).c_str()).set(fplog::Message::Mandatory_Fields::appname, "fplogd").add(fplog::Message::Optional_Fields::sequence, 0);
+                            fplog::Message error_msg = FPL_ERROR(std::string("Error: " + e.what() + " Log message:" + *str).c_str()).set(fplog::Message::Mandatory_Fields::appname, "fplogd").add(fplog::Message::Optional_Fields::sequence, 0).set(fplog::Message::Mandatory_Fields::facility, fplog::Facility::fplog);
                             std::string error_str = error_msg.as_string();
                             append_hostname(&error_str);
 
