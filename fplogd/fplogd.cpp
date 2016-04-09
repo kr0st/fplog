@@ -33,10 +33,13 @@ static char* g_process_name = "fplogd";
 #endif
 
 static char* g_config_file_name = "fplogd.ini";
+
+static char* g_emergency_config_setting_name = "log_file";
+static char* g_emergency_log_file_name = "fplogd.log";
+
 static char* g_config_file_channels_section_name = "channels";
 static char* g_config_file_transport_section_name = "transport";
 static char* g_config_file_misc_section_name = "misc";
-static char* g_config_file_file_path_section_name = "file_path";
 
 /*!
 \brief Check if a process is running
@@ -221,7 +224,7 @@ std::vector<Channel_Data> get_registered_channels()
     return res;
 }
 
-std::string get_log_error_file_path()
+std::string get_config_key_value(const std::string& section, const std::string& key)
 {
     using boost::property_tree::ptree;
     ptree pt;
@@ -230,19 +233,34 @@ std::string get_log_error_file_path()
     std::string home(get_home_dir());
     read_ini(home + g_config_file_name, pt);
 
-    for (auto& section : pt)
+    for (auto& ini_section : pt)
     {
-        if (section.first.find(g_config_file_file_path_section_name) == std::string::npos)
+        if (ini_section.first.find(section) == std::string::npos)
             continue;
 
-        for (auto& key : section.second)
+        for (auto& ini_key : ini_section.second)
         {
-            res = key.second.get_value<std::string>() + "\\";
+            std::string trimmed_key = ini_key.first;
+            if (generic_util::find_str_no_case(generic_util::trim(trimmed_key), key))
+            {
+                res = ini_key.second.get_value<std::string>();
+                break;
+            }
         }
     }
+
     return res;
 }
 
+std::string get_log_error_file_full_path()
+{
+    std::string emergency_log_path = get_config_key_value(g_config_file_misc_section_name, g_emergency_config_setting_name);
+    
+    if (emergency_log_path.empty())
+        emergency_log_path = get_home_dir() + g_emergency_log_file_name;
+
+    return emergency_log_path;
+}
 
 class Impl
 {
@@ -367,6 +385,7 @@ class Impl
 
             size_t buf_sz = 2048;
             char *buf = new char [buf_sz];
+            std::string emergency_log_file_path = get_log_error_file_full_path();
 
             while(true)
             {
@@ -392,9 +411,30 @@ class Impl
                     delete [] buf;
                     buf = new char [buf_sz];
                 }
-                catch(fplog::exceptions::Generic_Exception&)
+                catch(fplog::exceptions::Generic_Exception& e)
                 {
-                    //TODO: handle exceptions (send special log message to queue originating from fplog)
+                    fplog::Message error_msg = FPL_ERROR((std::string("Error from IPC: %s") + std::string(", app = ") + data->app_name + std::string(", uid = ") + data->uid).c_str(),
+                        e.what().c_str()).set(fplog::Message::Mandatory_Fields::appname, "fplogd").add(fplog::Message::Optional_Fields::sequence, 0).set(fplog::Message::Mandatory_Fields::facility, fplog::Facility::fplog);
+                    std::string error_str = error_msg.as_string();
+                    append_hostname(&error_str);
+
+                    if (log_transport_ && protocol_)
+                    {
+                        try
+                        {
+                            protocol_->write(error_str.c_str(), error_str.size() + 1, 200);
+                        }
+                        catch(...)
+                        {
+                            std::ofstream file(emergency_log_file_path, std::ios::app);
+                            if (file.is_open())
+                            {
+                                file << error_str + "\n";
+                                file.close();
+                            }
+                        }
+                    }
+
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
 
@@ -462,7 +502,7 @@ class Impl
 
         void mq_reader()
         {
-            std::string file_path = get_log_error_file_path();
+            std::string emergency_log_file_path = get_log_error_file_full_path();
             while(true)
             {
                 std::string* str = 0;
@@ -517,7 +557,7 @@ class Impl
                             catch (fplog::exceptions::Generic_Exception& e)
                             {
                                 if (retries_error <= 0){
-                                    std::ofstream file(file_path + "fplogd.log", std::ios::app);
+                                    std::ofstream file(emergency_log_file_path, std::ios::app);
                                     if (file.is_open())
                                     {
                                         file << error_str + "\n";

@@ -102,12 +102,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\utils.h" />
     <ClInclude Include="..\fplog\fplog.h" />
     <ClInclude Include="fplogd.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Transport_Factory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="fplogd.cpp" />
     <ClCompile Include="Transport_Factory.cpp" />
   </ItemGroup>
