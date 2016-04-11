@@ -2,13 +2,9 @@
 #include <libjson/libjson.h>
 #include "fplog.h"
 #include "utils.h"
-<<<<<<< HEAD
 #include <chrono>
-
-=======
 #include <thread>
 #include <conio.h>
->>>>>>> 6308cc05ccab0e427ca89f22aee8d7d5d7619bea
 
 namespace fplog { 
     
@@ -415,8 +411,8 @@ void multithreading_test()
 int main()
 {
     //fplog::testing::run_all_tests();
-  // fplog::testing::manual_test();
-     fplog::testing::performance_test();
+    fplog::testing::manual_test();
+    //fplog::testing::performance_test();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();
     return 0;
