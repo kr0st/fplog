@@ -105,12 +105,14 @@
     <ClInclude Include="..\common\utils.h" />
     <ClInclude Include="..\fplog\fplog.h" />
     <ClInclude Include="fplogd.h" />
+    <ClInclude Include="Queue_Controller.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Transport_Factory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="fplogd.cpp" />
+    <ClCompile Include="Queue_Controller.cpp" />
     <ClCompile Include="Transport_Factory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
