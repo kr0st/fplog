@@ -1,4 +1,5 @@
 #include "shared_sequence_number.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <chrono>
 
 using namespace std::chrono;
