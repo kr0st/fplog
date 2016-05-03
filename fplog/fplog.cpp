@@ -7,6 +7,7 @@
 #include <lua.hpp>
 #include <spipc/socket_transport.h>
 #include <sprot/sprot.h>
+#include <mutex>
 
 
 namespace fplog
@@ -295,12 +296,14 @@ class FPLOG_API Fplog_Impl
 
         ~Fplog_Impl()
         {
-            stopping_ = true;
+            stop_reading_queue();
+            mq_reader_->join();
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             delete mq_reader_;
             delete protocol_;
+
             if (inited_ && own_transport_)
                 delete transport_;
         }
@@ -362,8 +365,10 @@ class FPLOG_API Fplog_Impl
         void closelog()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            std::map<unsigned long long, Logger_Settings> empty_map;
-            thread_log_settings_table_.swap(empty_map);
+
+            std::map<unsigned long long, Logger_Settings>::iterator it = thread_log_settings_table_.find(std::this_thread::get_id().hash());
+            if (it != thread_log_settings_table_.end())
+                thread_log_settings_table_.erase(it);
         }
 
         void write(Message& msg)
@@ -464,12 +469,22 @@ class FPLOG_API Fplog_Impl
         std::map<unsigned long long, Logger_Settings> thread_log_settings_table_;
 
         std::recursive_mutex mutex_;
+        std::recursive_mutex mq_reader_mutex_;
+
         fplog::Transport_Interface* transport_;
         sprot::Protocol* protocol_;
+
+        void stop_reading_queue()
+        {
+            stopping_ = true;
+            std::lock_guard<std::recursive_mutex> lock(mq_reader_mutex_);
+        }
         
         void mq_reader()
         {
-            while(true)
+            std::lock_guard<std::recursive_mutex> queue_lock(mq_reader_mutex_);
+
+            while(!stopping_)
             {
                 
                 std::string* str = 0;
@@ -498,6 +513,9 @@ class FPLOG_API Fplog_Impl
                             return;
                         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     }
+
+                    if (stopping_)
+                        return;
                 }
                 catch(fplog::exceptions::Generic_Exception)
                 {
@@ -528,47 +546,95 @@ class FPLOG_API Fplog_Impl
         }
 };
 
-FPLOG_API Fplog_Impl g_fplog_impl;
-
+FPLOG_API Fplog_Impl* g_fplog_impl = 0;
+std::recursive_mutex g_api_mutex;
 
 void write(Message& msg)
 {
-    g_fplog_impl.write(msg);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+    
+    if (!g_fplog_impl)
+        return;
+   
+    g_fplog_impl->write(msg);
 }
 
 void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
 {
-    return g_fplog_impl.initlog(appname, uid, transport);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        g_fplog_impl = new Fplog_Impl();
+
+    return g_fplog_impl->initlog(appname, uid, transport);
+}
+
+void shutdownlog()
+{
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    delete g_fplog_impl;
+    g_fplog_impl = 0;
 }
 
 void openlog(const char* facility, Filter_Base* filter)
 {
-    return g_fplog_impl.openlog(facility, filter);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return;
+
+    return g_fplog_impl->openlog(facility, filter);
 }
 
 void closelog()
 {
-    return g_fplog_impl.closelog();
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return;
+
+    return g_fplog_impl->closelog();
 }
 
 const char* get_facility()
 {
-    return g_fplog_impl.get_facility();
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return "";
+
+    return g_fplog_impl->get_facility();
 }
 
 void add_filter(Filter_Base* filter)
 {
-    return g_fplog_impl.add_filter(filter);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return;
+
+    return g_fplog_impl->add_filter(filter);
 }
 
 void remove_filter(Filter_Base* filter)
 {
-    return g_fplog_impl.remove_filter(filter);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return;
+
+    return g_fplog_impl->remove_filter(filter);
 }
 
 Filter_Base* find_filter(const char* filter_id)
 {
-    return g_fplog_impl.find_filter(filter_id);
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return 0;
+
+    return g_fplog_impl->find_filter(filter_id);
 }
 
 class Lua_Filter::Lua_Filter_Impl

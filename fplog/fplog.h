@@ -41,6 +41,10 @@
 #define FPL_CWARN(format, ...) FPL_WARN(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 #define FPL_CERROR(format, ...) FPL_ERROR(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 
+namespace fplogd
+{
+    class Impl;
+};
 
 namespace fplog
 {
@@ -68,6 +72,7 @@ struct FPLOG_API Prio
 class FPLOG_API Message
 {
     friend class Fplog_Impl;
+    friend class fplogd::Impl;
 
     public:
 
@@ -282,6 +287,9 @@ class FPLOG_API Priority_Filter: public Filter_Base
 
 //One time per application call.
 FPLOG_API void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport = 0);
+
+//One time per application call to stop logging from an application and free all associated resources.
+FPLOG_API void shutdownlog();
 
 //Mandatory call from every thread that wants to log some data. Done to increase flexibility:
 //each thread will have its own filters configuration and can decide independently which stuff to log.

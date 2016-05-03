@@ -6,6 +6,7 @@
 #include <thread>
 #include <conio.h>
 
+
 namespace fplog { 
     
 class FPLOG_API Fplog_Impl
@@ -15,7 +16,7 @@ class FPLOG_API Fplog_Impl
         void set_test_mode(bool mode);
 };
 
-FPLOG_API extern fplog::Fplog_Impl g_fplog_impl;
+FPLOG_API extern Fplog_Impl* g_fplog_impl;
 FPLOG_API extern std::vector<std::string> g_test_results_vector;
 
 namespace testing {
@@ -231,6 +232,7 @@ void performance_test()
 
         std::cout << "Duration of " << j << " iterations: " << duration << " microseconds" <<std::endl;
 
+        fplog::remove_filter(filter);
         closelog();
         duration_sum += duration;
 
@@ -356,7 +358,7 @@ void run_all_tests()
 {
     initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
-    fplog::g_fplog_impl.set_test_mode(true);
+    g_fplog_impl->set_test_mode(true);
 
     if (!filter_test())
         printf("filter_test failed!\n");
@@ -411,9 +413,11 @@ void multithreading_test()
 int main()
 {
     //fplog::testing::run_all_tests();
-    fplog::testing::manual_test();
-    //fplog::testing::performance_test();
+    //fplog::testing::manual_test();
+    fplog::testing::performance_test();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();
+
+    fplog::shutdownlog();
     return 0;
 }
