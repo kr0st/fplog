@@ -296,10 +296,10 @@ void performance_test()
 
     if (final_duration < final_duration1)
     {
-        std::cout << "Priority filter is faster than Lua for " << (final_duration1 * 100) / final_duration << "%" << std::endl;
+        std::cout << "Priority filter is faster than Lua by " << (final_duration1 * 100) / final_duration - 100 << "%" << std::endl;
     }
     else {
-        std::cout << "Lua filter is faster than Priority for " << (final_duration * 100) / final_duration1 << "%" << std::endl;
+        std::cout << "Lua filter is faster than Priority by " << (final_duration * 100) / final_duration1 - 100 << "%" << std::endl;
 
     }
 
