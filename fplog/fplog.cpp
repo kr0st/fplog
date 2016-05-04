@@ -503,6 +503,9 @@ class FPLOG_API Fplog_Impl
 
             retry:
 
+                if (stopping_)
+                    return;
+
                 try
                 {
                     if (str)
@@ -514,8 +517,6 @@ class FPLOG_API Fplog_Impl
                         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     }
 
-                    if (stopping_)
-                        return;
                 }
                 catch(fplog::exceptions::Generic_Exception)
                 {
