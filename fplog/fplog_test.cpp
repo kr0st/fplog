@@ -229,13 +229,15 @@ void performance_test()
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<microseconds>(t2 - t1).count();
+        duration_sum += duration;
 
         std::cout << "Duration of " << j << " iterations: " << duration << " microseconds" <<std::endl;
 
         fplog::remove_filter(filter);
+        delete filter;
+        filter = 0;
+        
         closelog();
-        duration_sum += duration;
-
     }
 
     auto final_duration = (double)((duration_sum + 500) / 1000000);
@@ -271,12 +273,16 @@ void performance_test()
         high_resolution_clock::time_point t4 = high_resolution_clock::now();
 
         auto duration1 = duration_cast<microseconds>(t4 - t3).count();
+        duration_sum1 += duration1;
+
         std::cout << "Duration of " << j << " iterations: " << duration1 << " microseconds" << std::endl;
 
         fplog::remove_filter(lua_filter);
-        closelog();
+        
+        delete lua_filter;
+        lua_filter = 0;
 
-        duration_sum1 += duration1;
+        closelog();
     }
 
     auto final_duration1 = (double)((duration_sum1 + 500) / 1000000);
