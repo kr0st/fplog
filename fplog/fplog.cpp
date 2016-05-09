@@ -444,6 +444,31 @@ class FPLOG_API Fplog_Impl
         }
 
         void set_test_mode(bool mode){ g_test_results_vector.clear(); test_mode_ = mode; }
+        void wait_until_queues_are_empty()
+        {
+            int counter = 0;
+
+            while (counter < 5)
+            {
+                bool q1_empty = true;
+
+                {
+                    std::lock_guard<std::recursive_mutex> lock_q1(mutex_);
+                    q1_empty = mq_.empty();
+                }
+
+                if (q1_empty)
+                {
+                    counter++;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
+                else
+                {
+                    counter = 0;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
+        }
 
 
     private:

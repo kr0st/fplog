@@ -14,6 +14,7 @@ class FPLOG_API Fplog_Impl
     public:
 
         void set_test_mode(bool mode);
+        void wait_until_queues_are_empty();
 };
 
 FPLOG_API extern Fplog_Impl* g_fplog_impl;
@@ -251,6 +252,7 @@ void performance_test()
             }
         }
  
+        g_fplog_impl->wait_until_queues_are_empty();
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
         auto duration = duration_cast<microseconds>(t2 - t1).count();
@@ -294,6 +296,8 @@ void performance_test()
                 printf("EXCEPTION: %s\n", e.what().c_str());
             }
         }
+
+        g_fplog_impl->wait_until_queues_are_empty();
         high_resolution_clock::time_point t4 = high_resolution_clock::now();
 
         auto duration1 = duration_cast<microseconds>(t4 - t3).count();
@@ -529,10 +533,10 @@ void multithreading_test()
 
 int main()
 {
-    fplog::testing::run_all_tests();
+    //fplog::testing::run_all_tests();
     //fplog::testing::manual_test();
 
-    //fplog::testing::performance_test();
+    fplog::testing::performance_test();
 
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
