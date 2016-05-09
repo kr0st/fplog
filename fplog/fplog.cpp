@@ -278,8 +278,14 @@ std::vector<std::string> Message::reserved_names_;
 
 FPLOG_API std::vector<std::string> g_test_results_vector;
 
+class Fplog_Impl;
+
+void pass_filters(Fplog_Impl* _this, size_t hash);
+
 class FPLOG_API Fplog_Impl
 {
+    friend void pass_filters(Fplog_Impl* _this, size_t hash);
+
     public:
 
         Fplog_Impl():
@@ -292,11 +298,27 @@ class FPLOG_API Fplog_Impl
         mq_reader_(0)
         {
             Message::one_time_init();
+            num_filter_threads_ = 2;
+
+            filter_threads_ = new std::thread*[num_filter_threads_];
+            for (int i = 0; i < num_filter_threads_; ++i)
+            {
+                filter_threads_[i] = new std::thread(pass_filters, this, std::this_thread::get_id().hash());
+            }
         }
 
         ~Fplog_Impl()
         {
             stop_reading_queue();
+            
+            for (int i = 0; i < num_filter_threads_; ++i)
+            {
+                filter_threads_[i]->join();
+                delete filter_threads_[i];
+            }
+            
+            delete [] filter_threads_;
+            
             mq_reader_->join();
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -373,20 +395,17 @@ class FPLOG_API Fplog_Impl
 
         void write(Message& msg)
         {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-            if (stopping_)
-                return;
-
-            msg.set(Message::Mandatory_Fields::appname, appname_);
-            if (passed_filters(msg))
             {
-                msg.add(Message::Optional_Fields::sequence, (long long)sequence_.read());
+                std::lock_guard<std::recursive_mutex> lock(mutex_);
+                if (stopping_)
+                    return;
 
-                if (test_mode_)
-                    g_test_results_vector.push_back(msg.as_string());
-                else
-                    mq_.push(new std::string(msg.as_string()));
+                msg.set(Message::Mandatory_Fields::appname, appname_);
+                msg.add(Message::Optional_Fields::sequence, (long long)sequence_.read());
             }
+
+            std::lock_guard<std::recursive_mutex> lock(filter_mq_mutex_);
+            filter_mq_.push(Filter_Mq_Entry(msg));
         }
 
         void add_filter(Filter_Base* filter)
@@ -473,6 +492,22 @@ class FPLOG_API Fplog_Impl
 
     private:
 
+        struct Filter_Mq_Entry
+        {
+            fplog::Message* message;
+            bool pass;
+
+            Filter_Mq_Entry() { message = 0; pass = false; }
+            Filter_Mq_Entry(fplog::Message& msg) { message = new fplog::Message(msg); }
+
+            void dispose()
+            {
+                delete message;
+                message = 0;
+                pass = false;
+            }
+        };
+
         Shared_Sequence_Number sequence_;
         bool inited_;
         bool own_transport_;
@@ -482,6 +517,11 @@ class FPLOG_API Fplog_Impl
         std::string appname_;
 
         std::queue<std::string*> mq_;
+        std::queue<Filter_Mq_Entry> filter_mq_;
+        
+        std::thread** filter_threads_;
+        unsigned num_filter_threads_;
+
         std::thread* mq_reader_;
 
         struct Logger_Settings
@@ -495,6 +535,7 @@ class FPLOG_API Fplog_Impl
 
         std::recursive_mutex mutex_;
         std::recursive_mutex mq_reader_mutex_;
+        std::recursive_mutex filter_mq_mutex_;
 
         fplog::Transport_Interface* transport_;
         sprot::Protocol* protocol_;
@@ -550,27 +591,61 @@ class FPLOG_API Fplog_Impl
                 }
             }
         }
-
-        bool passed_filters(Message& msg)
-        {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
-            
-            if (settings.filter_id_ptr_map.size() == 0)
-                return false;
-
-            bool should_pass = true;
-
-            for (std::map<std::string, std::shared_ptr<Filter_Base>>::iterator it = settings.filter_id_ptr_map.begin(); it != settings.filter_id_ptr_map.end(); ++it)
-            {
-                should_pass = (should_pass && it->second->should_pass(msg));
-                if (!should_pass)
-                    break;
-            }
-
-            return should_pass;
-        }
 };
+
+void pass_filters(Fplog_Impl* _this, size_t hash)
+{
+    while(!_this->stopping_)
+    {
+                
+        Fplog_Impl::Filter_Mq_Entry entry;
+        Fplog_Impl::Logger_Settings settings;
+        bool is_empty = false;
+
+        {
+            std::lock_guard<std::recursive_mutex> mq_lock(_this->filter_mq_mutex_);
+
+            if (!_this->filter_mq_.empty())
+            {
+                entry = _this->filter_mq_.front();
+                _this->filter_mq_.pop();
+
+                std::lock_guard<std::recursive_mutex> data_lock(_this->mutex_);
+                settings = _this->thread_log_settings_table_[hash];
+            }
+            else
+            {
+                is_empty = true;
+            }
+        }
+
+        if (is_empty)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            is_empty = false;
+        }
+
+        if (settings.filter_id_ptr_map.size() == 0)
+            continue;
+
+        bool should_pass = true;
+
+        for (std::map<std::string, std::shared_ptr<Filter_Base>>::iterator it = settings.filter_id_ptr_map.begin(); it != settings.filter_id_ptr_map.end(); ++it)
+        {
+            should_pass = (should_pass && it->second->should_pass(*entry.message));
+            if (!should_pass)
+                break;
+        }
+
+        entry.pass = should_pass;
+        if (entry.pass)
+        {
+            std::lock_guard<std::recursive_mutex> data_lock(_this->mutex_);
+            _this->mq_.push(new std::string(entry.message->as_string()));
+            entry.dispose();
+        }
+    }
+}
 
 FPLOG_API Fplog_Impl* g_fplog_impl = 0;
 std::recursive_mutex g_api_mutex;
