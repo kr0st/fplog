@@ -303,6 +303,7 @@ FPLOG_API void openlog(const char* facility, Filter_Base* filter = 0);
 FPLOG_API void closelog();
 
 //Scope of filter-related functions is a calling thread - all manipulations will apply to calling thread only.
+//fplog will take ownership of the filter on adding and will deallocate it on removing, closelog() or shutdownlog().
 FPLOG_API void add_filter(Filter_Base* filter);
 FPLOG_API void remove_filter(Filter_Base* filter);
 FPLOG_API Filter_Base* find_filter(const char* filter_id);

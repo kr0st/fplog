@@ -13,7 +13,7 @@
 namespace fplog
 {
 
-typedef std::map<std::string, Filter_Base*> Filter_Map;
+typedef std::map<std::string, std::shared_ptr<Filter_Base>> Filter_Map;
 
 const char* Prio::emergency = "emergency"; //system is unusable
 const char* Prio::alert = "alert"; //action must be taken immediately
@@ -401,7 +401,7 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             Logger_Settings settings = Logger_Settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
-            settings.filter_id_ptr_map[filter_id] = filter;
+            settings.filter_id_ptr_map[filter_id] = std::shared_ptr<Filter_Base>(filter);
 
             thread_log_settings_table_[std::this_thread::get_id().hash()] = settings;
         }
@@ -436,9 +436,9 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
-            std::map<std::string, Filter_Base*>::iterator found(settings.filter_id_ptr_map.find(filter_id_trimmed));
+            std::map<std::string, std::shared_ptr<Filter_Base>>::iterator found(settings.filter_id_ptr_map.find(filter_id_trimmed));
             if (found != settings.filter_id_ptr_map.end())
-                return found->second;
+                return found->second.get();
 
             return 0;
         }
@@ -536,7 +536,7 @@ class FPLOG_API Fplog_Impl
 
             bool should_pass = true;
 
-            for (std::map<std::string, Filter_Base*>::iterator it = settings.filter_id_ptr_map.begin(); it != settings.filter_id_ptr_map.end(); ++it)
+            for (std::map<std::string, std::shared_ptr<Filter_Base>>::iterator it = settings.filter_id_ptr_map.begin(); it != settings.filter_id_ptr_map.end(); ++it)
             {
                 should_pass = (should_pass && it->second->should_pass(msg));
                 if (!should_pass)
@@ -645,8 +645,12 @@ class Lua_Filter::Lua_Filter_Impl
         Lua_Filter_Impl(const char* lua_script):
         lua_script_(lua_script)
         {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-            static bool inited_ = one_time_init();
+            init();
+        }
+        
+        ~Lua_Filter_Impl()
+        {
+            deinit();
         }
 
         bool should_pass(Message& msg)
@@ -671,9 +675,8 @@ class Lua_Filter::Lua_Filter_Impl
             if (!lua_error.empty())
             {
                 printf("lua_err = %s\n", lua_error.c_str());
-
-                one_time_deinit();
-                one_time_init();
+                deinit();
+                init();
             }
 
             lua_getglobal(lua_state_, "filter_result");
@@ -689,37 +692,23 @@ class Lua_Filter::Lua_Filter_Impl
 
     private:
 
-        static bool inited_;
-        class Static_Destructor
+        bool inited_;
+
+        lua_State *lua_state_;
+        std::recursive_mutex mutex_;
+
+        void init()
         {
-            public:
-
-                ~Static_Destructor()
-                {
-                    Lua_Filter_Impl::one_time_deinit();
-                }
-        };
-
-        static Static_Destructor static_destructor_;
-        static lua_State *lua_state_;
-        static std::recursive_mutex mutex_;
-
-        Lua_Filter_Impl();
-
-        bool one_time_init()
-        {
-            if (lua_state_ != 0)
-                return true;
-
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
             lua_state_ = luaL_newstate();
             luaL_openlibs(lua_state_);
 
             luaL_dostring(lua_state_, "json = require(\"json\")\n");        
 
-            return (lua_state_ != 0);
+            inited_ = (lua_state_ != 0);
         }
 
-        static void one_time_deinit()
+        void deinit()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             if(lua_state_) lua_close(lua_state_);
@@ -742,10 +731,6 @@ class Lua_Filter::Lua_Filter_Impl
 
         std::string lua_script_;
 };
-
-lua_State* Lua_Filter::Lua_Filter_Impl::lua_state_ = 0;
-std::recursive_mutex Lua_Filter::Lua_Filter_Impl::mutex_;
-Lua_Filter::Lua_Filter_Impl::Static_Destructor Lua_Filter::Lua_Filter_Impl::static_destructor_;
 
 Lua_Filter::Lua_Filter(const char* filter_id, const char* lua_script):
 Filter_Base(filter_id)

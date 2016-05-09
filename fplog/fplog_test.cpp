@@ -118,6 +118,8 @@ bool filter_test()
         fplog::Message msg(fplog::Prio::debug, fplog::Facility::system, "this debug message should be invisible");
         fplog::write(msg);
     }
+    
+    filter = new Priority_Filter("prio_filter");
 
     Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.text ~= nil and string.find(fplog_message.text, \"hello from Lua!\") ~= nil then filter_result = true else filter_result = false end");
 
@@ -193,6 +195,29 @@ void random_message()
     }
 }
 
+fplog::Message get_random_message()
+{
+    std::string str = string_vector[rand() % 10];
+
+    int x = rand() % 2000;
+    if (x % 10 == 0)
+    {
+        return FPL_TRACE("%s", str.c_str());
+    }
+    else if (x % 6 == 0)
+    {
+        return FPL_ERROR("%s", str.c_str());
+    }
+    else if (x % 7 == 0)
+    {
+        return FPL_WARN("%s", str.c_str());
+    }
+    else
+    {
+        return FPL_INFO("%s", str.c_str());
+    }
+}
+
 void performance_test()
 {
     int circle_count = 10;
@@ -234,7 +259,6 @@ void performance_test()
         std::cout << "Duration of " << j << " iterations: " << duration << " microseconds" <<std::endl;
 
         fplog::remove_filter(filter);
-        delete filter;
         filter = 0;
         
         closelog();
@@ -278,8 +302,6 @@ void performance_test()
         std::cout << "Duration of " << j << " iterations: " << duration1 << " microseconds" << std::endl;
 
         fplog::remove_filter(lua_filter);
-        
-        delete lua_filter;
         lua_filter = 0;
 
         closelog();
@@ -306,6 +328,95 @@ void performance_test()
     _getch();
 }
 
+void prio_filter_perf_test_thread(int msg_count)
+{
+    Priority_Filter* prio_filter = new Priority_Filter("prio_filter");
+
+    prio_filter->add(fplog::Prio::warning);
+    prio_filter->add(fplog::Prio::error);
+    prio_filter->add(fplog::Prio::critical);
+    prio_filter->add(fplog::Prio::info);
+
+    for (int i = 0; i < msg_count; i++)
+    {
+        try
+        {
+            fplog::Message msg(get_random_message());
+            bool passed = prio_filter->should_pass(msg);
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION: %s\n", e.what().c_str());
+        }
+    }
+
+    delete prio_filter;
+}
+
+void lua_filter_perf_test_thread(int msg_count)
+{
+    Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");
+
+    for (int i = 0; i < msg_count; i++)
+    {
+        try
+        {
+            fplog::Message msg(get_random_message());
+            bool passed = lua_filter->should_pass(msg);
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            printf("EXCEPTION: %s\n", e.what().c_str());
+        }
+    }
+
+    delete lua_filter;
+}
+
+typedef void (*perf_test_thread_func)(int msg_count);
+
+unsigned multi_threaded_filter_performance_test(perf_test_thread_func thread_func, int num_threads, int msg_per_thread)
+{
+    using namespace std::chrono;
+
+    if (!thread_func || (num_threads == 0))
+        return 0;
+
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
+    std::thread** workers = new std::thread* [num_threads];
+    for (int i = 0; i < num_threads; ++i)
+        workers[i] = new std::thread(thread_func, msg_per_thread);
+
+    for (int i = 0; i < num_threads; ++i)
+    {
+        workers[i]->join();
+        delete workers[i];
+    }
+
+    delete [] workers;
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    
+    auto duration = duration_cast<seconds>(t2 - t1).count();
+
+    return duration;
+}
+
+void filter_perft_test_summary()
+{
+    int msg_count = 2000000;
+    int thread_count = 2;
+
+    unsigned duration = multi_threaded_filter_performance_test(&prio_filter_perf_test_thread, thread_count, msg_count);
+    unsigned msg_per_second = msg_count * thread_count / duration;
+    std::cout << "Priority filter performance = " << msg_per_second << " mps" << "(" << thread_count << " threads)" << std::endl;
+
+    msg_count = 200000;
+    duration = multi_threaded_filter_performance_test(&lua_filter_perf_test_thread, thread_count, msg_count);
+    msg_per_second = msg_count * thread_count / duration;
+    std::cout << "Lua filter performance = " << msg_per_second << " mps" << "(" << thread_count << " threads)" << std::endl;
+}
 
 void manual_test()
 {
@@ -418,9 +529,12 @@ void multithreading_test()
 
 int main()
 {
-    //fplog::testing::run_all_tests();
+    fplog::testing::run_all_tests();
     //fplog::testing::manual_test();
-    fplog::testing::performance_test();
+
+    //fplog::testing::performance_test();
+
+    //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();
 
