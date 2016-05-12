@@ -465,7 +465,7 @@ class FPLOG_API Fplog_Impl
                 else
                 {
                     counter = 0;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
             }
         }
@@ -539,7 +539,7 @@ class FPLOG_API Fplog_Impl
                     {
                         if (stopping_)
                             return;
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     }
 
                 }
