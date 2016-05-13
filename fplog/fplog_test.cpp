@@ -6,6 +6,9 @@
 #include <thread>
 #include <conio.h>
 
+#include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
+
 
 namespace fplog { 
     
@@ -529,7 +532,104 @@ void multithreading_test()
     }
 }
 
-}};
+}
+
+class Chai_Filter: public Filter_Base
+{
+    public:
+
+            Chai_Filter(const char* filter_id, const char* chai_script);
+            virtual bool should_pass(Message& msg);
+            ~Chai_Filter();
+
+    private:
+
+            Chai_Filter();
+
+            class Chai_Filter_Impl;
+            Chai_Filter_Impl* impl_;
+};
+
+class Chai_Filter::Chai_Filter_Impl
+{
+    public:
+
+        Chai_Filter_Impl(const char* chai_script):
+        chai_script_(chai_script)
+        {
+            init();
+        }
+        
+        ~Chai_Filter_Impl()
+        {
+            deinit();
+        }
+
+        bool should_pass(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            std::string log_msg_escaped(msg.as_string());
+            generic_util::escape_quotes(log_msg_escaped);
+
+            const char* format = "log_msg=\"%s\"\nfplog_message = json.decode(log_msg)\n";
+            int chai_len = log_msg_escaped.length() + 256;
+            
+            char* chai_script = new char[chai_len];
+            memset(chai_script, 0, chai_len);
+            std::auto_ptr<char> chai_script_ptr(chai_script);
+
+            _snprintf(chai_script, chai_len - 1, format, log_msg_escaped.c_str());
+
+            std::string full_script(chai_script + chai_script_);
+
+            //"filter_result"
+
+            return false;
+        }
+
+
+    private:
+
+        bool inited_;
+        std::recursive_mutex mutex_;
+        chaiscript::ChaiScript* chai_;
+
+        void init()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            chai_ = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
+        }
+
+        void deinit()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            delete chai_;
+        }
+
+        std::string chai_script_;
+};
+
+Chai_Filter::Chai_Filter(const char* filter_id, const char* chai_script):
+Filter_Base(filter_id)
+{
+    impl_ = new Chai_Filter_Impl(chai_script);
+}
+
+bool Chai_Filter::should_pass(Message& msg)
+{
+    return impl_->should_pass(msg);
+}
+
+Chai_Filter::~Chai_Filter()
+{
+    delete impl_;
+}
+
+};
+
 
 int main()
 {
