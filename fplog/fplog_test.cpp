@@ -222,6 +222,118 @@ fplog::Message get_random_message()
     }
 }
 
+class Chai_Filter: public Filter_Base
+{
+    public:
+
+            Chai_Filter(const char* filter_id, const char* chai_script);
+            virtual bool should_pass(Message& msg);
+            ~Chai_Filter();
+
+    private:
+
+            Chai_Filter();
+
+            class Chai_Filter_Impl;
+            Chai_Filter_Impl* impl_;
+};
+
+class Chai_Filter::Chai_Filter_Impl
+{
+    public:
+
+        Chai_Filter_Impl(const char* chai_script):
+        chai_script_(chai_script)
+        {
+            init();
+        }
+        
+        ~Chai_Filter_Impl()
+        {
+            deinit();
+        }
+
+        bool should_pass(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            filter_result_ = false;
+
+            std::string log_msg_escaped(msg.as_string());
+            generic_util::escape_quotes(log_msg_escaped);
+
+            std::string std_format("log_msg=\"%s\";\nfplog_message = from_json(log_msg);\n");
+        
+        retry_parsing:
+
+            int chai_len = log_msg_escaped.length() + 256;
+            
+            char* chai_script = new char[chai_len];
+            memset(chai_script, 0, chai_len);
+            std::auto_ptr<char> chai_script_ptr(chai_script);
+
+            _snprintf(chai_script, chai_len - 1, std_format.c_str(), log_msg_escaped.c_str());
+
+            std::string full_script(chai_script + chai_script_);
+
+            try
+            {
+                chai_->eval(full_script);
+            }
+            catch (chaiscript::exception::eval_error& e)
+            {
+                std_format = "var log_msg=\"%s\";\nvar fplog_message = from_json(log_msg);\n";
+                goto retry_parsing;
+            }
+            catch (std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+                std::cout << full_script << std::endl;
+            }
+
+            return filter_result_;
+        }
+
+
+    private:
+
+        bool filter_result_;
+        std::recursive_mutex mutex_;
+        chaiscript::ChaiScript* chai_;
+
+        void init()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            chai_ = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
+            chai_->add(chaiscript::var(std::ref(filter_result_)), "filter_result");
+        }
+
+        void deinit()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            delete chai_;
+        }
+
+        std::string chai_script_;
+};
+
+Chai_Filter::Chai_Filter(const char* filter_id, const char* chai_script):
+Filter_Base(filter_id)
+{
+    impl_ = new Chai_Filter_Impl(chai_script);
+}
+
+bool Chai_Filter::should_pass(Message& msg)
+{
+    return impl_->should_pass(msg);
+}
+
+Chai_Filter::~Chai_Filter()
+{
+    delete impl_;
+}
+
 void performance_test()
 {
     int circle_count = 10;
@@ -231,7 +343,7 @@ void performance_test()
     initlog("fplog_test", "18749_18750");
 
 
-    std::cout << "Priority filter " << std::endl;
+    /*std::cout << "Priority filter " << std::endl;
 
     double duration_sum = 0;
 
@@ -273,7 +385,7 @@ void performance_test()
     double result = message_count / final_duration;
 
     std::cout << "Duration of 10 iteration with " << message_count << " messages, are done in: " << final_duration << " seconds" << std::endl;
-    std::cout << result << " messages per second " << std::endl;
+    std::cout << result << " messages per second " << std::endl;*/
   
     
     std::cout << "Lua filter " << std::endl;
@@ -283,7 +395,8 @@ void performance_test()
     for (int j = 0; j < circle_count; j++){
  
         openlog(Facility::security);
-        Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");         //local clock = os.clock function sleep() local i = 0 while i < 250000000 do i = i + 1 end end sleep() 
+        //Lua_Filter* lua_filter = new Lua_Filter("lua_filter", "if fplog_message.priority ~= nil then filter_result = true else filter_result = false end");         //local clock = os.clock function sleep() local i = 0 while i < 250000000 do i = i + 1 end end sleep() 
+        fplog::testing::Chai_Filter* lua_filter = new fplog::testing::Chai_Filter("chai_filter", "if (fplog_message[\"priority\"].is_var_undef()) { filter_result = false; } else { filter_result = true;}");
         fplog::add_filter(lua_filter);
 
         high_resolution_clock::time_point t3 = high_resolution_clock::now();
@@ -323,14 +436,14 @@ void performance_test()
 
     std::cout << "Duration of 10 iteration with " << message_count << " messages, are done in: " << final_duration1 << " seconds" << std::endl;
 
-    if (final_duration < final_duration1)
+    /*if (final_duration < final_duration1)
     {
         std::cout << "Priority filter is faster than Lua by " << (final_duration1 * 100) / final_duration - 100 << "%" << std::endl;
     }
     else {
         std::cout << "Lua filter is faster than Priority by " << (final_duration * 100) / final_duration1 - 100 << "%" << std::endl;
 
-    }
+    }*/
 
     _getch();
 }
@@ -532,103 +645,7 @@ void multithreading_test()
     }
 }
 
-}
-
-class Chai_Filter: public Filter_Base
-{
-    public:
-
-            Chai_Filter(const char* filter_id, const char* chai_script);
-            virtual bool should_pass(Message& msg);
-            ~Chai_Filter();
-
-    private:
-
-            Chai_Filter();
-
-            class Chai_Filter_Impl;
-            Chai_Filter_Impl* impl_;
-};
-
-class Chai_Filter::Chai_Filter_Impl
-{
-    public:
-
-        Chai_Filter_Impl(const char* chai_script):
-        chai_script_(chai_script)
-        {
-            init();
-        }
-        
-        ~Chai_Filter_Impl()
-        {
-            deinit();
-        }
-
-        bool should_pass(Message& msg)
-        {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-            std::string log_msg_escaped(msg.as_string());
-            generic_util::escape_quotes(log_msg_escaped);
-
-            const char* format = "log_msg=\"%s\"\nfplog_message = json.decode(log_msg)\n";
-            int chai_len = log_msg_escaped.length() + 256;
-            
-            char* chai_script = new char[chai_len];
-            memset(chai_script, 0, chai_len);
-            std::auto_ptr<char> chai_script_ptr(chai_script);
-
-            _snprintf(chai_script, chai_len - 1, format, log_msg_escaped.c_str());
-
-            std::string full_script(chai_script + chai_script_);
-
-            //"filter_result"
-
-            return false;
-        }
-
-
-    private:
-
-        bool inited_;
-        std::recursive_mutex mutex_;
-        chaiscript::ChaiScript* chai_;
-
-        void init()
-        {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-            chai_ = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
-        }
-
-        void deinit()
-        {
-            std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-            delete chai_;
-        }
-
-        std::string chai_script_;
-};
-
-Chai_Filter::Chai_Filter(const char* filter_id, const char* chai_script):
-Filter_Base(filter_id)
-{
-    impl_ = new Chai_Filter_Impl(chai_script);
-}
-
-bool Chai_Filter::should_pass(Message& msg)
-{
-    return impl_->should_pass(msg);
-}
-
-Chai_Filter::~Chai_Filter()
-{
-    delete impl_;
-}
-
-};
+}};
 
 
 int main()
