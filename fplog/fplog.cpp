@@ -8,7 +8,8 @@
 #include <spipc/socket_transport.h>
 #include <sprot/sprot.h>
 #include <mutex>
-
+#include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
 
 namespace fplog
 {
@@ -769,6 +770,102 @@ bool Lua_Filter::should_pass(Message& msg)
 }
 
 Lua_Filter::~Lua_Filter()
+{
+    delete impl_;
+}
+
+class Chai_Filter::Chai_Filter_Impl
+{
+    public:
+
+        Chai_Filter_Impl(const char* chai_script):
+        chai_script_(chai_script)
+        {
+            init();
+        }
+        
+        ~Chai_Filter_Impl()
+        {
+            deinit();
+        }
+
+        bool should_pass(Message& msg)
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+            filter_result_ = false;
+
+            std::string log_msg_escaped(msg.as_string());
+            generic_util::escape_quotes(log_msg_escaped);
+
+            std::string std_format("log_msg=\"%s\";\nfplog_message = from_json(log_msg);\n");
+        
+        retry_parsing:
+
+            int chai_len = log_msg_escaped.length() + 256;
+            
+            char* chai_script = new char[chai_len];
+            memset(chai_script, 0, chai_len);
+            std::auto_ptr<char> chai_script_ptr(chai_script);
+
+            _snprintf(chai_script, chai_len - 1, std_format.c_str(), log_msg_escaped.c_str());
+
+            std::string full_script(chai_script + chai_script_);
+
+            try
+            {
+                chai_->eval(full_script);
+            }
+            catch (chaiscript::exception::eval_error& e)
+            {
+                std_format = "var log_msg=\"%s\";\nvar fplog_message = from_json(log_msg);\n";
+                goto retry_parsing;
+            }
+            catch (std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+                std::cout << full_script << std::endl;
+            }
+
+            return filter_result_;
+        }
+
+
+    private:
+
+        bool filter_result_;
+        std::recursive_mutex mutex_;
+        chaiscript::ChaiScript* chai_;
+
+        void init()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            chai_ = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
+            chai_->add(chaiscript::var(std::ref(filter_result_)), "filter_result");
+        }
+
+        void deinit()
+        {
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            delete chai_;
+        }
+
+        std::string chai_script_;
+};
+
+Chai_Filter::Chai_Filter(const char* filter_id, const char* chai_script):
+Filter_Base(filter_id)
+{
+    impl_ = new Chai_Filter_Impl(chai_script);
+}
+
+bool Chai_Filter::should_pass(Message& msg)
+{
+    return impl_->should_pass(msg);
+}
+
+Chai_Filter::~Chai_Filter()
 {
     delete impl_;
 }

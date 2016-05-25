@@ -251,6 +251,8 @@ class FPLOG_API Filter_Base
 //this is a log message parsed from JSON and turned into Lua tables hierarchy.
 //All fields contained in the log message are available from Lua.
 //If script decides that fplog_message should pass the filter it should set global var filter_result to true.
+//!!! PERFORMANCE WARNING !!! use only when really advanced log filtering logic is required on client side:
+//this filter is very slow, meaning only around 250 messages per second will be handled.
 class FPLOG_API Lua_Filter: public Filter_Base
 {
     public:
@@ -265,6 +267,28 @@ class FPLOG_API Lua_Filter: public Filter_Base
 
             class Lua_Filter_Impl;
             Lua_Filter_Impl* impl_;
+};
+
+//From within ChaiScript code a special variable will be accessible: fplog_message,
+//this is a log message parsed from JSON.
+//All fields contained in the log message are available from ChaiScript.
+//If script decides that fplog_message should pass the filter it should set global var filter_result to true.
+//!!! PERFORMANCE WARNING !!! use only when really advanced log filtering logic is required on client side:
+//this filter is very slow, meaning only around 520 messages per second will be handled.
+class FPLOG_API Chai_Filter: public Filter_Base
+{
+    public:
+
+            Chai_Filter(const char* filter_id, const char* chai_script);
+            virtual bool should_pass(Message& msg);
+            ~Chai_Filter();
+
+    private:
+
+            Chai_Filter();
+
+            class Chai_Filter_Impl;
+            Chai_Filter_Impl* impl_;
 };
 
 //You need to explicitly state messages of which priorities you need to log by using add/remove.
