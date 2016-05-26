@@ -355,7 +355,7 @@ class Impl
 
                 if (!mq_.empty())
                 {
-                    mq_.front(str);
+                    str = mq_.front();
                     mq_.pop();
                     delete str;
                 }
@@ -415,6 +415,18 @@ class Impl
                     buf_sz *= 2;
                     delete [] buf;
                     buf = new char [buf_sz];
+                }
+                catch(fplog::exceptions::Timeout&)
+                {
+                    {
+                        std::lock_guard<std::recursive_mutex> lock(mutex_);
+                        if (should_stop_)
+                        {
+                            delete [] buf;
+                            return;
+                        }
+                    }
+                    continue;
                 }
                 catch(fplog::exceptions::Generic_Exception& e)
                 {
@@ -519,7 +531,7 @@ class Impl
 
                     if (!mq_.empty())
                     {
-                        mq_.front(str);
+                        str = mq_.front();
                         mq_.pop();
                     }
                 }
@@ -538,7 +550,6 @@ class Impl
                         if (log_transport_ && protocol_)
                         {
                             protocol_->write(str->c_str(), str->size() + 1, 200);
-                            mq_.pop();
                         } 
                         else
                         {
@@ -547,7 +558,8 @@ class Impl
                     }
                     catch(fplog::exceptions::Generic_Exception& e)
                     {
-                        if (retries <= 0) {
+                        if (retries <= 0)
+                        {
                             fplog::Message error_msg = FPL_ERROR(std::string("Error: " + e.what() + " Log message:" + *str).c_str()).set(fplog::Message::Mandatory_Fields::appname, "fplogd").add(fplog::Message::Optional_Fields::sequence, 0).set(fplog::Message::Mandatory_Fields::facility, fplog::Facility::fplog);
                             std::string error_str = error_msg.as_string();
                             append_hostname(&error_str);
@@ -559,17 +571,16 @@ class Impl
                             try
                             {
                                 protocol_->write(error_str.c_str(), error_str.size() + 1, 200);
-                                mq_.pop();
                             }
                             catch (fplog::exceptions::Generic_Exception& e)
                             {
-                                if (retries_error <= 0){
+                                if (retries_error <= 0)
+                                {
                                     std::ofstream file(emergency_log_file_path, std::ios::app);
                                     if (file.is_open())
                                     {
                                         file << error_str + "\n";
                                         file.close();
-                                        mq_.pop();
                                     }
                                 }
                                 else

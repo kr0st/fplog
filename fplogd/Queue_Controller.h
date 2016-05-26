@@ -8,7 +8,7 @@ class Queue_Controller {
 public: 
 
     bool empty();
-    void front(string *str);
+    string *front();
     void pop();
     void push(string *str);
 

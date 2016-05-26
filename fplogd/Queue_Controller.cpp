@@ -6,10 +6,11 @@ bool Queue_Controller::empty()
     
 };
 
-void Queue_Controller::front(string *str)
+string *Queue_Controller::front()
 {
-    str = mq_.front();
+    return mq_.front();
 }
+
 void Queue_Controller::pop()
 {
     return mq_.pop();
