@@ -222,7 +222,7 @@ fplog::Message get_random_message()
 void performance_test()
 {
     int circle_count = 10;
-    int message_count = 10000;
+    int message_count = 100000;
 
     using namespace std::chrono;
     initlog("fplog_test", "18749_18750");

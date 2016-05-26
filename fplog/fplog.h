@@ -146,9 +146,11 @@ class FPLOG_API Message
         {
             validate_params_ = false;
             
+            Message& msg(*this);
+
             try
             {
-                add(param_name, param);
+                msg = add(param_name, param);
             }
             catch(std::exception& e)
             {
@@ -162,6 +164,7 @@ class FPLOG_API Message
             }
 
             validate_params_ = true;
+            return msg;
         }
 
         template <typename T> bool is_valid(const char* param_name, T param)
@@ -310,7 +313,11 @@ class FPLOG_API Priority_Filter: public Filter_Base
 };
 
 //One time per application call.
-FPLOG_API void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport = 0);
+//async_logging means that log messages are going to the queue before dispatching to the destination.
+//This process is faster than sync logging but it also means that if app crashes with some messages still
+//in the queue, those messages are lost. If you need to debug some app crash, set this parameter to false
+//until you find the reason for the crash.
+FPLOG_API void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport = 0, bool async_logging = true);
 
 //One time per application call to stop logging from an application and free all associated resources.
 FPLOG_API void shutdownlog();

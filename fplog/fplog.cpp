@@ -290,7 +290,8 @@ class FPLOG_API Fplog_Impl
         test_mode_(false),
         stopping_(false),
         transport_(0),
-        mq_reader_(0)
+        mq_reader_(0),
+        async_logging_(true)
         {
             Message::one_time_init();
         }
@@ -328,9 +329,11 @@ class FPLOG_API Fplog_Impl
                 add_filter(filter);
         }
 
-        void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
+        void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport, bool async_logging)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+            async_logging_ = async_logging;
 
             if (!mq_reader_)
                 mq_reader_ = new std::thread(&Fplog_Impl::mq_reader, this);
@@ -386,7 +389,30 @@ class FPLOG_API Fplog_Impl
                 if (test_mode_)
                     g_test_results_vector.push_back(msg.as_string());
                 else
-                    mq_.push(new std::string(msg.as_string()));
+                {
+                    if (async_logging_)
+                    {
+                        mq_.push(new std::string(msg.as_string()));
+                    }
+                    else
+                    {
+                        int send_retries = 25;
+                        while (send_retries > 0)
+                        {
+                            try
+                            {
+                                std::string str(msg.as_string());
+                                protocol_->write(str.c_str(), str.size(), 200);
+                                break;
+                            }
+                            catch(fplog::exceptions::Generic_Exception)
+                            {
+                                send_retries--;
+                                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -478,7 +504,9 @@ class FPLOG_API Fplog_Impl
         bool inited_;
         bool own_transport_;
         bool test_mode_;
+
         volatile bool stopping_;
+        bool async_logging_;
 
         std::string appname_;
 
@@ -586,14 +614,14 @@ void write(Message& msg)
     g_fplog_impl->write(msg);
 }
 
-void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport)
+void initlog(const char* appname, const char* uid, fplog::Transport_Interface* transport, bool async_logging)
 {
     std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
 
     if (!g_fplog_impl)
         g_fplog_impl = new Fplog_Impl();
 
-    return g_fplog_impl->initlog(appname, uid, transport);
+    return g_fplog_impl->initlog(appname, uid, transport, async_logging);
 }
 
 void shutdownlog()
