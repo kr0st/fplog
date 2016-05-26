@@ -109,8 +109,6 @@
     <ClInclude Include="fplog.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\chaiscript\src\chaiscript_stdlib.cpp" />
-    <ClCompile Include="..\chaiscript\src\stl_extra.cpp" />
     <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="fplog_test.cpp" />
   </ItemGroup>
