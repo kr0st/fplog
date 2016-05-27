@@ -52,6 +52,7 @@ const char* Message::Optional_Fields::/*the*/blob = "blob"; //used when attachin
 const char* Message::Optional_Fields::warning = "warning"; //contains warning for the user in case there was an issue with this specific log message
 const char* Message::Optional_Fields::sequence = "sequence"; //sequence number that allows to prevent duplicate messages and also to tell
                                                              //which message was first even if timestamps are the same
+const char* Message::Optional_Fields::batch = "batch"; //indicator if this message is actually a container for N other shorter messages
 
 Message::Message(const char* prio, const char *facility, const char* format, ...):
 msg_(JSON_NODE)
@@ -118,6 +119,11 @@ Message& Message::set_method(const char* method)
     return set(Optional_Fields::method, method);
 }
 
+Message& Message::set_sequence(long long sequence)
+{
+    return set(Optional_Fields::sequence, sequence);
+}
+
 Message& Message::add(JSONNode& param)
 {
     if (is_valid(param))
@@ -128,6 +134,31 @@ Message& Message::add(JSONNode& param)
         else
             msg_.push_back(param);
     }
+
+    return *this;
+}
+
+Message& Message::add_batch(JSONNode& batch)
+{
+    batch.set_name(Message::Optional_Fields::batch);
+    validate_params_ = false;
+
+    try
+    {
+        add(batch);
+    }
+    catch(std::exception& e)
+    {
+        validate_params_ = true;
+        throw e;
+    }
+    catch(fplog::exceptions::Generic_Exception& e)
+    {
+        validate_params_ = true;
+        throw e;
+    }
+
+    validate_params_ = true;
 
     return *this;
 }
@@ -271,6 +302,8 @@ void Message::one_time_init()
     reserved_names_.push_back(Optional_Fields::options);
     reserved_names_.push_back(Optional_Fields::text);
     reserved_names_.push_back(Optional_Fields::warning);
+    reserved_names_.push_back(Optional_Fields::sequence);
+    reserved_names_.push_back(Optional_Fields::batch);
 }
 
 std::vector<std::string> Message::reserved_names_;
@@ -384,7 +417,7 @@ class FPLOG_API Fplog_Impl
             msg.set(Message::Mandatory_Fields::appname, appname_);
             if (passed_filters(msg))
             {
-                msg.add(Message::Optional_Fields::sequence, (long long)sequence_.read());
+                msg.set_sequence((long long)sequence_.read());
 
                 if (test_mode_)
                     g_test_results_vector.push_back(msg.as_string());

@@ -476,13 +476,36 @@ void spam_test()
     closelog();
 }
 
+bool batching_test()
+{
+    Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
+    if (!filter)
+        return false;
+
+    {
+        fplog::Message msg(fplog::Prio::alert, fplog::Facility::system, "this message should not appear");
+        fplog::write(msg);
+    }
+
+    filter->add(fplog::Prio::debug);
+
+    JSONNode batch(JSON_ARRAY);
+
+    batch.push_back(fplog::Message(fplog::Prio::debug, fplog::Facility::user, "batching test msg #1").as_json());
+    batch.push_back(fplog::Message(fplog::Prio::debug, fplog::Facility::user, "batching test msg #2").as_json());
+
+    fplog::write(fplog::Message(fplog::Prio::debug, fplog::Facility::user).add_batch(batch));
+
+    return true;
+}
+
 void run_all_tests()
 {
     initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
 
-    if (!filter_test())
+    /*if (!filter_test())
         printf("filter_test failed!\n");
 
     if (!class_logging_test())
@@ -496,6 +519,9 @@ void run_all_tests()
 
     if (!input_validators_test())
         printf("input_validators_test failed!\n");
+        */
+    if (!batching_test())
+        printf("batching_test failed!\n");
 
     print_test_vector();
     closelog();
@@ -535,11 +561,10 @@ void multithreading_test()
 
 int main()
 {
-    //fplog::testing::run_all_tests();
+    fplog::testing::run_all_tests();
+
     //fplog::testing::manual_test();
-
-    fplog::testing::performance_test();
-
+    //fplog::testing::performance_test();
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();

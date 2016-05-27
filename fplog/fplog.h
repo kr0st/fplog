@@ -103,6 +103,7 @@ class FPLOG_API Message
             static const char* warning; //contains warning for the user in case there was an issue with this specific log message
             static const char* sequence; //sequence number that allows to prevent duplicate messages and also to tell
                                          //which message was first even if timestamps are the same
+            static const char* batch; //indicator if this message is actually a container for N other shorter messages
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
@@ -118,6 +119,7 @@ class FPLOG_API Message
 
         //before adding JSON element make sure it has a name
         Message& add(JSONNode& param);
+        Message& add_batch(JSONNode& batch);
 
         Message& set_text(std::string& text);
         Message& set_text(const char* text);
@@ -205,6 +207,8 @@ class FPLOG_API Message
 
             return *this;
         }
+        
+        Message& set_sequence(long long sequence);
 
         JSONNode msg_;
         bool validate_params_;
