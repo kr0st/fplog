@@ -107,6 +107,8 @@ class FPLOG_API Message
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
+        Message(JSONNode& msg);
+        Message(std::string& msg);
 
         Message& set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
@@ -119,7 +121,10 @@ class FPLOG_API Message
 
         //before adding JSON element make sure it has a name
         Message& add(JSONNode& param);
+
         Message& add_batch(JSONNode& batch);
+        bool has_batch();
+        JSONNode Message::get_batch();
 
         Message& set_text(std::string& text);
         Message& set_text(const char* text);

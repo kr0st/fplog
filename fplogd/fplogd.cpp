@@ -520,6 +520,8 @@ class Impl
         void mq_reader()
         {
             std::string emergency_log_file_path = get_log_error_file_full_path();
+            std::vector<std::string*> batch;
+
             while(true)
             {
                 std::string* str = 0;
@@ -529,15 +531,37 @@ class Impl
                     if (should_stop_)
                         return;
 
-                    if (!mq_.empty())
+                    while (!mq_.empty() && (batch.size() < 100))
                     {
                         str = mq_.front();
                         mq_.pop();
+                        batch.push_back(str);
                     }
                 }
 
+                if (batch.size() < 100)
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    continue;
+                }
+
+                JSONNode json_batch(JSON_ARRAY);
+                for (auto item: batch)
+                    json_batch.push_back(fplog::Message(*item).as_json());
+
+                str = new std::string(fplog::Message(fplog::Prio::critical, "fplog").add_batch(json_batch).as_string());
+
                 if (str)
                 {
+                    {
+                        std::vector<std::string*> empty_batch;
+                        
+                        for (auto item: batch)
+                            delete item;
+
+                        batch.swap(empty_batch);
+                    }
+
                     std::auto_ptr<std::string> str_ptr(str);
                     int retries = 5;
                     

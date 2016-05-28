@@ -163,6 +163,26 @@ Message& Message::add_batch(JSONNode& batch)
     return *this;
 }
 
+bool Message::has_batch()
+{
+    JSONNode::iterator it(msg_.find(fplog::Message::Optional_Fields::batch));
+
+    if (it != msg_.end())
+        return true;
+
+    return false;
+}
+
+JSONNode Message::get_batch()
+{
+    JSONNode::iterator it(msg_.find(fplog::Message::Optional_Fields::batch));
+
+    if (it != msg_.end())
+        return *it;
+
+    return JSONNode(JSON_ARRAY);
+}
+
 bool Message::is_valid(JSONNode& param)
 {
     if (!validate_params_)
@@ -196,6 +216,16 @@ std::string Message::as_string()
 JSONNode& Message::as_json()
 {
     return msg_;
+}
+
+Message::Message(JSONNode& msg)
+{
+    msg_ = msg;
+}
+
+Message::Message(std::string& msg)
+{
+    msg_ = msg;
 }
 
 bool Priority_Filter::should_pass(Message& msg)

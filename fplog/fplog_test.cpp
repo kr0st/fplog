@@ -482,11 +482,6 @@ bool batching_test()
     if (!filter)
         return false;
 
-    {
-        fplog::Message msg(fplog::Prio::alert, fplog::Facility::system, "this message should not appear");
-        fplog::write(msg);
-    }
-
     filter->add(fplog::Prio::debug);
 
     JSONNode batch(JSON_ARRAY);
@@ -561,10 +556,12 @@ void multithreading_test()
 
 int main()
 {
-    fplog::testing::run_all_tests();
+    //fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
-    //fplog::testing::performance_test();
+    
+    fplog::testing::performance_test();
+    
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();

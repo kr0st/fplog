@@ -13,7 +13,10 @@
 #include <conio.h>
 #include <queue>
 #include <mutex>
+
 #include <fplog_exceptions.h>
+#include <fplog.h>
+
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/thread/thread_time.hpp>
@@ -270,7 +273,18 @@ class Impl
                         continue;
                     }
 
-                    mq_.push(new std::string(buf));
+                    fplog::Message msg(new_str);
+
+                    if (!msg.has_batch())
+                    {
+                        mq_.push(new std::string(buf));
+                    }
+                    else
+                    {
+                        JSONNode batch(msg.get_batch());
+                        for (auto item: batch)
+                            mq_.push(new std::string(item.as_string()));
+                    }
 
                     old_str = new_str;
 
