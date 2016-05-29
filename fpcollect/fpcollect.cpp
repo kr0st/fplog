@@ -250,7 +250,7 @@ class Impl
 
             sprot::Protocol protocol(transport);
 
-            size_t buf_sz = 2048;
+            size_t buf_sz = 30 * 1024; //30K buffer
             char *buf = new char [buf_sz];
 
             while(true)
@@ -283,14 +283,14 @@ class Impl
                     {
                         JSONNode batch(msg.get_batch());
                         for (auto item: batch)
-                            mq_.push(new std::string(item.as_string()));
+                            mq_.push(new std::string(item.write()));
                     }
 
                     old_str = new_str;
 
-                    if (buf_sz > 2048)
+                    if (buf_sz > 30 * 1024)
                     {
-                        buf_sz = 2048;
+                        buf_sz = 30 * 1024;
                         delete [] buf;
                         buf = new char [buf_sz];
                     }

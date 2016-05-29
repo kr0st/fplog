@@ -165,10 +165,16 @@ Message& Message::add_batch(JSONNode& batch)
 
 bool Message::has_batch()
 {
-    JSONNode::iterator it(msg_.find(fplog::Message::Optional_Fields::batch));
+    try
+    {
+        JSONNode::iterator it(msg_.find(fplog::Message::Optional_Fields::batch));
 
-    if (it != msg_.end())
-        return true;
+        if (it != msg_.end())
+            return true;
+    }
+    catch(...)
+    {
+    }
 
     return false;
 }
