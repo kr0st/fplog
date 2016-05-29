@@ -489,7 +489,28 @@ bool batching_test()
     batch.push_back(fplog::Message(fplog::Prio::debug, fplog::Facility::user, "batching test msg #1").as_json());
     batch.push_back(fplog::Message(fplog::Prio::debug, fplog::Facility::user, "batching test msg #2").as_json());
 
-    fplog::write(fplog::Message(fplog::Prio::debug, fplog::Facility::user).add_batch(batch));
+    fplog::Message batch_msg(fplog::Prio::debug, fplog::Facility::user);
+    batch_msg.add_batch(batch);
+
+    JSONNode json_msg(batch_msg.as_json());
+    JSONNode::iterator it(json_msg.begin());
+
+    std::cout << json_msg.write() << std::endl << std::endl;
+    int counter = 0;
+
+    while (it != json_msg.end())
+    {
+        std::cout << counter << ": name=" << it->name().c_str() << ", value=" << it->as_string().c_str() << std::endl;
+        ++it;
+        counter++;
+    }
+
+    std::cout << "msg has batch? = " << batch_msg.has_batch() << std::endl;
+
+    fplog::Message batch_clone(batch_msg.as_string());
+
+    std::cout << "cloned msg: " << batch_clone.as_string() << std::endl << std::endl;
+    std::cout << "clone msg has batch? = " << batch_clone.has_batch() << std::endl;
 
     return true;
 }
@@ -556,11 +577,11 @@ void multithreading_test()
 
 int main()
 {
-    //fplog::testing::run_all_tests();
+    fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
     
-    fplog::testing::performance_test();
+    //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

@@ -318,7 +318,7 @@ namespace sprot
                 bytes_left = buf_size - copied;
             }
         }
-        catch(fplog::exceptions::Generic_Exception&)
+        catch(fplog::exceptions::Generic_Exception& e)
         {
             if (full_retries == 0)
                 THROW(fplog::exceptions::Write_Failed);
@@ -462,7 +462,7 @@ namespace sprot
                 sequence_num_++;
                 break;
             }
-            catch (fplog::exceptions::Generic_Exception&)
+            catch (fplog::exceptions::Generic_Exception& e)
             {
                 if (retry_count == 0)
                     THROW(fplog::exceptions::Write_Failed);

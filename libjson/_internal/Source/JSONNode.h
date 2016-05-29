@@ -530,15 +530,18 @@ public:
 
     #define DECLARE_CAST_OP(type) operator type()
     //DECLARE_FOR_ALL_CAST_TYPES_CONST(DECLARE_CAST_OP)
-JSON_PRIVATE
-    static JSONNode * newJSONNode(const JSONNode & orig     JSON_MUTEX_COPY_DECL2) json_hot;
-    static JSONNode * newJSONNode(internalJSONNode * internal_t) json_hot;
+
     #ifdef JSON_READ_PRIORITY
 	   //used by JSONWorker
 	   JSONNode(const json_string & unparsed) json_nothrow : internal(internalJSONNode::newInternal(unparsed)){ //root, specialized because it can only be array or node
 		  LIBJSON_CTOR;
 	   }
     #endif
+
+JSON_PRIVATE
+    static JSONNode * newJSONNode(const JSONNode & orig     JSON_MUTEX_COPY_DECL2) json_hot;
+    static JSONNode * newJSONNode(internalJSONNode * internal_t) json_hot;
+
     JSONNode(internalJSONNode * internal_t) json_nothrow : internal(internal_t){ //do not increment anything, this is only used in one case and it's already taken care of
 	   LIBJSON_CTOR;
     }

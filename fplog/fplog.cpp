@@ -225,7 +225,8 @@ Message::Message(JSONNode& msg)
 
 Message::Message(std::string& msg)
 {
-    msg_ = msg;
+    JSONNode json(msg);
+    msg_ = json;
 }
 
 bool Priority_Filter::should_pass(Message& msg)
