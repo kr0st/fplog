@@ -1,3 +1,6 @@
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <wspiapi.h>
 #include <iostream>
 #include <libjson/libjson.h>
 #include "fplog.h"
@@ -5,10 +8,14 @@
 #include <chrono>
 #include <thread>
 #include <conio.h>
+#include <udt.h>
+#include <cc.h>
+#include <test_util.h>
 
+using namespace std;
 
 namespace fplog { 
-    
+
 class FPLOG_API Fplog_Impl
 {
     public:
