@@ -48,7 +48,7 @@ template <class T> void notify_when_stopped(void (T::*callback) (void), T* insta
 
 struct Channel_Data
 {
-    spipc::UID uid;
+    fplog::UID uid;
     std::string app_name;
 };
 

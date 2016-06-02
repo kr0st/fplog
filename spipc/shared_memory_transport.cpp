@@ -109,7 +109,7 @@ size_t Shared_Memory_Transport::read(void* buf, size_t buf_size, size_t timeout)
 size_t Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 {
     std::vector<unsigned char> tmp;
-    tmp.resize(buf_size + sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(long long));
+    tmp.resize(buf_size + sizeof(fplog::UID) + sizeof(size_t) + sizeof(int) + sizeof(long long));
 
     int pid = _getpid();
     size_t tid = std::this_thread::get_id().hash();
@@ -117,11 +117,11 @@ size_t Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size
     std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
     long long timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
-    memcpy(&(tmp[0]), &private_channel_id_, sizeof(UID));
-    memcpy(&(tmp[sizeof(UID)]), &pid, sizeof(int));
-    memcpy(&(tmp[sizeof(UID) + sizeof(int)]), &tid, sizeof(size_t));
-    memcpy(&(tmp[sizeof(UID) + sizeof(int) + sizeof(size_t)]), &timestamp, sizeof(long long));
-    memcpy(&(tmp[sizeof(UID) + sizeof(size_t) + sizeof(int) + sizeof(long long)]), buf, buf_size);
+    memcpy(&(tmp[0]), &private_channel_id_, sizeof(fplog::UID));
+    memcpy(&(tmp[sizeof(fplog::UID)]), &pid, sizeof(int));
+    memcpy(&(tmp[sizeof(fplog::UID) + sizeof(int)]), &tid, sizeof(size_t));
+    memcpy(&(tmp[sizeof(fplog::UID) + sizeof(int) + sizeof(size_t)]), &timestamp, sizeof(long long));
+    memcpy(&(tmp[sizeof(fplog::UID) + sizeof(size_t) + sizeof(int) + sizeof(long long)]), buf, buf_size);
 
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
 
@@ -130,7 +130,7 @@ size_t Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size
     while (get_buf_size() != 0)
     {
         long long read_timestamp = 0;
-        memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
+        memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(fplog::UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
 
         //Purge buffer in case content is older than the default single operation timeout div by 2
         if (abs(timestamp - read_timestamp) > 1 * sprot::Protocol::Timeout::Operation / 2)
@@ -162,7 +162,7 @@ size_t Shared_Memory_IPC_Transport::read(void* buf, size_t buf_size, size_t time
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(condition_mutex_);
 
     boost::system_time to(boost::get_system_time() + boost::posix_time::millisec(timeout));
-    UID empty_UID;
+    fplog::UID empty_UID;
     if (private_channel_id_ == empty_UID)
         THROW(exceptions::No_Receiver);
 
@@ -183,10 +183,10 @@ start_read:
     if (got_buf_size == 0)
         THROW(fplog::exceptions::Incorrect_Parameter);
 
-    if (got_buf_size <= (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)))
+    if (got_buf_size <= (sizeof(fplog::UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)))
         THROW(sprot::exceptions::Invalid_Frame);
 
-    size_t read_bytes = got_buf_size - (sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long));
+    size_t read_bytes = got_buf_size - (sizeof(fplog::UID) + sizeof(int) + sizeof(size_t) + sizeof(long long));
     if (read_bytes > buf_size)
         read_bytes = buf_size;
 
@@ -194,9 +194,9 @@ start_read:
     long long current_timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
     long long read_timestamp = 0;
 
-    memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
+    memcpy(&read_timestamp, buf_ + sizeof(size_t) + sizeof(fplog::UID) + sizeof(int) + sizeof(size_t), sizeof(long long));
     
-    if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(UID)) == 0)
+    if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(fplog::UID)) == 0)
     {
         int this_pid = _getpid();
         size_t this_tid = std::this_thread::get_id().hash();
@@ -204,8 +204,8 @@ start_read:
         int read_pid = 0;
         size_t read_tid = 0;
 
-        memcpy(&read_pid, buf_ + sizeof(size_t) + sizeof(UID), sizeof(int));
-        memcpy(&read_tid, buf_ + sizeof(size_t) + sizeof(UID) + sizeof(int), sizeof(size_t));
+        memcpy(&read_pid, buf_ + sizeof(size_t) + sizeof(fplog::UID), sizeof(int));
+        memcpy(&read_tid, buf_ + sizeof(size_t) + sizeof(fplog::UID) + sizeof(int), sizeof(size_t));
 
         if ((this_pid == read_pid) && (this_tid == read_tid))
         {
@@ -216,7 +216,7 @@ start_read:
             goto start_read;
         }
 
-        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)]), read_bytes);
+        memcpy(buf, &(buf_[sizeof(size_t) + sizeof(fplog::UID) + sizeof(int) + sizeof(size_t) + sizeof(long long)]), read_bytes);
         set_buf_size(0);
 
         buffer_empty_.notify_all();
@@ -249,7 +249,7 @@ void Shared_Memory_IPC_Transport::connect(const Params& params)
     {
         if (params.find("UID") == params.end())
         {
-            THROW(exceptions::Invalid_Uid);
+            THROW(fplog::exceptions::Invalid_Uid);
         }
         else
             uidstr = (*params.find("UID")).second;
@@ -257,7 +257,7 @@ void Shared_Memory_IPC_Transport::connect(const Params& params)
     else
         uidstr = (*params.find("uid")).second;
 
-    UID uid;
+    fplog::UID uid;
     private_channel_id_ = uid.from_string(uidstr);
 }
 

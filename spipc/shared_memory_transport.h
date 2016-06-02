@@ -54,7 +54,7 @@ class SPIPC_API Shared_Memory_IPC_Transport: public Shared_Memory_Transport
 
     private:
 
-       UID private_channel_id_;
+       fplog::UID private_channel_id_;
 };
 
 };

@@ -148,4 +148,14 @@ public:
     }
 };
 
+class Invalid_Uid: public Generic_Exception
+{
+    public:
+
+        Invalid_Uid(const char* facility, const char* file = "", int line = 0, const char* message = "Supplied fplog::UID is invalid."):
+        Generic_Exception(facility, file, line, message)
+        {
+        }
+};
+
 }};

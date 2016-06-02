@@ -1,8 +1,6 @@
 #include "socket_transport.h"
 #include "spipc.h"
 #include <chrono>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace std::chrono;
 
@@ -18,7 +16,7 @@ void Socket_Transport::connect(const Params& params)
     {
         if (params.find("UID") == params.end())
         {
-            THROW(exceptions::Invalid_Uid);
+            THROW(fplog::exceptions::Invalid_Uid);
         }
         else
             uidstr = (*params.find("UID")).second;
@@ -73,14 +71,14 @@ void Socket_Transport::connect(const Params& params)
     if (memcmp(ip_, localhost, sizeof(localhost)) == 0)
         localhost_ = true;
 
-    UID uid;
+    fplog::UID uid;
     uid.from_string(uidstr);
 
     if ((uid.high > 65535) || (uid.high < 1))
-        THROW(exceptions::Invalid_Uid);
+        THROW(fplog::exceptions::Invalid_Uid);
     
     if ((uid.low > 65535) || (uid.low < 1))
-        THROW(exceptions::Invalid_Uid);
+        THROW(fplog::exceptions::Invalid_Uid);
 
     disconnect();
     

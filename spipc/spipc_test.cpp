@@ -166,10 +166,10 @@ bool N_threads_mem_transport_test()
     return true;
 }
 
-std::map<spipc::UID, std::vector<std::string>> g_ipc_written;
-std::map<spipc::UID, std::vector<std::string>> g_ipc_read;
+std::map<fplog::UID, std::vector<std::string>> g_ipc_written;
+std::map<fplog::UID, std::vector<std::string>> g_ipc_read;
 
-void writer_ipc_thread(const spipc::UID uid)
+void writer_ipc_thread(const fplog::UID uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> ipc_written;
@@ -237,10 +237,10 @@ void writer_ipc_thread(const spipc::UID uid)
     g_ipc_written[uid] = ipc_written;
     
     fclose(fwriter);
-    printf("thread with UID [%lld/%lld] written %d values.\n", uid.high, uid.low, ipc_written.size());
+    printf("thread with fplog::UID [%lld/%lld] written %d values.\n", uid.high, uid.low, ipc_written.size());
 }
 
-void reader_ipc_thread(const spipc::UID uid)
+void reader_ipc_thread(const fplog::UID uid)
 {
     srand(std::this_thread::get_id().hash());
     std::vector<std::string> read_items;
@@ -289,12 +289,12 @@ void reader_ipc_thread(const spipc::UID uid)
     g_ipc_read[uid] = read_items;
 
     fclose(freader);
-    printf("thread with UID [%lld/%lld] read %d values.\n", uid.high, uid.low, read_items.size());
+    printf("thread with fplog::UID [%lld/%lld] read %d values.\n", uid.high, uid.low, read_items.size());
 }
 
 bool N_threads_IPC_test()
 {
-    spipc::UID uid;
+    fplog::UID uid;
     std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
     long long begin = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
 
@@ -337,7 +337,7 @@ bool N_threads_IPC_test()
     long long end = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
     size_t read_messages = 0;
 
-    std::map<spipc::UID, std::vector<std::string>>::iterator it(g_ipc_written.begin());
+    std::map<fplog::UID, std::vector<std::string>>::iterator it(g_ipc_written.begin());
     for (; it != g_ipc_written.end(); ++it)
     {
         std::vector<std::string> v1(g_ipc_read[it->first]);
@@ -361,7 +361,7 @@ void buffer_overflow_test_worker()
         data_5mb[i] = 65 + i % 23;
 
     spipc::IPC buffer_overflow_test;
-    spipc::UID uid;
+    fplog::UID uid;
     uid.high = 18743;
     uid.low = 18744;
     buffer_overflow_test.connect(uid);
@@ -379,7 +379,7 @@ bool Buffer_Overflow_Test()
     char* read_buf = new char[read_buf_sz];
 
     spipc::IPC buffer_overflow_test;
-    spipc::UID uid;
+    fplog::UID uid;
     uid.high = 18743;
     uid.low = 18744;
     buffer_overflow_test.connect(uid);
