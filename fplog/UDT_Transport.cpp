@@ -8,6 +8,7 @@
 #include <test_util.h>
 #include <mutex>
 #include <fplog_exceptions.h>
+#include <thread>
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -182,6 +183,34 @@ namespace fplog
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+                char* data;
+                int size = 100000;
+                data = new char[size];
+
+                while (true)
+                {
+                    int rsize = 0;
+                    int rs;
+                    while (rsize < size)
+                    {
+                        int rcv_size;
+                        int var_size = sizeof(int);
+                        UDT::getsockopt(client_sock_, 0, UDT_RCVDATA, &rcv_size, &var_size);
+                        if (UDT::ERROR == (rs = UDT::recv(client_sock_, data + rsize, size - rsize, 0)))
+                        {
+                            //std::cout << "recv:" << UDT::getlasterror().getErrorMessage() << std::endl;
+                            break;
+                        }
+
+                        rsize += rs;
+                    }
+
+                    if (rsize < size)
+                        break;
+
+                }
+
                 return 0;
             }
 
@@ -227,32 +256,41 @@ namespace fplog
 
             void accept_connection()
             {
-                /*sockaddr_storage clientaddr;
+                sockaddr_storage clientaddr;
                 int addrlen = sizeof(clientaddr);
 
-                while (true)
+                int retries = 5;
+
+                while (!connected_)
                 {
-                    if (UDT::INVALID_SOCK == (recver = UDT::accept(serv, (sockaddr*)&clientaddr, &addrlen)))
+                    if (retries <= 0)
+                        THROWM(exceptions::Connect_Failed, "Failed to accept connection.");
+
+                    if (UDT::INVALID_SOCK == (client_sock_ = UDT::accept(serv_sock_, (sockaddr*)&clientaddr, &addrlen)))
                     {
-                        cout << "accept: " << UDT::getlasterror().getErrorMessage() << endl;
-                        return 0;
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                        retries--;
+                        continue;
                     }
 
                     char clienthost[NI_MAXHOST];
                     char clientservice[NI_MAXSERV];
+
                     getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NUMERICHOST|NI_NUMERICSERV);
-                    cout << "new connection: " << clienthost << ":" << clientservice << endl;
+                    std::string ip_address(std::to_string(ip_[0]) + "." + std::to_string(ip_[1]) + "." + std::to_string(ip_[2]) + "." + std::to_string(ip_[3]));
+                    std::string host_addr(clienthost);
 
-                    #ifndef WIN32
-                        pthread_t rcvthread;
-                        pthread_create(&rcvthread, NULL, recvdata, new UDTSOCKET(recver));
-                        pthread_detach(rcvthread);
-                    #else
-                        CreateThread(NULL, 0, recvdata, new UDTSOCKET(recver), 0, NULL);
-                    #endif
+                    if (host_addr.find(ip_address) == std::string::npos)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                        retries--;
+                        continue;
+                    }
+                    else
+                    {
+                        connected_ = true;
+                    }
                 }
-
-                UDT::close(serv);*/
             }
     };
 
