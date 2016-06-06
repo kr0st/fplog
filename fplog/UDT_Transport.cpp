@@ -184,34 +184,29 @@ namespace fplog
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-                char* data;
-                int size = 100000;
-                data = new char[size];
+                accept_connection();
 
-                while (true)
+                UDT::UDSET read_set;
+                
+                timeval to;
+                to.tv_sec = timeout / 1000;
+                to.tv_usec = (timeout % 1000) * 1000;
+
+                if (UDT::select(client_sock_ + 1, &read_set, 0, 0, &to) < 0)
                 {
-                    int rsize = 0;
-                    int rs;
-                    while (rsize < size)
-                    {
-                        int rcv_size;
-                        int var_size = sizeof(int);
-                        UDT::getsockopt(client_sock_, 0, UDT_RCVDATA, &rcv_size, &var_size);
-                        if (UDT::ERROR == (rs = UDT::recv(client_sock_, data + rsize, size - rsize, 0)))
-                        {
-                            //std::cout << "recv:" << UDT::getlasterror().getErrorMessage() << std::endl;
-                            break;
-                        }
-
-                        rsize += rs;
-                    }
-
-                    if (rsize < size)
-                        break;
-
+                    THROWM(fplog::exceptions::Read_Failed, "Cannot select socket for reading!");
                 }
 
-                return 0;
+                if (read_set.size() == 0)
+                    THROW(fplog::exceptions::Timeout);
+
+                int sz = UDT::recv(client_sock_, (char*)buf, buf_size, 0);
+                if (sz == UDT::ERROR)
+                {
+                    THROWM(fplog::exceptions::Read_Failed, UDT::getlasterror().getErrorMessage());
+                }
+
+                return sz;
             }
 
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
