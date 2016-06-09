@@ -107,12 +107,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fplog.h" />
-    <ClInclude Include="UDT_Transport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="fplog_test.cpp" />
-    <ClCompile Include="UDT_Transport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

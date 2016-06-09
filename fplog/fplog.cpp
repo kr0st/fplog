@@ -5,7 +5,7 @@
 #include <thread>
 #include <queue>
 #include <lua.hpp>
-#include <spipc/socket_transport.h>
+#include <spipc/UDT_Transport.h>
 #include <sprot/sprot.h>
 #include <mutex>
 #include <chaiscript/chaiscript.hpp>
@@ -424,7 +424,7 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
-                transport_ = new spipc::Socket_Transport();
+                transport_ = new spipc::UDT_Transport();
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;

@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprot", "sprot\sprot.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spipc", "spipc\spipc.vcxproj", "{E8DDFEC3-4FCF-4F75-953C-E5113C2954D4}"
 	ProjectSection(ProjectDependencies) = postProject
+		{D84D100A-7C21-4CCB-B16E-0FB37137C16C} = {D84D100A-7C21-4CCB-B16E-0FB37137C16C}
 		{36D539D1-BC62-48CD-9727-78C6FCE89A4A} = {36D539D1-BC62-48CD-9727-78C6FCE89A4A}
 	EndProjectSection
 EndProject

@@ -438,7 +438,7 @@ void filter_perft_test_summary()
 
 void manual_test()
 {
-    initlog("fplog_test", "18749_18750");
+    initlog("fplog_test", "18749_18750", 0, false);
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
     if (filter)
@@ -534,7 +534,7 @@ void run_all_tests()
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
 
-    /*if (!filter_test())
+    if (!filter_test())
         printf("filter_test failed!\n");
 
     if (!class_logging_test())
@@ -548,7 +548,7 @@ void run_all_tests()
 
     if (!input_validators_test())
         printf("input_validators_test failed!\n");
-        */
+
     if (!batching_test())
         printf("batching_test failed!\n");
 
@@ -598,7 +598,7 @@ int main()
 {
     //fplog::testing::run_all_tests();
 
-    //fplog::testing::manual_test();
+    fplog::testing::manual_test();
     
     //fplog::testing::performance_test();
     
