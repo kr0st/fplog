@@ -1,11 +1,17 @@
 #pragma once
 
 #include <fplog_transport.h>
+#include "spipc.h"
 
+#ifdef SPIPC_EXPORT
+#define SPIPC_API __declspec(dllexport)
+#else
+#define SPIPC_API __declspec(dllimport)
+#endif
 
-namespace fplog
+namespace spipc
 {
-    class UDT_Transport: public Transport_Interface
+    class SPIPC_API UDT_Transport: public fplog::Transport_Interface
     {
         public:
 

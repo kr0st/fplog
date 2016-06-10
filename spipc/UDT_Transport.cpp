@@ -6,6 +6,7 @@
 
 #include <udt.h>
 #include <test_util.h>
+
 #include <mutex>
 #include <fplog_exceptions.h>
 #include <thread>
@@ -13,8 +14,9 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
+using namespace fplog;
 
-namespace fplog
+namespace spipc
 {
     class UDT_Transport::UDT_Transport_Impl
     {
@@ -38,11 +40,15 @@ namespace fplog
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
                 std::string UIDstr;
 
+                WSADATA wsaData;
+                if (WSAStartup(0x202, &wsaData))
+                    THROW(fplog::exceptions::Connect_Failed);
+
                 if (params.find("uid") == params.end())
                 {
                     if (params.find("UID") == params.end())
                     {
-                        THROW(exceptions::Incorrect_Parameter);
+                        THROW(fplog::exceptions::Incorrect_Parameter);
                     }
                     else
                         UIDstr = (*params.find("UID")).second;
@@ -101,10 +107,10 @@ namespace fplog
                 uid.from_string(UIDstr);
 
                 if ((uid.high > 65535) || (uid.high < 1))
-                    THROW(exceptions::Incorrect_Parameter);
+                    THROW(fplog::exceptions::Incorrect_Parameter);
     
                 if ((uid.low > 65535) || (uid.low < 1))
-                    THROW(exceptions::Incorrect_Parameter);
+                    THROW(fplog::exceptions::Incorrect_Parameter);
 
                 if (check_socket(client_sock_))
                     UDT::close(client_sock_);
@@ -114,6 +120,8 @@ namespace fplog
 
                 init_socket(client_sock_);
                 init_socket(serv_sock_);
+
+                uid_ = uid;
             }
 
             void disconnect()
@@ -133,6 +141,8 @@ namespace fplog
 
                 memset(ip_, 0, sizeof(char) * 4);
                 ip_str_ = "0.0.0.0";
+
+                WSACleanup();
             }
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
@@ -239,7 +249,7 @@ namespace fplog
                 while (!connected_)
                 {
                     if (retries <= 0)
-                        THROWM(exceptions::Connect_Failed, "Failed to accept connection.");
+                        THROWM(fplog::exceptions::Connect_Failed, "Failed to accept connection.");
 
                     addrinfo hints;
                     addrinfo* res;
@@ -260,6 +270,11 @@ namespace fplog
                         if (!localhost_)
                             THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
 
+                        memset(&hints, 0, sizeof(hints));
+                        hints.ai_flags = AI_PASSIVE;
+                        hints.ai_family = AF_INET;
+                        hints.ai_socktype = SOCK_STREAM;
+
                         port = std::to_string(uid_.low);
                         if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
                             THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
@@ -268,6 +283,9 @@ namespace fplog
                         high_uid_ = true;
 
                     serv_sock_ = UDT::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+                    sockaddr_in* listen_addr = (sockaddr_in*)res->ai_addr;
+
+                    //listen_addr->sin_port = (high_uid_ ? uid_.high : uid_.low);
 
                     if (UDT::ERROR == UDT::bind(serv_sock_, res->ai_addr, res->ai_addrlen))
                     {
@@ -341,6 +359,11 @@ namespace fplog
                     {
                         if (!localhost_)
                             THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
+
+                        memset(&hints, 0, sizeof(hints));
+                        hints.ai_flags = AI_PASSIVE;
+                        hints.ai_family = AF_INET;
+                        hints.ai_socktype = SOCK_STREAM;
 
                         port = std::to_string(uid_.low);
                         if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
