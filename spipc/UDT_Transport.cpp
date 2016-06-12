@@ -1,3 +1,5 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
@@ -15,6 +17,23 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace fplog;
+
+class WSA_Up_Down
+{
+    public:
+
+        WSA_Up_Down()
+        {
+            WSADATA wsaData;
+            if (WSAStartup(0x202, &wsaData))
+                THROW(fplog::exceptions::Connect_Failed);
+        }
+
+        ~WSA_Up_Down()
+        {
+            WSACleanup();
+        }
+};
 
 namespace spipc
 {
@@ -39,10 +58,6 @@ namespace spipc
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
                 std::string UIDstr;
-
-                WSADATA wsaData;
-                if (WSAStartup(0x202, &wsaData))
-                    THROW(fplog::exceptions::Connect_Failed);
 
                 if (params.find("uid") == params.end())
                 {
@@ -129,10 +144,14 @@ namespace spipc
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
 
                 if (check_socket(client_sock_))
+                {
                     UDT::close(client_sock_);
+                }
 
                 if (check_socket(serv_sock_))
+                {
                     UDT::close(serv_sock_);
+                }
 
                 init_socket(client_sock_);
                 init_socket(serv_sock_);
@@ -141,8 +160,6 @@ namespace spipc
 
                 memset(ip_, 0, sizeof(char) * 4);
                 ip_str_ = "0.0.0.0";
-
-                WSACleanup();
             }
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
@@ -206,8 +223,8 @@ namespace spipc
 
         private:
 
-            // Automatically start up and clean up UDT module.
-            static UDTUpDown _udt_;
+            //static WSA_Up_Down wsa_initer_;
+            static UDTUpDown udt_initer_;
             std::recursive_mutex mutex_;
             
             UDTSOCKET serv_sock_, client_sock_;
@@ -261,32 +278,14 @@ namespace spipc
                     hints.ai_socktype = SOCK_STREAM;
 
                     std::string port(std::to_string(uid_.high));
-                    high_uid_ = false;
+                    high_uid_ = true;
 
                     disconnect();
-                
+
                     if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
-                    {
-                        if (!localhost_)
-                            THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
-
-                        memset(&hints, 0, sizeof(hints));
-                        hints.ai_flags = AI_PASSIVE;
-                        hints.ai_family = AF_INET;
-                        hints.ai_socktype = SOCK_STREAM;
-
-                        port = std::to_string(uid_.low);
-                        if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
-                            THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
-                    }
-                    else
-                        high_uid_ = true;
+                        THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
 
                     serv_sock_ = UDT::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-                    sockaddr_in* listen_addr = (sockaddr_in*)res->ai_addr;
-
-                    //listen_addr->sin_port = (high_uid_ ? uid_.high : uid_.low);
-
                     if (UDT::ERROR == UDT::bind(serv_sock_, res->ai_addr, res->ai_addrlen))
                     {
                         UDT::close(serv_sock_);
@@ -342,7 +341,6 @@ namespace spipc
                 while (!connected_)
                 {
                     addrinfo hints;
-                    addrinfo* res;
 
                     memset(&hints, 0, sizeof(struct addrinfo));
 
@@ -350,50 +348,17 @@ namespace spipc
                     hints.ai_family = AF_INET;
                     hints.ai_socktype = SOCK_STREAM;
 
-                    std::string port(std::to_string(uid_.high));
                     high_uid_ = false;
 
-                    disconnect();
+                    struct addrinfo *peer;
 
-                    if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
-                    {
-                        if (!localhost_)
-                            THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
-
-                        memset(&hints, 0, sizeof(hints));
-                        hints.ai_flags = AI_PASSIVE;
-                        hints.ai_family = AF_INET;
-                        hints.ai_socktype = SOCK_STREAM;
-
-                        port = std::to_string(uid_.low);
-                        if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
-                            THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
-                    }
-                    else
-                        high_uid_ = true;
-
-                    freeaddrinfo(res);
-
-                    struct addrinfo *local, *peer;
-
-                    memset(&hints, 0, sizeof(struct addrinfo));
-
-                    hints.ai_flags = AI_PASSIVE;
-                    hints.ai_family = AF_INET;
-                    hints.ai_socktype = SOCK_STREAM;
-
-                    if (0 != getaddrinfo(NULL, port.c_str(), &hints, &local))
-                        THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
-
-                    client_sock_ = UDT::socket(local->ai_family, local->ai_socktype, local->ai_protocol);
+                    client_sock_ = UDT::socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
 
                     // Windows UDP issue
                     // For better performance, modify HKLM\System\CurrentControlSet\Services\Afd\Parameters\FastSendDatagramThreshold
                     #ifdef WIN32
-                        UDT::setsockopt(client_sock_, 0, UDT_MSS, new int(1052), sizeof(int));
+                        //UDT::setsockopt(client_sock_, 0, UDT_MSS, new int(1052), sizeof(int));
                     #endif
-
-                    freeaddrinfo(local);
 
                     std::string peer_port = (high_uid_ ? std::to_string(uid_.low) : std::to_string(uid_.high));
                     if (0 != getaddrinfo(ip_str_.c_str(), peer_port.c_str(), &hints, &peer))

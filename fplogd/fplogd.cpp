@@ -90,6 +90,10 @@ static std::string get_home_dir()
 
 void GetPrimaryIp(char* buffer, size_t buflen) 
 {
+    WSADATA wsaData;
+    if (WSAStartup(0x202, &wsaData))
+        THROW(fplog::exceptions::Connect_Failed);
+
     assert(buflen >= 16);
 
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -115,6 +119,8 @@ void GetPrimaryIp(char* buffer, size_t buflen)
     assert(p);
 
     closesocket(sock);
+
+    WSACleanup();
 }
 
 using namespace boost::interprocess;
