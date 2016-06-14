@@ -390,7 +390,11 @@ class Impl
         {
             spipc::IPC ipc;
             spipc::IPC::Params params;
+
+            params["type"] = "ip";
+            params["ip"] = "127.0.0.1";
             params["uid"] = data->uid;
+            
             ipc.connect(params);
 
             size_t buf_sz = 2048;

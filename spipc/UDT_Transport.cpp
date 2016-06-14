@@ -171,6 +171,8 @@ namespace spipc
                 to.tv_sec = timeout / 1000;
                 to.tv_usec = (timeout % 1000) * 1000;
 
+                UD_SET(client_sock_, &read_set);
+
                 if (UDT::select(client_sock_ + 1, &read_set, 0, 0, &to) < 0)
                 {
                     THROWM(fplog::exceptions::Read_Failed, "Cannot select socket for reading!");
@@ -200,6 +202,7 @@ namespace spipc
                 to.tv_sec = timeout / 1000;
                 to.tv_usec = (timeout % 1000) * 1000;
 
+                UD_SET(client_sock_, &write_set);
                 if (UDT::select(client_sock_ + 1, 0, &write_set, 0, &to) < 0)
                 {
                     THROWM(fplog::exceptions::Read_Failed, "Cannot select socket for writing!");
@@ -313,11 +316,23 @@ namespace spipc
                     char clienthost[NI_MAXHOST];
                     char clientservice[NI_MAXSERV];
 
-                    getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NUMERICHOST|NI_NUMERICSERV);
-                    std::string ip_address(std::to_string(ip_[0]) + "." + std::to_string(ip_[1]) + "." + std::to_string(ip_[2]) + "." + std::to_string(ip_[3]));
-                    std::string host_addr(clienthost);
+                    getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NUMERICHOST | NI_NUMERICSERV);
 
-                    if (host_addr.find(ip_address) == std::string::npos)
+                    std::string ip_address(std::to_string(ip_[0]) + "." + std::to_string(ip_[1]) + "." + std::to_string(ip_[2]) + "." + std::to_string(ip_[3]));
+                    std::string host_addr(clienthost), host_name, host_name_local;
+
+                    getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NOFQDN);
+                    host_name = clienthost;
+
+                    ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b1 = 127;
+                    ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b2 = 0;
+                    ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b3 = 0;
+                    ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b4 = 1;
+
+                    getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NOFQDN);
+                    host_name_local = clienthost;
+
+                    if ((host_addr.find(ip_address) == std::string::npos) && (host_name.find(host_name_local) == std::string::npos))
                     {
                         UDT::close(client_sock_);
 
