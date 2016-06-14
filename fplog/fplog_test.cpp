@@ -11,6 +11,7 @@
 #include <udt.h>
 #include <cc.h>
 #include <test_util.h>
+#include <spipc/UDT_Transport.h>
 
 using namespace std;
 
@@ -585,10 +586,72 @@ void multithreading_test()
     }
 }
 
+bool g_udt_stop;
+const char* g_udt_msg = "very secret one paragraph";
 
-int udt_test()
+fplog::Transport_Interface::Params g_udt_params;
+
+void udt_server()
 {
-   return true;
+    spipc::UDT_Transport trans;
+
+    trans.connect(g_udt_params);
+
+    while (!g_udt_stop)
+    {
+        char buf[1024] = {0};
+
+        try
+        {
+            memset(buf, 0, sizeof(buf));
+            if (trans.read(buf, sizeof(buf), 1000) > 0)
+                std::cout << "READ " << buf;
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            std::cout << "RECV error: " << e.what() << std::endl;
+        }
+    }
+}
+
+void udt_client()
+{
+    spipc::UDT_Transport trans;
+
+    trans.connect(g_udt_params);
+
+    while (!g_udt_stop)
+    {
+        try
+        {
+            if (trans.write(g_udt_msg, sizeof(g_udt_msg) + 1, 1000) > 0)
+                std::cout << "WROTE " << g_udt_msg;
+        }
+        catch (fplog::exceptions::Generic_Exception& e)
+        {
+            std::cout << "SEND error: " << e.what() << std::endl;
+        }
+    }
+}
+
+bool udt_test()
+{
+    g_udt_params["type"] = "ip";
+    g_udt_params["ip"] = "127.0.0.1";
+    g_udt_params["uid"] = "18751_18752";
+
+    g_udt_stop = false;
+
+    std::thread srv(udt_server);
+    std::thread client(udt_client);
+
+    _getch();
+    g_udt_stop = true;
+
+    srv.join();
+    client.join();
+
+    return true;
 }
 
 }};
@@ -598,13 +661,15 @@ int main()
 {
     //fplog::testing::run_all_tests();
 
-    fplog::testing::manual_test();
+    //fplog::testing::manual_test();
     
     //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();
+
+    fplog::testing::udt_test();
 
     fplog::shutdownlog();
     return 0;

@@ -157,9 +157,6 @@ namespace spipc
                 init_socket(serv_sock_);
 
                 connected_ = false;
-
-                memset(ip_, 0, sizeof(char) * 4);
-                ip_str_ = "0.0.0.0";
             }
 
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
@@ -303,7 +300,7 @@ namespace spipc
                         UDT::close(serv_sock_);
                         init_socket(serv_sock_);
 
-                        THROWM(fplog::exceptions::Connect_Failed, "Socket cannot accept connections.");
+                        THROWM(fplog::exceptions::Connect_Failed, std::string("Socket cannot accept connections, err = " + std::to_string(UDT::getlasterror().getErrorCode())).c_str());
                     }
 
                     if (UDT::INVALID_SOCK == (client_sock_ = UDT::accept(serv_sock_, (sockaddr*)&clientaddr, &addrlen)))
