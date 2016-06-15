@@ -56,6 +56,8 @@ namespace spipc
 
             void connect(const Params& params)
             {
+                static UDTUpDown udt_initer_;
+
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
                 std::string UIDstr;
 
@@ -223,8 +225,7 @@ namespace spipc
 
         private:
 
-            //static WSA_Up_Down wsa_initer_;
-            static UDTUpDown udt_initer_;
+
             std::recursive_mutex mutex_;
             
             UDTSOCKET serv_sock_, client_sock_;
@@ -282,8 +283,9 @@ namespace spipc
 
                     disconnect();
 
-                    if (0 != getaddrinfo(NULL, port.c_str(), &hints, &res))
-                        THROWM(fplog::exceptions::Connect_Failed, "Port is in use, cannot connect.");
+                    int err = getaddrinfo(NULL, port.c_str(), &hints, &res);
+                    if (err != 0)
+                        THROWM(fplog::exceptions::Connect_Failed, ("Port is in use, cannot connect. Error = " + std::to_string(err)).c_str());
 
                     serv_sock_ = UDT::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
                     if (UDT::ERROR == UDT::bind(serv_sock_, res->ai_addr, res->ai_addrlen))

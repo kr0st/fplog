@@ -541,7 +541,7 @@ class Impl
                     if (should_stop_)
                         return;
 
-                    while (!mq_.empty() && (batch.size() < 100))
+                    while (!mq_.empty() && (batch.size() < 1))
                     {
                         str = mq_.front();
                         mq_.pop();
@@ -549,7 +549,7 @@ class Impl
                     }
                 }
 
-                if (batch.size() < 100)
+                if (batch.size() < 1)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     continue;
