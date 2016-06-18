@@ -23,6 +23,28 @@
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
+namespace vsprot
+{
+    class SPROT_API Protocol: public fplog::Transport_Interface
+    {
+        public:
+            
+            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024):transport_(transport), MTU_(MTU){}
+            ~Protocol(){}
+
+            virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
+            virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait);
+
+
+    private:
+
+        fplog::Transport_Interface* transport_;
+        size_t MTU_;
+
+        Protocol(){}
+    };
+};
+
 namespace sprot
 {
     class SPROT_API Protocol: public fplog::Transport_Interface

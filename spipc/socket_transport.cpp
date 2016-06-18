@@ -6,8 +6,27 @@ using namespace std::chrono;
 
 namespace spipc {
 
+class WSA_Up_Down
+{
+    public:
+
+        WSA_Up_Down()
+        {
+            WSADATA wsaData;
+            if (WSAStartup(0x202, &wsaData))
+                THROW(fplog::exceptions::Connect_Failed);
+        }
+
+        ~WSA_Up_Down()
+        {
+            WSACleanup();
+        }
+};
+
 void Socket_Transport::connect(const Params& params)
 {
+    static WSA_Up_Down sock_initer;
+
     std::lock_guard<std::recursive_mutex> lock(mutex_);
 
     std::string uidstr;
@@ -82,10 +101,6 @@ void Socket_Transport::connect(const Params& params)
 
     disconnect();
     
-    WSADATA wsaData;
-    if (WSAStartup(0x202, &wsaData))
-        THROW(fplog::exceptions::Connect_Failed);
-    
     socket_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (socket_ == INVALID_SOCKET)
     {
@@ -113,6 +128,10 @@ void Socket_Transport::connect(const Params& params)
         listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
         listen_addr.sin_addr.S_un.S_un_b.s_b4 = 0;
     }
+
+    // Set the exclusive address option
+    int opt_val = 1;
+    setsockopt(socket_, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *) &opt_val, sizeof(opt_val));
 
     if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
     {
@@ -155,12 +174,6 @@ void Socket_Transport::disconnect()
     }
 
     if (SOCKET_ERROR == closesocket(socket_))
-    {
-        res = WSAGetLastError();
-        //TODO: do something meaningful with the error
-    }
-
-    if (SOCKET_ERROR == WSACleanup())
     {
         res = WSAGetLastError();
         //TODO: do something meaningful with the error

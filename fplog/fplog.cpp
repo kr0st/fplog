@@ -5,6 +5,7 @@
 #include <thread>
 #include <queue>
 #include <lua.hpp>
+#include <spipc/Socket_Transport.h>
 #include <spipc/UDT_Transport.h>
 #include <sprot/sprot.h>
 #include <mutex>
@@ -424,7 +425,7 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
-                transport_ = new spipc::UDT_Transport();
+                transport_ = new spipc::Socket_Transport();
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;
@@ -466,13 +467,13 @@ class FPLOG_API Fplog_Impl
                     }
                     else
                     {
-                        int send_retries = 25;
+                        int send_retries = 12;
                         while (send_retries > 0)
                         {
                             try
                             {
                                 std::string str(msg.as_string());
-                                protocol_->write(str.c_str(), str.size(), 200);
+                                protocol_->write(str.c_str(), str.size(), 400);
                                 break;
                             }
                             catch(fplog::exceptions::Generic_Exception)
@@ -633,7 +634,7 @@ class FPLOG_API Fplog_Impl
                 try
                 {
                     if (str)
-                        protocol_->write(str->c_str(), str->size(), 200);
+                        protocol_->write(str->c_str(), str->size(), 400);
                     else
                     {
                         if (stopping_)

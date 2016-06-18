@@ -18,22 +18,6 @@
 
 using namespace fplog;
 
-class WSA_Up_Down
-{
-    public:
-
-        WSA_Up_Down()
-        {
-            WSADATA wsaData;
-            if (WSAStartup(0x202, &wsaData))
-                THROW(fplog::exceptions::Connect_Failed);
-        }
-
-        ~WSA_Up_Down()
-        {
-            WSACleanup();
-        }
-};
 
 namespace spipc
 {
@@ -56,7 +40,7 @@ namespace spipc
 
             void connect(const Params& params)
             {
-                static UDTUpDown udt_initer_;
+                static UDTUpDown udt_initer;
 
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
                 std::string UIDstr;

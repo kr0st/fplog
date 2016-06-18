@@ -13,7 +13,15 @@ fplog::Transport_Interface* Transport_Factory::create(const fplog::Transport_Int
         {
             if (generic_util::find_str_no_case(param.second, "ip"))
             {
-                //return new spipc::Socket_Transport();
+                for (auto p2 : params)
+                    if (generic_util::find_str_no_case(p2.first, "transport"))
+                    {
+                        if (generic_util::find_str_no_case(p2.second, "udp"))
+                        {
+                            return new spipc::Socket_Transport();
+                        }
+                    }
+
                 return new spipc::UDT_Transport();
             }
         }

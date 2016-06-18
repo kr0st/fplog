@@ -545,3 +545,31 @@ namespace sprot
         memset(frame_buf_, c, MTU_ + Frame::overhead);
     }
 };
+
+namespace vsprot
+{
+    size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
+    {
+        if (!buf)
+            return 0;
+
+        if (transport_)
+            return transport_->read(buf, buf_size, timeout);
+
+        return 0;
+    }
+    
+    size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
+    {
+        if (!buf)
+            return 0;
+
+        if (buf_size > MTU_)
+            THROW(fplog::exceptions::Buffer_Overflow);
+
+        if (transport_)
+            return transport_->write(buf, buf_size, timeout);
+
+        return 0;
+    }
+};
