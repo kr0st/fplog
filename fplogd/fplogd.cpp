@@ -583,7 +583,7 @@ class Impl
                     {
                         if (log_transport_ && protocol_)
                         {
-                            size_t timeout = 200;
+                            size_t timeout = 400;
                             size_t str_len = str->size();
 
                             protocol_->write(str->c_str(), str_len + 1, timeout * (1 + str_len / 3096)) * (6 - retries);

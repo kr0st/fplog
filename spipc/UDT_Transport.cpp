@@ -177,6 +177,14 @@ namespace spipc
 
                 if (UDT::select(client_sock_ + 1, &read_set, 0, 0, &to) < 0)
                 {
+                    int status = UDT::getsockstate(client_sock_);
+                    if (status >= BROKEN)
+                    {
+                        UDT::close(client_sock_);
+                        init_socket(client_sock_);
+                        connected_ = false;
+                    }
+
                     THROWM(fplog::exceptions::Read_Failed, "Cannot select socket for reading!");
                 }
 
@@ -186,6 +194,14 @@ namespace spipc
                 int sz = UDT::recv(client_sock_, (char*)buf, buf_size, 0);
                 if (sz == UDT::ERROR)
                 {
+                    int status = UDT::getsockstate(client_sock_);
+                    if (status >= BROKEN)
+                    {
+                        UDT::close(client_sock_);
+                        init_socket(client_sock_);
+                        connected_ = false;
+                    }
+
                     THROWM(fplog::exceptions::Read_Failed, UDT::getlasterror().getErrorMessage());
                 }
 
@@ -207,6 +223,14 @@ namespace spipc
                 UD_SET(client_sock_, &write_set);
                 if (UDT::select(client_sock_ + 1, 0, &write_set, 0, &to) < 0)
                 {
+                    int status = UDT::getsockstate(client_sock_);
+                    if (status >= BROKEN)
+                    {
+                        UDT::close(client_sock_);
+                        init_socket(client_sock_);
+                        connected_ = false;
+                    }
+
                     THROWM(fplog::exceptions::Read_Failed, "Cannot select socket for writing!");
                 }
 
@@ -216,6 +240,14 @@ namespace spipc
                 int sz = UDT::send(client_sock_, (char*)buf, buf_size, 0);
                 if (sz == UDT::ERROR)
                 {
+                    int status = UDT::getsockstate(client_sock_);
+                    if (status >= BROKEN)
+                    {
+                        UDT::close(client_sock_);
+                        init_socket(client_sock_);
+                        connected_ = false;
+                    }
+
                     THROWM(fplog::exceptions::Write_Failed, UDT::getlasterror().getErrorMessage());
                 }
 
@@ -371,7 +403,7 @@ namespace spipc
                     // Windows UDP issue
                     // For better performance, modify HKLM\System\CurrentControlSet\Services\Afd\Parameters\FastSendDatagramThreshold
                     #ifdef WIN32
-                        //UDT::setsockopt(client_sock_, 0, UDT_MSS, new int(1052), sizeof(int));
+                        UDT::setsockopt(client_sock_, 0, UDT_MSS, new int(1052), sizeof(int));
                     #endif
 
                     std::string peer_port = (high_uid_ ? std::to_string(uid_.low) : std::to_string(uid_.high));
