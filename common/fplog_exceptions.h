@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <stdlib.h>
+#include <stdio.h>
 
 #ifndef __SHORT_FORM_OF_FILE__
 
@@ -42,7 +44,13 @@ class Generic_Exception
         std::string what()
         {
             char buf[256];
-            _itoa_s(line_, buf, sizeof(buf) / sizeof(char), 10);
+			
+			#ifdef _WIN32
+				_itoa_s(line_, buf, sizeof(buf) / sizeof(char), 10);
+			#else
+				itoa(line_, buf, 10);
+			#endif
+			
             return "[" + facility_ + ", f:" + file_ + ", l:" + buf + "] " + message_;
         }
 

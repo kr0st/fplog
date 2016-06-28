@@ -1,2 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="fplog" Database=""/>
+<CodeLite_Workspace Name="fplog" Database="">
+  <Project Name="sprot" Path="sprot/sprot.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="sprot" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="sprot" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
