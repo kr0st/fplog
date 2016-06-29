@@ -16,6 +16,10 @@
 #define SPROT_API __declspec(dllimport)
 #endif
 
+#ifdef _LINUX
+#define SPROT_API 
+#endif
+
 #ifdef _DEBUG
 #define private public
 #endif

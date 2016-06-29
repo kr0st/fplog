@@ -27,6 +27,13 @@
 #define THROW(exception_type) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__); }
 #define THROWM(exception_type, message) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, message); }
 
+#ifdef _LINUX
+char *itoa(long i, char* s, int dummy_radix) {
+    sprintf(s, "%ld", i);
+    return s;
+}
+#endif
+
 namespace fplog { namespace exceptions {
 
 class Generic_Exception
