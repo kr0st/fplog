@@ -111,8 +111,13 @@ size_t Shared_Memory_IPC_Transport::write(const void* buf, size_t buf_size, size
     std::vector<unsigned char> tmp;
     tmp.resize(buf_size + sizeof(fplog::UID) + sizeof(size_t) + sizeof(int) + sizeof(long long));
 
+#ifdef _LINUX
+    int pid = getpid();
+#else
     int pid = _getpid();
-    size_t tid = std::this_thread::get_id().hash();
+#endif
+
+    size_t tid = std::hash<std::thread::id>()(std::this_thread::get_id());
 
     std::chrono::time_point<std::chrono::system_clock> beginning_of_time(std::chrono::system_clock::from_time_t(0));
     long long timestamp = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::duration(std::chrono::system_clock::now() - beginning_of_time))).count();
@@ -198,8 +203,13 @@ start_read:
     
     if (memcmp(buf_ + sizeof(size_t), &private_channel_id_, sizeof(fplog::UID)) == 0)
     {
+#ifdef _LINUX
+        int this_pid = getpid();
+#else
         int this_pid = _getpid();
-        size_t this_tid = std::this_thread::get_id().hash();
+#endif
+
+        size_t this_tid = std::hash<std::thread::id>()(std::this_thread::get_id());
 
         int read_pid = 0;
         size_t read_tid = 0;

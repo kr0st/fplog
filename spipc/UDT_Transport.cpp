@@ -1,8 +1,14 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
+#ifndef _LINUX
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#endif
 
 #include "UDT_Transport.h"
 
@@ -342,10 +348,17 @@ namespace spipc
                     getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NOFQDN);
                     host_name = clienthost;
 
+#ifdef _LINUX
+                    ((char*)&(((sockaddr_in *)&clientaddr)->sin_addr.s_addr))[0] = 127;
+                    ((char*)&(((sockaddr_in *)&clientaddr)->sin_addr.s_addr))[1] = 0;
+                    ((char*)&(((sockaddr_in *)&clientaddr)->sin_addr.s_addr))[2] = 0;
+                    ((char*)&(((sockaddr_in *)&clientaddr)->sin_addr.s_addr))[3] = 1;
+#else
                     ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b1 = 127;
                     ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b2 = 0;
                     ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b3 = 0;
                     ((sockaddr_in *)&clientaddr)->sin_addr.S_un.S_un_b.s_b4 = 1;
+#endif
 
                     getnameinfo((sockaddr *)&clientaddr, addrlen, clienthost, sizeof(clienthost), clientservice, sizeof(clientservice), NI_NOFQDN);
                     host_name_local = clienthost;

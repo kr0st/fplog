@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="sprot" InternalType="Library">
+<CodeLite_Project Name="spipc" InternalType="Library">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
@@ -29,11 +29,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../sprot/sprot.cpp"/>
+    <File Name="../spipc/spipc.cpp"/>
+    <File Name="../spipc/UDT_Transport.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="../sprot/sprot.h"/>
-    <File Name="../sprot/targetver.h"/>
+    <File Name="../spipc/spipc.h"/>
+    <File Name="../spipc/UDT_Transport.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
@@ -50,10 +51,14 @@
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../udt4/src/"/>
+        <IncludePath Value="../udt4/app/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -67,6 +72,10 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/</Command>
+        <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -97,10 +106,14 @@
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
+        <IncludePath Value="../udt4/app/"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../udt4/src/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -114,6 +127,10 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/</Command>
+        <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>

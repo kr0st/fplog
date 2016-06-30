@@ -9,6 +9,10 @@
 #define SPIPC_API __declspec(dllimport)
 #endif
 
+#ifdef _LINUX
+#define SPIPC_API 
+#endif
+
 namespace spipc
 {
     class SPIPC_API UDT_Transport: public fplog::Transport_Interface

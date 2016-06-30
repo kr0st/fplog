@@ -1,20 +1,23 @@
+#ifndef _LINUX
 #include "targetver.h"
+#include <process.h>
+#include "socket_transport.h"
+#endif
+
 #include "spipc.h"
 
-#include <process.h>
 #include <chrono>
 #include <mutex>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include "UDT_Transport.h"
-#include "Socket_Transport.h"
 
 namespace spipc {
 
 IPC::IPC(fplog::Transport_Interface* transport, size_t MTU)
 {
     own_transport_ = (transport == 0);
-    transport_ = own_transport_ ? new Socket_Transport() : transport;
+    transport_ = own_transport_ ? new UDT_Transport() : transport;
     protocol_ = new sprot::Protocol(transport_, MTU);
 }
 

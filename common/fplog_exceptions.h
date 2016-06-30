@@ -28,7 +28,7 @@
 #define THROWM(exception_type, message) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, message); }
 
 #ifdef _LINUX
-char *itoa(long i, char* s, int dummy_radix) {
+inline char *itoa(long i, char* s, int dummy_radix) {
     sprintf(s, "%ld", i);
     return s;
 }

@@ -2,7 +2,21 @@
 
 #include <fplog_exceptions.h>
 #include <fplog_transport.h>
+
+#ifdef _LINUX
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h> 
+
+#else
+
 #include <winsock2.h>
+
+#endif
+
 #include <mutex>
 #include "spipc.h"
 
@@ -10,6 +24,10 @@
 #define SPIPC_API __declspec(dllexport)
 #else
 #define SPIPC_API __declspec(dllimport)
+#endif
+
+#ifdef _LINUX
+#define SPIPC_API 
 #endif
 
 namespace spipc {
