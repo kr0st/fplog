@@ -52,6 +52,7 @@
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
@@ -73,6 +74,10 @@
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/</Command>
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -104,6 +109,7 @@
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
@@ -125,6 +131,10 @@
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/</Command>
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
