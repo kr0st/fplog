@@ -4,11 +4,11 @@
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
 # Your platform. See PLATS for possible values.
-PLAT= none
+PLAT= linux
 
 CC= gcc
-CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
-LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL -m32 $(SYSCFLAGS) $(MYCFLAGS)
+LDFLAGS= -m32 $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
 AR= ar rcu

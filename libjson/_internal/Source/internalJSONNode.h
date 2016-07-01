@@ -1,7 +1,7 @@
 #ifndef INTERNAL_JSONNODE_H
 #define INTERNAL_JSONNODE_H
 
-#include <utils.h>
+#include "../../../common/utils.h"
 
 #include "JSONDebug.h"
 #include "JSONChildren.h"

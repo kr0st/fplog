@@ -134,7 +134,7 @@ OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	cxxflags_default = -fast -ffast-math -fexpensive-optimizations -DNDEBUG
 else
-	cxxflags_default = -O3 -ffast-math -fexpensive-optimizations -DNDEBUG
+	cxxflags_default = -O3 -ffast-math -fexpensive-optimizations -m32 -std=c++11 -DNDEBUG
 endif
 cxxflags_small   = -Os -ffast-math -DJSON_LESS_MEMORY -DNDEBUG
 cxxflags_debug   = -g -DJSON_SAFE -DJSON_DEBUG
@@ -220,9 +220,9 @@ $(lib_target): banner installdirs $(addprefix $(objdir)/, $(objects))
 	@echo "Link "
 	cd $(objdir) ; \
 	if test "$(OS)" = "Darwin" ; then \
-		$(CXX) -shared -Wl,-dylib_install_name -Wl,$(libname_shared_major_version) -o $@ $(objects) ; \
+		$(CXX) -m32 -shared -Wl,-dylib_install_name -Wl,$(libname_shared_major_version) -o $@ $(objects) ; \
 	else \
-		$(CXX) -shared -Wl,-soname,$(libname_shared_major_version) -o $@ $(objects) ; \
+		$(CXX) -m32 -shared -Wl,-soname,$(libname_shared_major_version) -o $@ $(objects) ; \
 	fi ; \
 	mv -f $@ ../
 	@echo "Link: Done"

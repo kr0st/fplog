@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="fplog" Database="">
   <Project Name="sprot" Path="sprot.project" Active="No"/>
-  <Project Name="spipc" Path="spipc.project" Active="Yes"/>
+  <Project Name="spipc" Path="spipc.project" Active="No"/>
+  <Project Name="fplog" Path="fplog.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -24,6 +25,18 @@
       <Environment/>
       <Project Name="spipc" ConfigName="Release"/>
       <Project Name="spipc" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="fplog" ConfigName="Debug"/>
+      <Project Name="fplog" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Environment/>
+      <Project Name="fplog" ConfigName="Release"/>
+      <Project Name="fplog" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
