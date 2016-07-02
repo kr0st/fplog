@@ -31,10 +31,12 @@
   <VirtualDirectory Name="src">
     <File Name="../fplog/fplog.cpp"/>
     <File Name="../fplog/shared_sequence_number.cpp"/>
+    <File Name="../common/utils.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../fplog/fplog.h"/>
     <File Name="../fplog/shared_sequence_number.h"/>
+    <File Name="../common/utils.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <GlobalSettings>

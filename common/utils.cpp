@@ -1,4 +1,6 @@
 #include "utils.h"
+
+#include <stdio.h>
 #include <time.h>
 #include <boost/algorithm/string.hpp>
 
@@ -37,14 +39,22 @@ static unsigned long long get_msec_time_impl()
 
 //TODO: Linux implementation
 //some hints at http://linux.die.net/man/3/gmtime and http://linux.die.net/man/3/timelocal
+//returns timezone in minutes, not hours!
+//check out console cmd: date +%:z
 static int get_system_timezone_impl()
 {
+    return 180;
 }
 
 //TODO: Linux implementation
 //Use clock_gettime(CLOCK_MONOTONIC)
 static unsigned long long get_msec_time_impl()
 {
+    struct timespec tp;
+    int res = clock_gettime(CLOCK_MONOTONIC, &tp);
+    if (res != 0)
+        return 0;
+    return tp.tv_sec * 1000 + (tp.tv_nsec / 1000000);
 }
 
 #endif
@@ -65,9 +75,9 @@ std::string timezone_from_minutes_to_iso8601(int tz_minute_bias)
     char str[25] = {0};
 
     if (minutes != 0)
-        _snprintf(str, sizeof(str) - 1, "%s%02d%02d", hours > 0 ? "+" : "-", abs(hours), abs(minutes));
+        snprintf(str, sizeof(str) - 1, "%s%02d%02d", hours > 0 ? "+" : "-", abs(hours), abs(minutes));
     else
-        _snprintf(str, sizeof(str) - 1, "%s%02d", hours > 0 ? "+" : "-", abs(hours));
+        snprintf(str, sizeof(str) - 1, "%s%02d", hours > 0 ? "+" : "-", abs(hours));
 
     return str;
 }
@@ -78,7 +88,7 @@ std::string get_iso8601_timestamp()
     struct tm* tm(localtime(&elapsed_time));
     char timestamp[200] = {0};
 
-    _snprintf(timestamp, sizeof(timestamp) - 1, "%04d-%02d-%02dT%02d:%02d:%02d.%lld%s",
+    snprintf(timestamp, sizeof(timestamp) - 1, "%04d-%02d-%02dT%02d:%02d:%02d.%lld%s",
         tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, get_msec_time() % 1000,
         timezone_from_minutes_to_iso8601(get_system_timezone()).c_str());
 
