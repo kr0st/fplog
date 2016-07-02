@@ -1,5 +1,6 @@
 #include "shared_sequence_number.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 #include <chrono>
 
 using namespace std::chrono;
@@ -8,7 +9,7 @@ namespace fplog {
 
 static const char* g_shared_mem_name = "fplog_sequence_number";
 static const char* g_condition_mutex_name = "fplog_sequence_protector";
-static const size_t g_shared_mem_size = sizeof(unsigned long long);
+static const size_t g_shared_mem_size = sizeof(unsigned long long int);
 
 Shared_Sequence_Number::~Shared_Sequence_Number()
 {
@@ -63,7 +64,7 @@ relock:
         memset(buf_, 0, g_shared_mem_size);
 }
 
-unsigned long long Shared_Sequence_Number::read()
+unsigned long long int Shared_Sequence_Number::read()
 {
 relock:
 
@@ -79,11 +80,11 @@ relock:
         goto relock;
     }
 
-    unsigned long long number;
+    unsigned long long int number;
 
-    memcpy(&number, buf_, sizeof(unsigned long long));
+    memcpy(&number, buf_, sizeof(unsigned long long int));
     number++;
-    memcpy(buf_, &number, sizeof(unsigned long long));
+    memcpy(buf_, &number, sizeof(unsigned long long int));
 
     return number - 1;
 }

@@ -72,9 +72,9 @@
 	   #define DECLARE_FOR_LONG_DOUBLE_CONST(foo)
 	   #define IMPLEMENT_FOR_LONG_DOUBLE(foo)
     #else
-	   #define DECLARE_FOR_LONG_LONG(foo) foo(long long) json_nothrow; foo(unsigned long long) json_nothrow;
-	   #define DECLARE_FOR_LONG_LONG_CONST(foo) foo(long long) const json_nothrow; foo(unsigned long long) const json_nothrow;
-	   #define IMPLEMENT_FOR_LONG_LONG(foo) foo(long long) foo(unsigned long long)
+	   #define DECLARE_FOR_LONG_LONG(foo) foo(long long int) json_nothrow; foo(unsigned long long int) json_nothrow;
+	   #define DECLARE_FOR_LONG_LONG_CONST(foo) foo(long long int) const json_nothrow; foo(unsigned long long int) const json_nothrow;
+	   #define IMPLEMENT_FOR_LONG_LONG(foo) foo(long long int) foo(unsigned long long int)
 	   #define DECLARE_FOR_LONG_DOUBLE(foo) foo(long double) json_nothrow;
 	   #define DECLARE_FOR_LONG_DOUBLE_CONST(foo) foo(long double) const json_nothrow;
 	   #define IMPLEMENT_FOR_LONG_DOUBLE(foo) foo(long double)

@@ -5,7 +5,6 @@
 #include <thread>
 #include <queue>
 #include <lua.hpp>
-#include <spipc/Socket_Transport.h>
 #include <spipc/UDT_Transport.h>
 #include <sprot/sprot.h>
 #include <mutex>
@@ -120,7 +119,7 @@ Message& Message::set_method(const char* method)
     return set(Optional_Fields::method, method);
 }
 
-Message& Message::set_sequence(long long sequence)
+Message& Message::set_sequence(long long int sequence)
 {
     return set(Optional_Fields::sequence, sequence);
 }
@@ -384,7 +383,7 @@ class FPLOG_API Fplog_Impl
         const char* get_facility()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            return thread_log_settings_table_[std::this_thread::get_id().hash()].facility_.c_str();
+            return thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())].facility_.c_str();
         }
 
         void openlog(const char* facility, Filter_Base* filter)
@@ -392,7 +391,7 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
             if (facility)
-                thread_log_settings_table_[std::this_thread::get_id().hash()].facility_ = facility;
+                thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())].facility_ = facility;
             else
                 return;
 
@@ -425,7 +424,7 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
-                transport_ = new spipc::Socket_Transport();
+                transport_ = new spipc::UDT_Transport();
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;
@@ -441,7 +440,7 @@ class FPLOG_API Fplog_Impl
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            std::map<unsigned long long, Logger_Settings>::iterator it = thread_log_settings_table_.find(std::this_thread::get_id().hash());
+            std::map<unsigned long long int, Logger_Settings>::iterator it = thread_log_settings_table_.find(std::hash<std::thread::id>()(std::this_thread::get_id()));
             if (it != thread_log_settings_table_.end())
                 thread_log_settings_table_.erase(it);
         }
@@ -455,7 +454,7 @@ class FPLOG_API Fplog_Impl
             msg.set(Message::Mandatory_Fields::appname, appname_);
             if (passed_filters(msg))
             {
-                msg.set_sequence((long long)sequence_.read());
+                msg.set_sequence((long long int)sequence_.read());
 
                 if (test_mode_)
                     g_test_results_vector.push_back(msg.as_string());
@@ -498,10 +497,10 @@ class FPLOG_API Fplog_Impl
                 return;
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Logger_Settings settings = Logger_Settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings = Logger_Settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
             settings.filter_id_ptr_map[filter_id] = std::shared_ptr<Filter_Base>(filter);
 
-            thread_log_settings_table_[std::this_thread::get_id().hash()] = settings;
+            thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())] = settings;
         }
 
         void remove_filter(Filter_Base* filter)
@@ -511,13 +510,13 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
 
             std::string filter_id(filter->get_id());
             if (!filter_id.empty())
             {
                 settings.filter_id_ptr_map.erase(settings.filter_id_ptr_map.find(filter_id));
-                thread_log_settings_table_[std::this_thread::get_id().hash()] = settings;
+                thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())] = settings;
             }
         }
 
@@ -533,7 +532,7 @@ class FPLOG_API Fplog_Impl
 
             std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
             std::map<std::string, std::shared_ptr<Filter_Base>>::iterator found(settings.filter_id_ptr_map.find(filter_id_trimmed));
             if (found != settings.filter_id_ptr_map.end())
                 return found->second.get();
@@ -591,7 +590,7 @@ class FPLOG_API Fplog_Impl
             std::string facility_;
         };
 
-        std::map<unsigned long long, Logger_Settings> thread_log_settings_table_;
+        std::map<unsigned long long int, Logger_Settings> thread_log_settings_table_;
 
         std::recursive_mutex mutex_;
         std::recursive_mutex mq_reader_mutex_;
@@ -654,7 +653,7 @@ class FPLOG_API Fplog_Impl
         bool passed_filters(Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
-            Logger_Settings settings(thread_log_settings_table_[std::this_thread::get_id().hash()]);
+            Logger_Settings settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
             
             if (settings.filter_id_ptr_map.size() == 0)
                 return false;
@@ -791,8 +790,11 @@ class Lua_Filter::Lua_Filter_Impl
             memset(lua_script, 0, lua_len);
             std::auto_ptr<char> lua_script_ptr(lua_script);
 
+#ifndef _LINUX
             _snprintf(lua_script, lua_len - 1, format, log_msg_escaped.c_str());
-
+#else
+			sprintf(lua_script, format, log_msg_escaped.c_str());
+#endif
             std::string full_script(lua_script + lua_script_);
             luaL_dostring(lua_state_, full_script.c_str());
 
@@ -905,9 +907,11 @@ class Chai_Filter::Chai_Filter_Impl
             char* chai_script = new char[chai_len];
             memset(chai_script, 0, chai_len);
             std::auto_ptr<char> chai_script_ptr(chai_script);
-
+#ifndef _LINUX
             _snprintf(chai_script, chai_len - 1, std_format.c_str(), log_msg_escaped.c_str());
-
+#else
+			sprintf(chai_script, std_format.c_str(), log_msg_escaped.c_str());
+#endif
             std::string full_script(chai_script + chai_script_);
 
             try

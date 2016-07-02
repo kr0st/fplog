@@ -18,6 +18,10 @@
 #define FPLOG_API __declspec(dllimport)
 #endif
 
+#ifdef _LINUX
+#define FPLOG_API
+#endif
+
 #define CLASSNAME typeid(*this).name()
 #define CLASSNAME_SHORT \
     (strrchr(CLASSNAME,' ') \
@@ -113,7 +117,7 @@ class FPLOG_API Message
         Message& set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
         Message& add(const char* param_name, int param){ return add<int>(param_name, param); }
-        Message& add(const char* param_name, long long param){ return add<long long>(param_name, param); }
+        Message& add(const char* param_name, long long int param){ return add<long long int>(param_name, param); }
         Message& add(const char* param_name, double param){ return add<double>(param_name, param); }
         Message& add(const char* param_name, std::string& param){ return add<std::string>(param_name, param); }
         Message& add(const char* param_name, const char* param){ return add<const char*>(param_name, param); }
@@ -205,7 +209,7 @@ class FPLOG_API Message
             {
                 JSONNode::iterator it(msg_.find_nocase(param_name));
                 if (it != msg_.end())
-                    *it=param;
+                    *it = param;
                 else
                     msg_.push_back(JSONNode(trimmed, param));
             }
@@ -213,7 +217,7 @@ class FPLOG_API Message
             return *this;
         }
         
-        Message& set_sequence(long long sequence);
+        Message& set_sequence(long long int sequence);
 
         JSONNode msg_;
         bool validate_params_;

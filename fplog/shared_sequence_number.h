@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 #include <fplog_exceptions.h>
@@ -15,7 +16,7 @@ class Shared_Sequence_Number
         Shared_Sequence_Number();
         virtual ~Shared_Sequence_Number();
 
-        unsigned long long read();
+        unsigned long long int read();
 
     private:
         

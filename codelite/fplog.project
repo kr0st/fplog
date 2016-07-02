@@ -53,6 +53,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
@@ -76,7 +77,7 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
-        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/</Command>
         <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
@@ -110,6 +111,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
@@ -133,7 +135,7 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
-        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/</Command>
         <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
