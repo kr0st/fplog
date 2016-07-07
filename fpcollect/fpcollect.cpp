@@ -1,6 +1,5 @@
-#include "targetver.h"
-
 #ifdef WIN32
+#include "targetver.h"
 #include <winsock2.h>
 #include <windows.h>
 #include <tlhelp32.h>
@@ -10,7 +9,6 @@
 #include "fpcollect.h"
 #include "Transport_Factory.h"
 #include <stdio.h>
-#include <conio.h>
 #include <queue>
 #include <mutex>
 
@@ -34,6 +32,29 @@ static char* g_process_name = "fpcollect";
 static char* g_config_file_name = "fpcollect.ini";
 static char* g_config_file_storage_section_name = "storage";
 static char* g_config_file_connection_section_name = "connection_";
+
+#ifndef _LINUX
+#include <conio.h>
+#else
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+
+int _getch() {
+  struct termios oldt,
+                 newt;
+  int            ch;
+  tcgetattr( STDIN_FILENO, &oldt );
+  newt = oldt;
+  newt.c_lflag &= ~( ICANON | ECHO );
+  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+  ch = getchar();
+  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+  return ch;
+}
+
+#endif
 
 static std::string get_home_dir()
 {
@@ -181,7 +202,7 @@ class Impl
             should_stop_ = false;
 
             std::vector<fplog::Transport_Interface::Params> params(get_connections());
-            for each (auto param in params)
+            for (auto param : params)
             {
                 Thread_Data* worker = new Thread_Data();
                 
@@ -323,7 +344,7 @@ class Impl
             overload_checker_.join();
             mq_reader_.join();
 
-            for each (auto worker in pool_)
+            for (auto worker : pool_)
             {
                 if (!worker)
                     continue;

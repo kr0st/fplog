@@ -98,6 +98,7 @@ bool IsProcessRunning(const char *processName)
     CloseHandle(snapshot);
     return exists;
 #else
+//TODO: Linux implementation!
     return false;
 #endif
 }
