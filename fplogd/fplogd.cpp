@@ -1,15 +1,42 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
+#ifndef _LINUX
 #include "targetver.h"
+#endif
+
+#include <string>
 #include "fplogd.h"
-#include "..\fplog\fplog.h"
+#include "../fplog/fplog.h"
 #include <libjson/libjson.h>
 #include "Transport_Factory.h"
 #include "Queue_Controller.h"
 
 #include <fstream> 
 #include <stdio.h>
+
+#ifndef _LINUX
 #include <conio.h>
+#else
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+
+int _getch() {
+  struct termios oldt,
+                 newt;
+  int            ch;
+  tcgetattr( STDIN_FILENO, &oldt );
+  newt = oldt;
+  newt.c_lflag &= ~( ICANON | ECHO );
+  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+  ch = getchar();
+  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+  return ch;
+}
+
+#endif
+
 #include <queue>
 #include <mutex>
 #include <fplog_exceptions.h>
@@ -27,6 +54,11 @@
 #include <windows.h>
 #include <tlhelp32.h>
 #include <Shlobj.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 #endif
 
 #ifdef WIN32
@@ -88,6 +120,7 @@ static std::string get_home_dir()
 #endif
 }
 
+#ifndef _LINUX
 void GetPrimaryIp(char* buffer, size_t buflen) 
 {
     WSADATA wsaData;
@@ -122,6 +155,39 @@ void GetPrimaryIp(char* buffer, size_t buflen)
 
     WSACleanup();
 }
+#else
+
+void GetPrimaryIp(char* buffer, size_t buflen) 
+{
+    assert(buflen >= 16);
+
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    assert(sock != -1);
+
+    const char* kGoogleDnsIp = "8.8.8.8";
+    uint16_t kDnsPort = 53;
+    struct sockaddr_in serv;
+    memset(&serv, 0, sizeof(serv));
+    serv.sin_family = AF_INET;
+    serv.sin_addr.s_addr = inet_addr(kGoogleDnsIp);
+    serv.sin_port = htons(kDnsPort);
+
+    int err = connect(sock, (const sockaddr*) &serv, sizeof(serv));
+    assert(err != -1);
+
+    sockaddr_in name;
+    int namelen = sizeof(name);
+    err = getsockname(sock, (sockaddr*) &name, &namelen);
+    assert(err != -1);
+
+    const char* p = inet_ntop(AF_INET, &name.sin_addr, buffer, buflen);
+    assert(p);
+
+    shutdown(sock, SHUT_RDWR);
+    close(sock);
+}
+
+#endif
 
 using namespace boost::interprocess;
 
@@ -224,7 +290,8 @@ std::vector<Channel_Data> get_registered_channels()
 
         for (auto& key: section.second)
         {
-            data.uid.from_string(key.second.get_value<std::string>());
+            std::string str_uid(key.second.get_value<std::string>());
+            data.uid.from_string(str_uid);
             data.app_name = key.first;
             res.push_back(data);
         }
@@ -313,7 +380,7 @@ class Impl
 
                         GetPrimaryIp(ip_str, sizeof(ip_str));
                         unsigned long name_len = sizeof(comp_name);
-                        GetComputerNameA(comp_name, &name_len);
+                        gethostname(comp_name, name_len);
 
                         if (std::string(ip_str).empty() && std::string(comp_name).empty())
                         {
@@ -333,7 +400,7 @@ class Impl
             }
 
             std::vector<Channel_Data> channels(get_registered_channels());
-            for each (auto channel in channels)
+            for (auto channel : channels)
             {
                 Thread_Data* worker = new Thread_Data();
                 
@@ -481,7 +548,7 @@ class Impl
             overload_checker_.join();
             mq_reader_.join();
 
-            for each (auto worker in pool_)
+            for (auto worker : pool_)
             {
                 if (!worker)
                     continue;

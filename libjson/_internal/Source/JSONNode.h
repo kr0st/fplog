@@ -41,12 +41,16 @@
 
     #define DECLARE_FOR_ALL_TYPES(foo)\
 	   foo(json_int_t)json_nothrow;\
-	   foo(json_number) json_nothrow;\
+       foo(long long int)json_nothrow;\
+	   foo(unsigned long long int)json_nothrow;\
+       foo(json_number) json_nothrow;\
 	   foo(bool) json_nothrow;\
 	   foo(const json_string &) json_nothrow;
 
     #define DECLARE_FOR_ALL_CAST_TYPES_CONST(foo)\
 	   foo(json_int_t) const json_nothrow;\
+       foo(long long int) const json_nothrow;\
+	   foo(unsigned long long int) const json_nothrow;\
 	   foo(json_number) const json_nothrow;\
 	   foo(bool) const json_nothrow;\
 	   foo(const json_string &) const json_nothrow;\

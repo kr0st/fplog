@@ -85,7 +85,7 @@ void jsonChildren::doerase(JSONNode ** position, json_index_t number) json_nothr
     if (position + number >= array + mysize){
 	   mysize = (json_index_t)(position - array);
 	   #ifndef JSON_ISO_STRICT
-		  JSON_ASSERT((long long)position - (long long)array >= 0, JSON_TEXT("doing negative allocation"));
+		  JSON_ASSERT((long long int)position - (long long int)array >= 0, JSON_TEXT("doing negative allocation"));
 	   #endif
     } else {
 	   std::memmove(position, position + number, (mysize - (position - array) - number) * sizeof(JSONNode *));

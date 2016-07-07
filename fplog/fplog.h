@@ -34,6 +34,20 @@
     ? strrchr(__FUNCTION__,':')+1 \
     : __FUNCTION__ \
     )
+    
+#ifndef _WIN32_WINNT
+
+#define FPL_TRACE(format, ...) fplog::Message(fplog::Prio::debug, fplog::get_facility(), format, ##__VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_INFO(format, ...) fplog::Message(fplog::Prio::info, fplog::get_facility(), format, ##__VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_WARN(format, ...) fplog::Message(fplog::Prio::warning, fplog::get_facility(), format, ##__VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+#define FPL_ERROR(format, ...) fplog::Message(fplog::Prio::error, fplog::get_facility(), format, ##__VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
+
+#define FPL_CTRACE(format, ...) FPL_TRACE(format, ##__VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CINFO(format, ...) FPL_INFO(format, ##__VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CWARN(format, ...) FPL_WARN(format, ##__VA_ARGS__).set_class(CLASSNAME_SHORT)
+#define FPL_CERROR(format, ...) FPL_ERROR(format, ##__VA_ARGS__).set_class(CLASSNAME_SHORT)
+
+#else
 
 #define FPL_TRACE(format, ...) fplog::Message(fplog::Prio::debug, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
 #define FPL_INFO(format, ...) fplog::Message(fplog::Prio::info, fplog::get_facility(), format, __VA_ARGS__).set_module(__SHORT_FORM_OF_FILE__).set_line(__LINE__).set_method(FUNCTION_SHORT)
@@ -44,6 +58,8 @@
 #define FPL_CINFO(format, ...) FPL_INFO(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 #define FPL_CWARN(format, ...) FPL_WARN(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
 #define FPL_CERROR(format, ...) FPL_ERROR(format, __VA_ARGS__).set_class(CLASSNAME_SHORT)
+
+#endif
 
 namespace fplogd
 {
@@ -211,13 +227,13 @@ class FPLOG_API Message
                 if (it != msg_.end())
                     *it = param;
                 else
-                    msg_.push_back(JSONNode(trimmed, param));
+                    msg_.push_back(JSONNode(trimmed.c_str(), param));
             }
 
             return *this;
         }
         
-        Message& set_sequence(long long int sequence);
+        Message& set_sequence(unsigned long long int sequence);
 
         JSONNode msg_;
         bool validate_params_;

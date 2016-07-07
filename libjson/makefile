@@ -188,7 +188,8 @@ endif
 ifeq ($(SHARED), 1)
 	libname_shared               = $(libname).$(suffix_shared)
 	libname_shared_major_version = $(libname_shared).$(major_version)
-	lib_target                   = $(libname_shared_major_version).$(minor_version)
+#	lib_target                   = $(libname_shared_major_version).$(minor_version)
+	lib_target                   = $(libname_shared)
 	objdir                      := $(objdir)_shared
 	CXXFLAGS                    := $(CXXFLAGS) $(cxxflags_shared)
 else
@@ -222,7 +223,7 @@ $(lib_target): banner installdirs $(addprefix $(objdir)/, $(objects))
 	if test "$(OS)" = "Darwin" ; then \
 		$(CXX) -m32 -shared -Wl,-dylib_install_name -Wl,$(libname_shared_major_version) -o $@ $(objects) ; \
 	else \
-		$(CXX) -m32 -shared -Wl,-soname,$(libname_shared_major_version) -o $@ $(objects) ; \
+		$(CXX) -m32 -shared -Wl,-soname,$(libname_shared) -o $@ $(objects) ; \
 	fi ; \
 	mv -f $@ ../
 	@echo "Link: Done"

@@ -325,7 +325,7 @@ void internalJSONNode::Set(const json_string & val) json_nothrow {
     SET_INTEGER(int)
     SET_INTEGER(long)
     #ifndef JSON_ISO_STRICT 
-	   SET_INTEGER(long long)
+	   SET_INTEGER(long long int)
 	   SET_FLOAT(long double)
     #endif
 
@@ -582,7 +582,7 @@ internalJSONNode::operator bool() const json_nothrow {
     #ifdef JSON_ISO_STRICT /*-> JSON_ISO_STRICT */
 	   internalJSONNode::operator long() const json_nothrow
     #else /*<- else */
-	   internalJSONNode::operator long long() const json_nothrow
+	   internalJSONNode::operator long long int() const json_nothrow
     #endif /*<- */
     {
 	   Fetch();
@@ -603,27 +603,27 @@ internalJSONNode::operator bool() const json_nothrow {
 		  JSON_ASSERT(_value._number == (json_number)((long)_value._number), json_string(JSON_TEXT("(long) will truncate ")) + _string);
 		  return (long)_value._number;
 	   #else /*<- else */
-		  JSON_ASSERT(type() == JSON_NUMBER, json_global(ERROR_UNDEFINED) + JSON_TEXT("(long long)"));
+		  JSON_ASSERT(type() == JSON_NUMBER, json_global(ERROR_UNDEFINED) + JSON_TEXT("(long long int)"));
 		  #ifdef LONG_LONG_MAX			 
-			 JSON_ASSERT(_value._number < LONG_LONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("long long"));
+			 JSON_ASSERT(_value._number < LONG_LONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("long long int"));
 		  #elif defined(LLONG_MAX)
-			 JSON_ASSERT(_value._number < LLONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("long long"));
+			 JSON_ASSERT(_value._number < LLONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("long long int"));
 		  #endif
 		  #ifdef LONG_LONG_MIN
-			 JSON_ASSERT(_value._number > LONG_LONG_MIN, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("long long"));
+			 JSON_ASSERT(_value._number > LONG_LONG_MIN, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("long long int"));
 		  #elif defined(LLONG_MAX)
-			 JSON_ASSERT(_value._number > LLONG_MIN, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("long long"));
+			 JSON_ASSERT(_value._number > LLONG_MIN, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("long long int"));
 		  #endif
 
-		  JSON_ASSERT(_value._number == (json_number)((long long)_value._number), json_string(JSON_TEXT("(long long) will truncate ")) + _string);
-		  return (long long)_value._number;
+		  JSON_ASSERT(_value._number == (json_number)((long long int)_value._number), json_string(JSON_TEXT("(long long int) will truncate ")) + _string);
+		  return (long long int)_value._number;
 	   #endif /*<- */
     }
 
     #ifdef JSON_ISO_STRICT /*-> JSON_ISO_STRICT */
 	   internalJSONNode::operator unsigned long() const json_nothrow
     #else /*<- else */
-	   internalJSONNode::operator unsigned long long() const json_nothrow
+	   internalJSONNode::operator unsigned long long int() const json_nothrow
     #endif /*<- */
     {
 	   Fetch();
@@ -644,15 +644,15 @@ internalJSONNode::operator bool() const json_nothrow {
 		  JSON_ASSERT(_value._number == (json_number)((unsigned long)_value._number), json_string(JSON_TEXT("(unsigend long) will truncate ")) + _string);
 		  return (unsigned long)_value._number;
 	   #else /*<- else */
-		  JSON_ASSERT(type() == JSON_NUMBER, json_global(ERROR_UNDEFINED) + JSON_TEXT("(unsigned long long)"));
-		  JSON_ASSERT(_value._number > 0, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("unsigned long long"));
+		  JSON_ASSERT(type() == JSON_NUMBER, json_global(ERROR_UNDEFINED) + JSON_TEXT("(unsigned long long int)"));
+		  JSON_ASSERT(_value._number > 0, _string + json_global(ERROR_LOWER_RANGE) + JSON_TEXT("unsigned long long int"));
 		  #ifdef ULONG_LONG_MAX
-			 JSON_ASSERT(_value._number < ULONG_LONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("unsigned long long"));
+			 JSON_ASSERT(_value._number < ULONG_LONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("unsigned long long int"));
 		  #elif defined(ULLONG_MAX)
-			 JSON_ASSERT(_value._number < ULLONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("unsigned long long"));
+			 JSON_ASSERT(_value._number < ULLONG_MAX, _string + json_global(ERROR_UPPER_RANGE) + JSON_TEXT("unsigned long long int"));
 		  #endif
-		  JSON_ASSERT(_value._number == (json_number)((unsigned long long)_value._number), json_string(JSON_TEXT("(unsigned long long) will truncate ")) + _string);
-		  return (unsigned long long)_value._number;
+		  JSON_ASSERT(_value._number == (json_number)((unsigned long long int)_value._number), json_string(JSON_TEXT("(unsigned long long int) will truncate ")) + _string);
+		  return (unsigned long long int)_value._number;
 	   #endif /*<- */
     }
 #endif /*<- */

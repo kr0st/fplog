@@ -9,14 +9,10 @@
 namespace generic_util
 {
 
+static inline bool compare_no_case(char ch1, char ch2){ return std::toupper(ch1) == std::toupper(ch2); }
 static inline bool find_str_no_case(const std::string& search_where, const std::string& search_what)
 {
-  auto it = std::search(
-    search_where.begin(), search_where.end(),
-    search_what.begin(), search_what.end(),
-    [](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
-  );
-  return (it != search_where.end() );
+    return (std::search(search_where.begin(), search_where.end(), search_what.begin(), search_what.end(), compare_no_case) != search_where.end());
 }
 
 //Returns difference in minutes from UTC

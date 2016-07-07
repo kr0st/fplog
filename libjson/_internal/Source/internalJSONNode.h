@@ -147,7 +147,7 @@ public:
 	   DECL_SET_INTEGER(int)
 	   DECL_SET_INTEGER(long)
 	   #ifndef JSON_ISO_STRICT
-		  DECL_SET_INTEGER(long long)
+		  DECL_SET_INTEGER(long long int)
 		  void Set(long double val) json_nothrow json_write_priority;
 	   #endif
 	   void Set(float val) json_nothrow json_write_priority;
@@ -159,7 +159,7 @@ public:
 	   DECL_CAST_OP(int)
 	   DECL_CAST_OP(long)
 	   #ifndef JSON_ISO_STRICT
-		  DECL_CAST_OP(long long)
+		  DECL_CAST_OP(long long int)
 		  operator long double() const json_nothrow;
 	   #endif
 	   operator float() const json_nothrow;
@@ -455,7 +455,7 @@ inline JSONNode * internalJSONNode::at(json_index_t pos) json_nothrow {
     #ifdef JSON_ISO_STRICT
 	   #define BASE_CONVERT_TYPE long
     #else
-	   #define BASE_CONVERT_TYPE long long
+	   #define BASE_CONVERT_TYPE long long int
     #endif
 
     #define IMP_SMALLER_INT_CAST_OP(_type, type_max, type_min)\

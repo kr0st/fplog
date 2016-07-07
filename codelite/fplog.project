@@ -60,9 +60,15 @@
       </Compiler>
       <Linker Options="-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="dl"/>
+        <Library Value="spipc"/>
+        <Library Value="lua"/>
+        <Library Value="rt"/>
+        <Library Value="json"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -80,7 +86,7 @@
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
         <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/</Command>
-        <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
+        <Command Enabled="yes">cp ../libjson/libjson.so ../Stage/libjson.so</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -165,4 +171,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="spipc"/>
+  </Dependencies>
 </CodeLite_Project>

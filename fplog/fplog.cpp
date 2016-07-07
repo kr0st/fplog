@@ -119,7 +119,7 @@ Message& Message::set_method(const char* method)
     return set(Optional_Fields::method, method);
 }
 
-Message& Message::set_sequence(long long int sequence)
+Message& Message::set_sequence(unsigned long long int sequence)
 {
     return set(Optional_Fields::sequence, sequence);
 }

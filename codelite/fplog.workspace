@@ -3,6 +3,7 @@
   <Project Name="sprot" Path="sprot.project" Active="No"/>
   <Project Name="spipc" Path="spipc.project" Active="No"/>
   <Project Name="fplog" Path="fplog.project" Active="Yes"/>
+  <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -37,6 +38,18 @@
       <Environment/>
       <Project Name="fplog" ConfigName="Release"/>
       <Project Name="fplog" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="fplogd" ConfigName="Debug"/>
+      <Project Name="fplogd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Environment/>
+      <Project Name="fplogd" ConfigName="Release"/>
+      <Project Name="fplogd" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

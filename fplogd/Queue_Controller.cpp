@@ -1,4 +1,5 @@
 #include "Queue_Controller.h"
+#include <string.h>
 
 bool Queue_Controller::empty()
 {
@@ -19,7 +20,12 @@ void Queue_Controller::pop()
 void Queue_Controller::push(string *str)
 {   
     size_t buf_sz = 2048;
+    
+    #ifdef _LINUX
+    int buf_length = strnlen(str->c_str(), buf_sz);
+    #else
     int buf_length = strnlen_s(str->c_str(), buf_sz);
+    #endif
 
     if (mq_size < queue_limiter)      {                      
 
