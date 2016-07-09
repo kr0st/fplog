@@ -169,7 +169,7 @@ class FPLOG_API Message
         Message& set_line(int line);
         Message& set_file(const char* name);
 
-        std::string as_string();
+        std::string as_string() const;
         JSONNode& as_json();
 
 

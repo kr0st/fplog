@@ -35,6 +35,8 @@ static unsigned long long get_msec_time_impl()
     return result;
 }
 
+#define snprintf _snprintf
+
 #else
 
 //TODO: Linux implementation

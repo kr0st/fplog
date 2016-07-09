@@ -214,7 +214,7 @@ bool Message::is_valid(JSONNode& param)
     return true;
 }
 
-std::string Message::as_string()
+std::string Message::as_string() const
 {
     return msg_.write();
 }
@@ -237,8 +237,9 @@ Message::Message(const std::string& msg)
 
 bool Priority_Filter::should_pass(const Message& msg)
 {
-    JSONNode::iterator it(msg.as_json().find(fplog::Message::Mandatory_Fields::priority));
-    if (it != msg.as_json().end())
+    Message& m = const_cast<Message&>(msg);
+    JSONNode::iterator it(m.as_json().find(fplog::Message::Mandatory_Fields::priority));
+    if (it != m.as_json().end())
         return (prio_.find(it->as_string()) != prio_.end());
 
     return false;
@@ -446,8 +447,10 @@ class FPLOG_API Fplog_Impl
                 thread_log_settings_table_.erase(it);
         }
 
-        void write(const Message& msg)
+        void write(const Message& m)
         {
+            Message msg(m);
+
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             if (stopping_)
                 return;
@@ -540,8 +543,8 @@ class FPLOG_API Fplog_Impl
 
             return 0;
         }
-        FPLOG_API void set_test_mode(bool mode);
-        FPLOG_API void wait_until_queues_are_empty();
+        void set_test_mode(bool mode);
+        void wait_until_queues_are_empty();
 
     private:
 
