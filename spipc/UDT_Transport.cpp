@@ -404,7 +404,9 @@ namespace spipc
                     #endif
 
                     std::string peer_port = (high_uid_ ? std::to_string(uid_.low) : std::to_string(uid_.high));
-                    if (0 != getaddrinfo(ip_str_.c_str(), peer_port.c_str(), &hints, &peer))
+                    std::string ip_address(std::to_string(ip_[0]) + "." + std::to_string(ip_[1]) + "." + std::to_string(ip_[2]) + "." + std::to_string(ip_[3]));
+                    
+                    if (0 != getaddrinfo(ip_address.c_str(), peer_port.c_str(), &hints, &peer))
                         THROWM(fplog::exceptions::Connect_Failed, (std::string("Cannot connect to ") + ip_str_ + ":" + peer_port).c_str());
 
                     // connect to the server, implict bind
@@ -414,6 +416,7 @@ namespace spipc
                         THROWM(fplog::exceptions::Connect_Failed, UDT::getlasterror().getErrorMessage());
                     }
 
+                    ip_str_ = ip_address;
                     connected_ = true;
 
                     freeaddrinfo(peer);
