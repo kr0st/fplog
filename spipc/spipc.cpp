@@ -60,6 +60,7 @@ void IPC::connect(const fplog::UID& private_channel)
 
     Params params;
     params["uid"] = private_channel_id_.to_string(private_channel_id_);
+    params["ip"] = "127.0.0.1";
 
     transport_->connect(params);
 

@@ -13,13 +13,21 @@
 #include "utils.h"
 
 #ifdef FPLOG_EXPORT
+
+#ifdef _LINUX
+#define FPLOG_API __attribute__ ((visibility("default")))
+#else
 #define FPLOG_API __declspec(dllexport)
+#endif
+
+#else
+
+#ifdef _LINUX
+#define FPLOG_API 
 #else
 #define FPLOG_API __declspec(dllimport)
 #endif
 
-#ifdef _LINUX
-#define FPLOG_API
 #endif
 
 #define CLASSNAME typeid(*this).name()
@@ -127,8 +135,8 @@ class FPLOG_API Message
         };
 
         Message(const char* prio, const char *facility, const char* format = 0, ...);
-        Message(JSONNode& msg);
-        Message(std::string& msg);
+        Message(const JSONNode& msg);
+        Message(const std::string& msg);
 
         Message& set_timestamp(const char* timestamp = 0); //either sets provided timestamp or uses current system date/time if timestamp is 0
 
@@ -264,7 +272,7 @@ class FPLOG_API Filter_Base
     public:
 
         Filter_Base(const char* filter_id) { if (filter_id) filter_id_ = filter_id; else filter_id_ = ""; }
-        virtual bool should_pass(Message& msg) = 0;
+        virtual bool should_pass(const Message& msg) = 0;
         std::string get_id(){ std::lock_guard<std::recursive_mutex> lock(mutex_); std::string id(filter_id_); return id; };
 
 
@@ -290,7 +298,7 @@ class FPLOG_API Lua_Filter: public Filter_Base
     public:
 
             Lua_Filter(const char* filter_id, const char* lua_script);
-            virtual bool should_pass(Message& msg);
+            virtual bool should_pass(const Message& msg);
             ~Lua_Filter();
 
     private:
@@ -312,7 +320,7 @@ class FPLOG_API Chai_Filter: public Filter_Base
     public:
 
             Chai_Filter(const char* filter_id, const char* chai_script);
-            virtual bool should_pass(Message& msg);
+            virtual bool should_pass(const Message& msg);
             ~Chai_Filter();
 
     private:
@@ -330,7 +338,7 @@ class FPLOG_API Priority_Filter: public Filter_Base
 
         Priority_Filter(const char* filter_id): Filter_Base(filter_id){}
 
-        virtual bool should_pass(Message& msg);
+        virtual bool should_pass(const Message& msg);
 
         void add(const char* prio){ if (prio) prio_.insert(prio); }
         void remove(const char* prio) { if (prio){ std::set<std::string>::iterator it(prio_.find(prio)); if (it != prio_.end()) { prio_.erase(it); }}}
@@ -371,6 +379,6 @@ FPLOG_API Filter_Base* find_filter(const char* filter_id);
 FPLOG_API const char* get_facility();
 
 //Should be used from any thread that opened logger, calling from other threads will have no effect.
-FPLOG_API void write(Message& msg);
+FPLOG_API void write(const Message& msg);
 
 };

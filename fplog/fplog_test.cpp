@@ -1,16 +1,41 @@
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
+#endif
+
+#ifndef _LINUX
+#include <conio.h>
+#else
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+
+int _getch() {
+  struct termios oldt,
+                 newt;
+  int            ch;
+  tcgetattr( STDIN_FILENO, &oldt );
+  newt = oldt;
+  newt.c_lflag &= ~( ICANON | ECHO );
+  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+  ch = getchar();
+  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+  return ch;
+}
+
+#endif
+
 #include <iostream>
 #include <libjson/libjson.h>
 #include "fplog.h"
 #include "utils.h"
 #include <chrono>
 #include <thread>
-#include <conio.h>
-#include <udt.h>
-#include <cc.h>
-#include <test_util.h>
+//#include <udt.h>
+//#include <cc.h>
+//#include <test_util.h>
 #include <spipc/UDT_Transport.h>
 
 using namespace std;
@@ -62,6 +87,7 @@ bool class_logging_test()
 bool send_file_test()
 {
     const char* str = "asafdkfj *** Hello, world! -=-=-=-=-=-+++   ";
+    
     fplog::write(fplog::File(fplog::Prio::alert, "dump.bin", str, strlen(str)).as_message());
     
     return true;
@@ -661,9 +687,9 @@ int main()
 {
     //fplog::testing::run_all_tests();
 
-    //fplog::testing::manual_test();
+    fplog::testing::manual_test();
     
-    fplog::testing::performance_test();
+    //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

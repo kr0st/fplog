@@ -224,18 +224,18 @@ JSONNode& Message::as_json()
     return msg_;
 }
 
-Message::Message(JSONNode& msg)
+Message::Message(const JSONNode& msg)
 {
     msg_ = msg;
 }
 
-Message::Message(std::string& msg)
+Message::Message(const std::string& msg)
 {
     JSONNode json(msg);
     msg_ = json;
 }
 
-bool Priority_Filter::should_pass(Message& msg)
+bool Priority_Filter::should_pass(const Message& msg)
 {
     JSONNode::iterator it(msg.as_json().find(fplog::Message::Mandatory_Fields::priority));
     if (it != msg.as_json().end())
@@ -428,6 +428,7 @@ class FPLOG_API Fplog_Impl
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;
+                params["ip"] = "127.0.0.1";
 
                 transport_->connect(params);
                 protocol_ = new sprot::Protocol(transport_);
@@ -445,7 +446,7 @@ class FPLOG_API Fplog_Impl
                 thread_log_settings_table_.erase(it);
         }
 
-        void write(Message& msg)
+        void write(const Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             if (stopping_)
@@ -539,34 +540,8 @@ class FPLOG_API Fplog_Impl
 
             return 0;
         }
-
-        void set_test_mode(bool mode){ g_test_results_vector.clear(); test_mode_ = mode; }
-        void wait_until_queues_are_empty()
-        {
-            int counter = 0;
-
-            while (counter < 5)
-            {
-                bool q1_empty = true;
-
-                {
-                    std::lock_guard<std::recursive_mutex> lock_q1(mutex_);
-                    q1_empty = mq_.empty();
-                }
-
-                if (q1_empty)
-                {
-                    counter++;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                }
-                else
-                {
-                    counter = 0;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                }
-            }
-        }
-
+        FPLOG_API void set_test_mode(bool mode);
+        FPLOG_API void wait_until_queues_are_empty();
 
     private:
 
@@ -650,7 +625,7 @@ class FPLOG_API Fplog_Impl
             }
         }
 
-        bool passed_filters(Message& msg)
+        bool passed_filters(const Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             Logger_Settings settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
@@ -674,7 +649,7 @@ class FPLOG_API Fplog_Impl
 FPLOG_API Fplog_Impl* g_fplog_impl = 0;
 std::recursive_mutex g_api_mutex;
 
-void write(Message& msg)
+void write(const Message& msg)
 {
     std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
     
@@ -777,7 +752,7 @@ class Lua_Filter::Lua_Filter_Impl
             deinit();
         }
 
-        bool should_pass(Message& msg)
+        bool should_pass(const Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             std::string log_msg_escaped(msg.as_string());
@@ -865,7 +840,7 @@ Filter_Base(filter_id)
     impl_ = new Lua_Filter_Impl(lua_script);
 }
 
-bool Lua_Filter::should_pass(Message& msg)
+bool Lua_Filter::should_pass(const Message& msg)
 {
     return impl_->should_pass(msg);
 }
@@ -890,7 +865,7 @@ class Chai_Filter::Chai_Filter_Impl
             deinit();
         }
 
-        bool should_pass(Message& msg)
+        bool should_pass(const Message& msg)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             filter_result_ = false;
@@ -963,7 +938,7 @@ Filter_Base(filter_id)
     impl_ = new Chai_Filter_Impl(chai_script);
 }
 
-bool Chai_Filter::should_pass(Message& msg)
+bool Chai_Filter::should_pass(const Message& msg)
 {
     return impl_->should_pass(msg);
 }
@@ -971,6 +946,37 @@ bool Chai_Filter::should_pass(Message& msg)
 Chai_Filter::~Chai_Filter()
 {
     delete impl_;
+}
+
+FPLOG_API void Fplog_Impl::set_test_mode(bool mode)
+{
+    g_test_results_vector.clear(); test_mode_ = mode;
+}
+
+FPLOG_API void Fplog_Impl::wait_until_queues_are_empty()
+{
+    int counter = 0;
+
+    while (counter < 5)
+    {
+        bool q1_empty = true;
+
+        {
+            std::lock_guard<std::recursive_mutex> lock_q1(mutex_);
+            q1_empty = mq_.empty();
+        }
+
+        if (q1_empty)
+        {
+            counter++;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        else
+        {
+            counter = 0;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
 }
 
 };

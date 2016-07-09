@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _WIN32
 #include "targetver.h"
 #include <winsock2.h>
 #include <windows.h>
@@ -27,6 +27,13 @@
 static char* g_process_name = "fpcollect.exe";
 #else
 static char* g_process_name = "fpcollect";
+
+#define MAX_PATH 255
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #endif
 
 static char* g_config_file_name = "fpcollect.ini";
@@ -58,10 +65,9 @@ int _getch() {
 
 static std::string get_home_dir()
 {
-#ifdef WIN32
     char path[MAX_PATH + 3];
     memset(path, 0, sizeof(path));
-
+#ifdef WIN32
     if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, path))) 
     {
         path[strlen(path)] = '\\';
@@ -70,7 +76,18 @@ static std::string get_home_dir()
     else
         return "./";
 #else
-    return "~/";
+    char *home = getenv("HOME");
+    if (home)
+        sprintf(path, "%s", home);
+    else
+    {
+        struct passwd *pw = getpwuid(getuid());
+        sprintf(path, "%s", pw->pw_dir);
+    }
+    if (path[strlen(path) - 1] != '/')
+        path[strlen(path)] = '/';
+
+    return path;
 #endif
 }
 
