@@ -123,11 +123,17 @@
         <IncludePath Value="../chaiscript/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
-      <Linker Options="-O2;-m32" Required="yes">
+      <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
         <LibraryPath Value="../Stage"/>
-        <Library Value="fplog.so"/>
-        <Library Value="spipc.so"/>
+        <Library Value="dl"/>
+        <Library Value="lua"/>
+        <Library Value="udt"/>
+        <Library Value="sprot"/>
+        <Library Value="spipc"/>
+        <Library Value="fplog"/>
+        <Library Value="boost_system-gcc48-mt-1_61"/>
+        <Library Value="json"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -144,6 +150,11 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

@@ -36,6 +36,9 @@
     <File Name="../spipc/spipc.h"/>
     <File Name="../spipc/UDT_Transport.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="sprot"/>
+  </Dependencies>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -111,17 +114,22 @@
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
-        <IncludePath Value="../udt4/app/"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../udt4/src/"/>
+        <IncludePath Value="../udt4/app/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="sprot"/>
+        <Library Value="udt"/>
+        <Library Value="dl"/>
+        <Library Value="pthread"/>
+        <Library Value="boost_system-gcc48-mt-1_61"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -162,7 +170,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-  </Dependencies>
 </CodeLite_Project>

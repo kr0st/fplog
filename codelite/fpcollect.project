@@ -127,13 +127,25 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../mongo/include"/>
+        <IncludePath Value="../fplog"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
-      <Linker Options="-O2;-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+      <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
+        <LibraryPath Value="../boost/stage/lib"/>
         <LibraryPath Value="../Stage"/>
-        <Library Value="fplog.so"/>
-        <Library Value="spipc.so"/>
+        <Library Value="dl"/>
+        <Library Value="lua"/>
+        <Library Value="udt"/>
+        <Library Value="sprot"/>
+        <Library Value="spipc"/>
+        <Library Value="fplog"/>
+        <Library Value="boost_system-gcc48-1_61"/>
+        <Library Value="boost_system-gcc48-mt-1_61"/>
+        <Library Value="libboost_regex-gcc48-1_61"/>
+        <Library Value="libboost_thread-gcc48-mt-1_61"/>
+        <Library Value="json"/>
+        <Library Value="mongoclient"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -147,6 +159,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">cp ../mongo/lib/*mongo* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
