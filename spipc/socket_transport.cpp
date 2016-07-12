@@ -131,7 +131,18 @@ void Socket_Transport::connect(const Params& params)
 
     // Set the exclusive address option
     int opt_val = 1;
+    
+    #ifndef _LINUX
+    
     setsockopt(socket_, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *) &opt_val, sizeof(opt_val));
+    
+    #else
+    
+    opt_val = 0;
+    setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (char *) &opt_val, sizeof(opt_val));
+    setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, (char *) &opt_val, sizeof(opt_val));
+ 
+    #endif
 
     if (0 != bind(socket_, (sockaddr*)&listen_addr, sizeof(listen_addr)))
     {

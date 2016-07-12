@@ -11,6 +11,11 @@
 #include <arpa/inet.h>
 #include <netdb.h> 
 
+#define SOCKET int
+#define SD_BOTH SHUT_RDWR
+#define closesocket close
+#define SOCKET_ERROR -1
+
 #else
 
 #include <winsock2.h>

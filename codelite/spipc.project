@@ -31,10 +31,12 @@
   <VirtualDirectory Name="src">
     <File Name="../spipc/spipc.cpp"/>
     <File Name="../spipc/UDT_Transport.cpp"/>
+    <File Name="../spipc/socket_transport.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../spipc/spipc.h"/>
     <File Name="../spipc/UDT_Transport.h"/>
+    <File Name="../spipc/socket_transport.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="sprot"/>
