@@ -15,6 +15,7 @@
 #define SD_BOTH SHUT_RDWR
 #define closesocket close
 #define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
 
 #else
 

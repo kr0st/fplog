@@ -12,14 +12,22 @@ class WSA_Up_Down
 
         WSA_Up_Down()
         {
-            WSADATA wsaData;
+			#ifndef _LINUX
+            
+			WSADATA wsaData;
             if (WSAStartup(0x202, &wsaData))
                 THROW(fplog::exceptions::Connect_Failed);
+			
+			#endif
         }
 
         ~WSA_Up_Down()
         {
+			#ifndef _LINUX
+			
             WSACleanup();
+			
+			#endif
         }
 };
 
@@ -105,9 +113,18 @@ void Socket_Transport::connect(const Params& params)
     if (socket_ == INVALID_SOCKET)
     {
         std::string error;
+
+		#ifndef _LINUX
+
         error += ("Connect failed, socket error = " + std::to_string(WSAGetLastError()));
-        WSACleanup();
-        THROWM(fplog::exceptions::Connect_Failed, error.c_str());
+
+		#else
+
+		error += ("Connect failed, socket error = " + std::to_string(errno));
+
+		#endif
+
+		THROWM(fplog::exceptions::Connect_Failed, error.c_str());
     }
 
     sockaddr_in listen_addr;
@@ -116,17 +133,17 @@ void Socket_Transport::connect(const Params& params)
     
     if (localhost_)
     {
-        listen_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
-        listen_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
-        listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
-        listen_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
+        ((char*)&(listen_addr.sin_addr.s_addr))[0] = 127;
+        ((char*)&(listen_addr.sin_addr.s_addr))[1] = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[2] = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[3] = 1;
     }
     else
     {
-        listen_addr.sin_addr.S_un.S_un_b.s_b1 = 0;
-        listen_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
-        listen_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
-        listen_addr.sin_addr.S_un.S_un_b.s_b4 = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[0] = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[1] = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[2] = 0;
+        ((char*)&(listen_addr.sin_addr.s_addr))[3] = 0;
     }
 
     // Set the exclusive address option
@@ -150,7 +167,6 @@ void Socket_Transport::connect(const Params& params)
         {
             shutdown(socket_, SD_BOTH);
             closesocket(socket_);
-            WSACleanup();
             THROW(fplog::exceptions::Connect_Failed);
         }
 
@@ -159,7 +175,6 @@ void Socket_Transport::connect(const Params& params)
         {
             shutdown(socket_, SD_BOTH);
             closesocket(socket_);
-            WSACleanup();
             THROW(fplog::exceptions::Connect_Failed);
         }
     }
@@ -180,13 +195,31 @@ void Socket_Transport::disconnect()
     int res = 0;
     if (SOCKET_ERROR == shutdown(socket_, SD_BOTH))
     {
+		#ifndef _LINUX
+		
         res = WSAGetLastError();
-        //TODO: do something meaningful with the error
+		
+		#else
+		
+		res = errno;
+		
+		#endif
+        
+		//TODO: do something meaningful with the error
     }
 
     if (SOCKET_ERROR == closesocket(socket_))
     {
+		#ifndef _LINUX
+		
         res = WSAGetLastError();
+		
+		#else
+		
+		res = errno;
+		
+		#endif
+		
         //TODO: do something meaningful with the error
     }
 
@@ -216,8 +249,18 @@ retry:
     int addr_len = sizeof(remote_addr);
     
     fd_set fdset;
+ 
+#ifndef _LINUX
+
     fdset.fd_count = 1;
     fdset.fd_array[0] = socket_;
+
+#else
+
+	FD_ZERO(&fdset);
+	FD_SET(socket_, &fdset);
+
+#endif
 
     timeval to;
     to.tv_sec = timeout / 1000;
@@ -237,7 +280,7 @@ retry:
             goto retry;
 
         if (!localhost_)
-            if (memcmp(&(remote_addr.sin_addr.S_un.S_un_b), ip_, sizeof(ip_)) != 0)
+            if (memcmp(&(remote_addr.sin_addr.s_addr), ip_, sizeof(ip_)) != 0)
                 goto retry;
 
         return res;
@@ -259,17 +302,17 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 
     if (localhost_)
     {
-        remote_addr.sin_addr.S_un.S_un_b.s_b1 = 127;
-        remote_addr.sin_addr.S_un.S_un_b.s_b2 = 0;
-        remote_addr.sin_addr.S_un.S_un_b.s_b3 = 0;
-        remote_addr.sin_addr.S_un.S_un_b.s_b4 = 1;
+        ((char*)&(remote_addr.sin_addr.s_addr))[0] = 127;
+        ((char*)&(remote_addr.sin_addr.s_addr))[1] = 0;
+        ((char*)&(remote_addr.sin_addr.s_addr))[2] = 0;
+        ((char*)&(remote_addr.sin_addr.s_addr))[3] = 1;
     }
     else
     {
-        remote_addr.sin_addr.S_un.S_un_b.s_b1 = ip_[0];
-        remote_addr.sin_addr.S_un.S_un_b.s_b2 = ip_[1];
-        remote_addr.sin_addr.S_un.S_un_b.s_b3 = ip_[2];
-        remote_addr.sin_addr.S_un.S_un_b.s_b4 = ip_[3];
+        ((char*)&(remote_addr.sin_addr.s_addr))[0] = ip_[0];
+        ((char*)&(remote_addr.sin_addr.s_addr))[1] = ip_[1];
+        ((char*)&(remote_addr.sin_addr.s_addr))[2] = ip_[2];
+        ((char*)&(remote_addr.sin_addr.s_addr))[3] = ip_[3];
     }
     
     remote_addr.sin_family = AF_INET;
@@ -281,8 +324,19 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     remote_addr.sin_port = htons(remote_addr.sin_port);
 
     fd_set fdset;
+	
+#ifndef _LINUX
+
     fdset.fd_count = 1;
     fdset.fd_array[0] = socket_;
+
+#else
+
+	FD_ZERO(&fdset);
+	FD_SET(socket_, &fdset);
+
+#endif
+
 
     timeval to;
     to.tv_sec = timeout / 1000;
