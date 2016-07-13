@@ -264,7 +264,7 @@ retry:
 
     timeval to;
     to.tv_sec = timeout / 1000;
-    to.tv_usec = (timeout - to.tv_sec * 1000) * 1000;
+    to.tv_usec = (timeout % 1000) * 1000;
 
     int res = select(0, &fdset, 0, 0, &to);
     if (res == 0)
@@ -340,7 +340,7 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 
     timeval to;
     to.tv_sec = timeout / 1000;
-    to.tv_usec = (timeout - to.tv_sec * 1000) * 1000;
+    to.tv_usec = (timeout % 1000) * 1000;
 
     int res = select(0, 0, &fdset, 0, &to);
     if (res == 0)

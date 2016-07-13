@@ -3,8 +3,8 @@
   <Project Name="sprot" Path="sprot.project" Active="No"/>
   <Project Name="spipc" Path="spipc.project" Active="No"/>
   <Project Name="fplog" Path="fplog.project" Active="No"/>
-  <Project Name="fplog_test" Path="fplog_test.project" Active="No"/>
-  <Project Name="fplogd" Path="fplogd.project" Active="Yes"/>
+  <Project Name="fplog_test" Path="fplog_test.project" Active="Yes"/>
+  <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <Project Name="fpcollect" Path="fpcollect.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
