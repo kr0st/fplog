@@ -70,6 +70,7 @@
         <Library Value="fplog"/>
         <Library Value="boost_system-gcc48-mt-d-1_61"/>
         <Library Value="json"/>
+        <Library Value="stdc++"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="fplog_test" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)/../../Stage" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
