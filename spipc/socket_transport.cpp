@@ -1,5 +1,4 @@
 #include "socket_transport.h"
-#include "spipc.h"
 #include <chrono>
 
 using namespace std::chrono;
@@ -266,7 +265,7 @@ retry:
     to.tv_sec = timeout / 1000;
     to.tv_usec = (timeout % 1000) * 1000;
 
-    int res = select(0, &fdset, 0, 0, &to);
+    int res = select(socket_ + 1, &fdset, 0, 0, &to);
     if (res == 0)
         THROW(fplog::exceptions::Timeout);
     if (res != 1)
@@ -276,6 +275,7 @@ retry:
     if (res != SOCKET_ERROR)
     {
         remote_addr.sin_port = ntohs(remote_addr.sin_port);
+        
         if ((remote_addr.sin_port != uid_.high) && (remote_addr.sin_port != uid_.low))
             goto retry;
 
@@ -292,7 +292,7 @@ retry:
 }
 
 size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
-{
+{    
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (!connected_)
         THROW(fplog::exceptions::Write_Failed);
@@ -322,7 +322,7 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
         remote_addr.sin_port = (u_short)uid_.high;
 
     remote_addr.sin_port = htons(remote_addr.sin_port);
-
+    
     fd_set fdset;
 	
 #ifndef _LINUX
@@ -342,7 +342,7 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     to.tv_sec = timeout / 1000;
     to.tv_usec = (timeout % 1000) * 1000;
 
-    int res = select(0, 0, &fdset, 0, &to);
+    int res = select(socket_ + 1, 0, &fdset, 0, &to);
     if (res == 0)
         THROW(fplog::exceptions::Timeout);
     if (res != 1)
@@ -352,7 +352,10 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
     if (res != SOCKET_ERROR)
         return res;
     else
+    {
+        int e = errno;
         THROW(fplog::exceptions::Write_Failed);
+    }
 
     return 0;
 }

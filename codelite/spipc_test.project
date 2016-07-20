@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="fplog_test" InternalType="Executable">
+<CodeLite_Project Name="spipc_test" InternalType="Executable">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
@@ -29,7 +29,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../fplog/fplog_test.cpp"/>
+    <File Name="../spipc/spipc_test.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include"/>
   <Dependencies Name="Debug">
@@ -179,11 +179,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-  </Dependencies>
 </CodeLite_Project>

@@ -93,8 +93,14 @@ namespace sprot
 
         auto check_time_out = [&timeout, &timer_start]()
         {
+            unsigned long long int mult = 1;
+            
+            #ifdef _LINUX
+            mult = 100;
+            #endif
+            
             time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
             if (timer_stop - timer_start >= converted_timeout)
                 THROW(fplog::exceptions::Timeout);
         };
@@ -282,8 +288,14 @@ namespace sprot
 
         auto check_time_out = [&timeout, &timer_start]()
         {
+            unsigned long long int mult = 1;
+            
+            #ifdef _LINUX
+            mult = 100;
+            #endif
+            
             time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
             if (timer_stop - timer_start >= converted_timeout)
                 THROW(fplog::exceptions::Timeout);
         };
@@ -382,8 +394,14 @@ namespace sprot
 
         auto check_time_out = [&timeout, &timer_start]()
         {
+            unsigned long long int mult = 1;
+            
+            #ifdef _LINUX
+            mult = 100;
+            #endif
+            
             time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
             if (timer_stop - timer_start >= converted_timeout)
                 THROW(fplog::exceptions::Timeout);
         };

@@ -480,7 +480,7 @@ class FPLOG_API Fplog_Impl
                                 protocol_->write(str.c_str(), str.size(), 400);
                                 break;
                             }
-                            catch(fplog::exceptions::Generic_Exception)
+                            catch(fplog::exceptions::Generic_Exception& e)
                             {
                                 send_retries--;
                                 std::this_thread::sleep_for(std::chrono::milliseconds(10));

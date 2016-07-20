@@ -24,7 +24,6 @@
 #endif
 
 #include <mutex>
-#include "spipc.h"
 
 #ifdef SPIPC_EXPORT
 #define SPIPC_API __declspec(dllexport)

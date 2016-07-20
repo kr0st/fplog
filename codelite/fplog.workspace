@@ -6,95 +6,22 @@
   <Project Name="fplog_test" Path="fplog_test.project" Active="Yes"/>
   <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <Project Name="fpcollect" Path="fpcollect.project" Active="No"/>
+  <Project Name="spipc_test" Path="spipc_test.project" Active="No"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
       <Project Name="sprot" ConfigName="Debug"/>
+      <Project Name="spipc_test" ConfigName="Debug"/>
       <Project Name="spipc" ConfigName="Debug"/>
       <Project Name="fplogd" ConfigName="Debug"/>
       <Project Name="fplog_test" ConfigName="Debug"/>
       <Project Name="fplog" ConfigName="Debug"/>
       <Project Name="fpcollect" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
-      <Environment/>
-      <Project Name="fplog" ConfigName="Release"/>
-      <Project Name="fplog" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-  </BuildMatrix>
-  <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Environment/>
-      <Project Name="sprot" ConfigName="Debug"/>
-      <Project Name="spipc" ConfigName="Debug"/>
-      <Project Name="fplogd" ConfigName="Debug"/>
-      <Project Name="fplog_test" ConfigName="Debug"/>
-      <Project Name="fplog" ConfigName="Debug"/>
-      <Project Name="fpcollect" ConfigName="Debug"/>
-    </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
-      <Environment/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-  </BuildMatrix>
-  <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Environment/>
-      <Project Name="fplogd" ConfigName="Debug"/>
-      <Project Name="fplogd" ConfigName="Debug"/>
-    </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
-      <Environment/>
-      <Project Name="fplogd" ConfigName="Release"/>
-      <Project Name="fplogd" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-  </BuildMatrix>
-  <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Environment/>
-      <Project Name="fpcollect" ConfigName="Debug"/>
-      <Project Name="fpcollect" ConfigName="Debug"/>
-    </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
       <Project Name="sprot" ConfigName="Release"/>
-      <Project Name="spipc" ConfigName="Release"/>
-      <Project Name="fplogd" ConfigName="Release"/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-      <Project Name="fplog" ConfigName="Release"/>
-      <Project Name="fpcollect" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-  </BuildMatrix>
-  <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Environment/>
-      <Project Name="sprot" ConfigName="Debug"/>
-      <Project Name="spipc" ConfigName="Release"/>
-      <Project Name="fplogd" ConfigName="Release"/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-      <Project Name="fplog" ConfigName="Release"/>
-      <Project Name="fpcollect" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
-      <Environment/>
-      <Project Name="sprot" ConfigName="Release"/>
-      <Project Name="spipc" ConfigName="Release"/>
-      <Project Name="fplogd" ConfigName="Release"/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-      <Project Name="fplog" ConfigName="Release"/>
-      <Project Name="fpcollect" ConfigName="Release"/>
-    </WorkspaceConfiguration>
-  </BuildMatrix>
-  <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Environment/>
-      <Project Name="spipc" ConfigName="Debug"/>
-      <Project Name="spipc" ConfigName="Debug"/>
-    </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
-      <Environment/>
-      <Project Name="sprot" ConfigName="Release"/>
+      <Project Name="spipc_test" ConfigName="Release"/>
       <Project Name="spipc" ConfigName="Release"/>
       <Project Name="fplogd" ConfigName="Release"/>
       <Project Name="fplog_test" ConfigName="Release"/>

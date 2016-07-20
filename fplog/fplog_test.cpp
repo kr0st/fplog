@@ -37,6 +37,7 @@ int _getch() {
 //#include <cc.h>
 //#include <test_util.h>
 #include <spipc/UDT_Transport.h>
+#include <spipc/socket_transport.h>
 
 using namespace std;
 
@@ -614,14 +615,22 @@ void multithreading_test()
 
 bool g_udt_stop;
 const char* g_udt_msg = "very secret one paragraph";
+bool g_udt_transport_test = false;
 
 fplog::Transport_Interface::Params g_udt_params;
 
-void udt_server()
+void transport_server()
 {
-    spipc::UDT_Transport trans;
+    fplog::Transport_Interface* trans;
 
-    trans.connect(g_udt_params);
+    if (g_udt_transport_test)
+        trans = new spipc::UDT_Transport();
+    else
+        trans = new spipc::Socket_Transport();
+        
+    std::auto_ptr<fplog::Transport_Interface> ptr(trans);
+
+    trans->connect(g_udt_params);
 
     while (!g_udt_stop)
     {
@@ -630,8 +639,8 @@ void udt_server()
         try
         {
             memset(buf, 0, sizeof(buf));
-            if (trans.read(buf, sizeof(buf), 1000) > 0)
-                std::cout << "READ " << buf;
+            if (trans->read(buf, sizeof(buf), 1000) > 0)
+                std::cout << "READ " << buf << std::endl;
         }
         catch (fplog::exceptions::Generic_Exception& e)
         {
@@ -640,18 +649,25 @@ void udt_server()
     }
 }
 
-void udt_client()
+void transport_client()
 {
-    spipc::UDT_Transport trans;
+    fplog::Transport_Interface* trans;
+    
+    if (g_udt_transport_test)
+        trans = new spipc::UDT_Transport();
+    else
+        trans = new spipc::Socket_Transport();
+        
+    std::auto_ptr<fplog::Transport_Interface> ptr(trans);
 
-    trans.connect(g_udt_params);
+    trans->connect(g_udt_params);
 
     while (!g_udt_stop)
     {
         try
         {
-            if (trans.write(g_udt_msg, sizeof(g_udt_msg) + 1, 1000) > 0)
-                std::cout << "WROTE " << g_udt_msg;
+            if (trans->write(g_udt_msg, strlen(g_udt_msg) + 1, 1000) > 0)
+                std::cout << "WROTE " << g_udt_msg << std::endl;
         }
         catch (fplog::exceptions::Generic_Exception& e)
         {
@@ -660,7 +676,7 @@ void udt_client()
     }
 }
 
-bool udt_test()
+bool transport_test()
 {
     g_udt_params["type"] = "ip";
     g_udt_params["ip"] = "127.0.0.1";
@@ -668,8 +684,8 @@ bool udt_test()
 
     g_udt_stop = false;
 
-    std::thread srv(udt_server);
-    std::thread client(udt_client);
+    std::thread srv(transport_server);
+    std::thread client(transport_client);
 
     _getch();
     g_udt_stop = true;
@@ -680,6 +696,18 @@ bool udt_test()
     return true;
 }
 
+bool udt_test()
+{
+    g_udt_transport_test = true;
+    return transport_test();
+}
+
+bool socket_test()
+{
+    g_udt_transport_test = false;
+    return transport_test();
+}
+
 }};
 
 
@@ -687,15 +715,16 @@ int main()
 {
     //fplog::testing::run_all_tests();
 
-    fplog::testing::manual_test();
+    //fplog::testing::manual_test();
     
-    //fplog::testing::performance_test();
+    fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
     //fplog::testing::multithreading_test();
 
     //fplog::testing::udt_test();
+    //fplog::testing::socket_test();
 
     fplog::shutdownlog();
     return 0;
