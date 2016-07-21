@@ -2,17 +2,13 @@
 
 #include <common/fplog_transport.h>
 
-namespace mongo {
-    class DBClientConnection;
-};
-
 namespace fpcollect {
 
     class Mongo_Stub : public fplog::Transport_Interface
     {
     public:
 
-        Mongo_Stub() : connection_(0) {}
+        Mongo_Stub(){}
 
         void connect(const Params& params);
         void disconnect();
@@ -23,11 +19,6 @@ namespace fpcollect {
 
         virtual ~Mongo_Stub();
 
-
-    private:
-
-        mongo::DBClientConnection* connection_;
-        std::string collection_;
     };
 
 };

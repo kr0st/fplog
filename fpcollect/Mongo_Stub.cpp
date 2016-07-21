@@ -11,62 +11,12 @@
 
 namespace fpcollect {
 
-    class Mongo_Init
-    {
-    public:
-
-        Mongo_Init()
-        {
-            //mongo::client::initialize();
-        }
-    };
-
     Mongo_Stub::~Mongo_Stub()
     {
-        /*disconnect();
-        delete connection_;*/
     }
 
     void Mongo_Stub::connect(const Params& params)
     {
-        /*
-        try
-        {
-        static Mongo_Init init;
-        std::string ip, port, collection;
-
-        for (auto item : params)
-        {
-        if (generic_util::find_str_no_case(item.first, "ip"))
-        ip = item.second;
-
-        if (generic_util::find_str_no_case(item.first, "port"))
-        port = item.second;
-
-        if (generic_util::find_str_no_case(item.first, "collection"))
-        collection = item.second;
-        }
-
-        if (ip.empty())
-        THROWM(fplog::exceptions::Connect_Failed, "IP not provided.");
-
-        if (port.empty())
-        port = "27017"; //default
-
-        if (collection.empty())
-        collection = "fplog.logs"; //default
-
-        collection_ = collection;
-
-        if (!connection_)
-        connection_ = new mongo::DBClientConnection();
-
-        connection_->connect(ip + ":" + port);
-        }
-        catch (mongo::DBException& e)
-        {
-        THROWM(fplog::exceptions::Connect_Failed, e.what());
-        }	*/
     }
 
     void Mongo_Stub::disconnect()
@@ -75,25 +25,28 @@ namespace fpcollect {
 
     size_t Mongo_Stub::write(const void* buf, size_t buf_size, size_t timeout)
     {
-        /*
-        if (!buf || (buf_size == 0))
-        return 0;
+        static unsigned long long int msg_counter = 0;
+        static unsigned long long int clocks = 0;
+        static unsigned long long int ref_clocks = 0;
 
-        if (((const char*)buf)[buf_size - 1] != 0)
-        THROWM(fplog::exceptions::Write_Failed, "Only null-terminated strings are supported by the storage.");
+        msg_counter++;
 
-        try
+        if (msg_counter % 100 == 0)
         {
-        mongo::BSONObj bson(mongo::fromjson((const char*)buf));
-        connection_->insert(collection_, bson);
+            struct timespec tp;
+            int res = clock_gettime(CLOCK_MONOTONIC, &tp);
+            if (res == 0)
+            {
+                clocks = tp.tv_sec * 1000 + (tp.tv_nsec / 1000000);
+                if (ref_clocks == 0)
+                    ref_clocks = clocks;
+            }
         }
-        catch (mongo::DBException& e)
-        {
-        THROWM(fplog::exceptions::Write_Failed, e.what());
-        }
-        */
-        //return buf_size;
-        return 0;
+
+        if (clocks % 10000 < 1000)
+            std::cout << (msg_counter / ((clocks - ref_clocks + 1001) / 1000)) << "msg/s" << std::endl;
+
+        return buf_size;
     }
 
 };
