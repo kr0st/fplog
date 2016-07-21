@@ -149,6 +149,7 @@
         <Library Value="libboost_thread-gcc48-mt-1_61"/>
         <Library Value="json"/>
         <Library Value="mongoclient"/>
+        <Library Value="stdc++"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>

@@ -39,6 +39,13 @@
     <Project Name="fplogd"/>
     <Project Name="fpcollect"/>
   </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fplogd"/>
+    <Project Name="fpcollect"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -135,6 +142,7 @@
         <Library Value="fplog"/>
         <Library Value="boost_system-gcc48-mt-1_61"/>
         <Library Value="json"/>
+        <Library Value="stdc++"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -179,11 +187,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-  </Dependencies>
 </CodeLite_Project>
