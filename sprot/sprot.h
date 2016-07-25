@@ -82,7 +82,7 @@ namespace sprot
                 };
             };
 
-            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024);
+            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024, int frames_before_ack = 12);
             ~Protocol();
 
             virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
@@ -105,6 +105,8 @@ namespace sprot
 
             unsigned char* frame_buf_;
             std::recursive_mutex mutex_;
+            
+            int ack_after_;
 
             Frame make_frame(const Frame::Type type, unsigned char* data = 0, size_t data_length = 0);
             Frame make_frame(const unsigned char* buf, size_t length);

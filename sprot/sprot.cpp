@@ -48,13 +48,14 @@ namespace sprot
         return (util::crc7(buf, length - 1) == buf[length - 1]);
     }
 
-    Protocol::Protocol(fplog::Transport_Interface* transport, size_t MTU):
+    Protocol::Protocol(fplog::Transport_Interface* transport, size_t MTU, int frames_before_ack):
     transport_(transport),
     sequence_num_(0),
     MTU_(MTU),
     terminating_(false),
     evil_twin_(0),
-    twin_size_(0)
+    twin_size_(0),
+    ack_after_(frames_before_ack)
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -75,6 +76,8 @@ namespace sprot
 
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
+        int frame_num = 0;
+
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         if (terminating_)
             return 0;
@@ -89,6 +92,8 @@ namespace sprot
 
         bytes_read = 0;
         sequence_num_ = 0;
+        frame_num = 0;
+        
         ptr = (unsigned char*)buf;
 
         auto check_time_out = [&timeout, &timer_start]()
@@ -109,7 +114,7 @@ namespace sprot
         int retry_count = 5;
         Frame recv_frame;
 
-        auto frame_read = [check_time_out, &recv_frame, &full_retries, &retry_count, this]()
+        auto frame_read = [check_time_out, &recv_frame, &full_retries, &retry_count, &frame_num, this]()
         {
             while (true)
             {
@@ -118,6 +123,7 @@ namespace sprot
                 try
                 {
                     recv_frame = read_frame();
+                    frame_num++;
                     break;
                 }
                 catch (sprot::exceptions::Wrong_Sequence&)
@@ -178,100 +184,121 @@ namespace sprot
 
             Frame last_frame(recv_frame);
 
-            sequence_num_++;
-            Frame send_frame = make_frame(Frame::ACK);
-
-            while (true)
+            bool ack_sent = false;
+            if ((frame_num % ack_after_ == 0) || (recv_frame.type == Frame::DATA_LAST) || (!multipart))
             {
-                check_time_out();
+                sequence_num_++;
+                Frame send_frame = make_frame(Frame::ACK);
 
-                try
+                while (true)
                 {
-                    write_frame(send_frame);
-                    break;
-                }
-                catch (fplog::exceptions::Generic_Exception&)
-                {
-                    if (retry_count == 0)
-                        THROW(fplog::exceptions::Read_Failed);
-                    retry_count--;
+                    check_time_out();
+
+                    try
+                    {
+                        write_frame(send_frame);
+                        ack_sent = true;
+                        break;
+                    }
+                    catch (fplog::exceptions::Generic_Exception&)
+                    {
+                        if (retry_count == 0)
+                            THROW(fplog::exceptions::Read_Failed);
+                        retry_count--;
+                    }
                 }
             }
-
-            sequence_num_++;
-            if (!frame_read())
+            
+            if (ack_sent)
             {
-                auto duplicate_frame = [this, &bytes_read, buf] ()
+                sequence_num_++;
+                if (!frame_read())
                 {
-                    twin_size_ = bytes_read;
-                    if (evil_twin_)
+                    auto duplicate_frame = [this, &bytes_read, buf] ()
+                    {
+                        twin_size_ = bytes_read;
+                        if (evil_twin_)
+                            delete [] evil_twin_;
+                        evil_twin_ = new unsigned char[twin_size_];
+                        memcpy(evil_twin_, buf, twin_size_);
+                    };
+
+                    //First we will try to guess if we get all the data except the last ACK
+                    //if we did get all the data - return successfully anyway.
+                    if ((last_frame.type == Frame::DATA_SINGLE) && !multipart)
+                    {
+                        duplicate_frame();
+                        return bytes_read;
+                    }
+
+                    if ((last_frame.type == Frame::DATA_LAST) && multipart)
+                    {
+                        duplicate_frame();
+                        return bytes_read;
+                    }
+
+                    goto full_read_retry;
+                }
+
+                auto detect_evil_presence = [this, &bytes_read, buf]()
+                {
+                    if (twin_size_ && evil_twin_)
+                    {
+                        bool got_duplicate = false;
+
+                        if (bytes_read == twin_size_)
+                            if (memcmp(evil_twin_, buf, twin_size_) == 0)
+                                got_duplicate = true;
+
+                        twin_size_ = 0;
                         delete [] evil_twin_;
-                    evil_twin_ = new unsigned char[twin_size_];
-                    memcpy(evil_twin_, buf, twin_size_);
+                        evil_twin_ = 0;
+
+                        if (got_duplicate)
+                            return true;
+                    }
+
+                    return false;
                 };
 
-                //First we will try to guess if we get all the data except the last ACK
-                //if we did get all the data - return successfully anyway.
-                if ((last_frame.type == Frame::DATA_SINGLE) && !multipart)
+                if (recv_frame.type == Frame::ACK)
                 {
-                    duplicate_frame();
-                    return bytes_read;
+                    if (!multipart)
+                    {
+                        if (detect_evil_presence())
+                            goto full_read_retry;
+
+                        return bytes_read;
+                    }
+
+                    if (multipart && last)
+                    {
+                        if (detect_evil_presence())
+                            goto full_read_retry;
+
+                        return bytes_read;
+                    }
                 }
 
-                if ((last_frame.type == Frame::DATA_LAST) && multipart)
-                {
-                    duplicate_frame();
-                    return bytes_read;
-                }
-
-                goto full_read_retry;
+                sequence_num_++;
             }
-
-            auto detect_evil_presence = [this, &bytes_read, buf]()
-            {
-                if (twin_size_ && evil_twin_)
-                {
-                    bool got_duplicate = false;
-
-                    if (bytes_read == twin_size_)
-                        if (memcmp(evil_twin_, buf, twin_size_) == 0)
-                            got_duplicate = true;
-
-                    twin_size_ = 0;
-                    delete [] evil_twin_;
-                    evil_twin_ = 0;
-
-                    if (got_duplicate)
-                        return true;
-                }
-
-                return false;
-            };
-
-            if (recv_frame.type == Frame::ACK)
-            {
-                if (!multipart)
-                {
-                    if (detect_evil_presence())
-                        goto full_read_retry;
-
-                    return bytes_read;
-                }
-
-                if (multipart && last)
-                {
-                    if (detect_evil_presence())
-                        goto full_read_retry;
-
-                    return bytes_read;
-                }
-            }
-
-            sequence_num_++;
         }
 
         return bytes_read;
     }
+
+    class Assign_On_Destroy
+    {
+        public:
+        
+            Assign_On_Destroy(int& x, int y): x_(x), y_(y) {}
+            ~Assign_On_Destroy() { x_ = y_; }
+
+        private:
+        
+            int& x_;
+            int y_;
+    };
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
@@ -302,6 +329,9 @@ namespace sprot
 
         if (buf_size <= MTU_)
         {
+            Assign_On_Destroy acks(ack_after_, ack_after_);
+            ack_after_ = 1;
+
             write_data(buf, buf_size, Frame::DATA_SINGLE, timeout);
             return buf_size;
         }
@@ -390,6 +420,8 @@ namespace sprot
 
     void Protocol::write_data(const void* buf, size_t buf_size, Frame::Type type, size_t timeout)
     {
+        static int frame_num = 0;
+        
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
         auto check_time_out = [&timeout, &timer_start]()
@@ -417,19 +449,21 @@ namespace sprot
             try
             {
                 write_frame(send_frame);
+                frame_num++;
                 break;
             }
             catch (fplog::exceptions::Generic_Exception&)
             {
                 if (retry_count == 0)
+                {
+                    frame_num = 0;
                     THROW(fplog::exceptions::Write_Failed);
-
+                }
                 retry_count--;
             }
         }
 
         Frame recv_frame;
-        sequence_num_++;
         retry_count = 5;
 
         auto frame_read = [&recv_frame, &retry_count, this, &check_time_out]()
@@ -459,33 +493,41 @@ namespace sprot
             return true;
         };
 
-        if (!frame_read())
-            THROW(exceptions::Invalid_Frame);
-
-        if (recv_frame.type != Frame::ACK)
-            THROW(exceptions::Invalid_Frame);
-
-        sequence_num_++;
-        retry_count = 5;
-
-        send_frame = make_frame(Frame::ACK);
-
-        while (true)
+        if ((frame_num % ack_after_ == 0) || (type == Frame::DATA_LAST))
         {
-            check_time_out();
+            sequence_num_++;
+            
+            if (!frame_read())
+                THROW(exceptions::Invalid_Frame);
 
-            try
-            {
-                write_frame(send_frame);
-                sequence_num_++;
-                break;
-            }
-            catch (fplog::exceptions::Generic_Exception& e)
-            {
-                if (retry_count == 0)
-                    THROW(fplog::exceptions::Write_Failed);
+            if (recv_frame.type != Frame::ACK)
+                THROW(exceptions::Invalid_Frame);
 
-                retry_count--;
+            sequence_num_++;
+            retry_count = 5;
+
+            send_frame = make_frame(Frame::ACK);
+
+            while (true)
+            {
+                check_time_out();
+
+                try
+                {
+                    write_frame(send_frame);
+                    sequence_num_++;
+                    frame_num = 0;
+                    break;
+                }
+                catch (fplog::exceptions::Generic_Exception& e)
+                {
+                    if (retry_count == 0)
+                    {
+                        frame_num = 0;
+                        THROW(fplog::exceptions::Write_Failed);
+                    }
+                    retry_count--;
+                }
             }
         }
     }
