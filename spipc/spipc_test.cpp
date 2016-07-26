@@ -379,9 +379,17 @@ void buffer_overflow_test_worker()
     fplog::UID uid;
     uid.high = 18743;
     uid.low = 18744;
-    buffer_overflow_test.connect(uid);
-    buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    
+    try
+    {
+        buffer_overflow_test.connect(uid);
+        buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    }
+    catch(fplog::exceptions::Generic_Exception& e)
+    {
+        printf("buffer_overflow_test_worker failed! reason: %s\n", e.what().c_str());
+    }
 }
 
 bool Buffer_Overflow_Test()
@@ -407,6 +415,7 @@ retry:
     if (retries > 1)
     {
         printf("buffer_overflow_test.read() failed.\n");
+        worker.join();
         return false;
     }
 
@@ -416,12 +425,14 @@ retry:
         if ((sizeof(data_5mb) != read_buf_sz) || memcmp(read_buf, data_5mb, sizeof(data_5mb)) != 0)
         {
             printf("buffer_overflow_test.read() got corrupted data.\n");
+            worker.join();
             return false;
         }
     }
     catch(fplog::exceptions::Read_Failed)
     {
         printf("buffer_overflow_test.read() failed.\n");
+        worker.join();
         return false;
     }
     catch(fplog::exceptions::Buffer_Overflow& e)
