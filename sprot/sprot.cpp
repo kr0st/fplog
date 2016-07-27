@@ -123,7 +123,6 @@ namespace sprot
                 try
                 {
                     recv_frame = read_frame();
-                    frame_num++;
                     break;
                 }
                 catch (sprot::exceptions::Wrong_Sequence&)
@@ -168,6 +167,8 @@ namespace sprot
                 full_retries--;
                 goto full_read_retry;
             }
+            else
+                frame_num++;
 
             if (recv_frame.type == Frame::DATA_FIRST)
                 multipart = true;
@@ -211,6 +212,7 @@ namespace sprot
             
             if (ack_sent)
             {
+                frame_num = 0;
                 sequence_num_++;
                 if (!frame_read())
                 {
@@ -421,7 +423,7 @@ namespace sprot
     void Protocol::write_data(const void* buf, size_t buf_size, Frame::Type type, size_t timeout)
     {
         static int frame_num = 0;
-        
+
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
         auto check_time_out = [&timeout, &timer_start]()
@@ -435,7 +437,10 @@ namespace sprot
             time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
             system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
             if (timer_stop - timer_start >= converted_timeout)
+            {
+                frame_num = 0;
                 THROW(fplog::exceptions::Timeout);
+            }
         };
 
         int retry_count = 5;
@@ -479,13 +484,16 @@ namespace sprot
                 }
                 catch (sprot::exceptions::Wrong_Sequence&)
                 {
+                    frame_num = 0;
                     return false;
                 }
                 catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (retry_count == 0)
+                    {
+                        frame_num = 0;
                         THROW(fplog::exceptions::Read_Failed);
-
+                    }
                         retry_count--;
                 }
             }
@@ -498,11 +506,17 @@ namespace sprot
             sequence_num_++;
             
             if (!frame_read())
+            {
+                frame_num = 0;
                 THROW(exceptions::Invalid_Frame);
+            }
 
             if (recv_frame.type != Frame::ACK)
+            {
+                frame_num = 0;
                 THROW(exceptions::Invalid_Frame);
-
+            }
+            
             sequence_num_++;
             retry_count = 5;
 

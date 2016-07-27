@@ -196,7 +196,7 @@ void writer_ipc_thread(const fplog::UID uid)
     
     char number[100];
 
-    for (int i = 0; i < 150; ++i)
+    for (int i = 0; i < 150000; ++i)
     {
 #ifndef _LINUX
         sprintf_s(number, "%d", i);
@@ -268,7 +268,7 @@ void reader_ipc_thread(const fplog::UID uid)
     freader = fopen(freader_name, "w");
 #endif
 
-    for (int i = 0; i < 150; ++i)
+    for (int i = 0; i < 150000; ++i)
     {
         char read_buf[3000];
         memset(read_buf, 0, sizeof(read_buf));

@@ -179,4 +179,9 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Release">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+  </Dependencies>
 </CodeLite_Project>
