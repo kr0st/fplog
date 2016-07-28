@@ -112,9 +112,9 @@ namespace sprot
 
         bool multipart = false, last = false;
         int retry_count = 5;
-        Frame recv_frame;
+        Frame recv_frame, prev_frame;
 
-        auto frame_read = [check_time_out, &recv_frame, &full_retries, &retry_count, &frame_num, this]()
+        auto frame_read = [check_time_out, &recv_frame, &prev_frame, &full_retries, &retry_count, &frame_num, this]()
         {
             while (true)
             {
@@ -168,21 +168,37 @@ namespace sprot
                 goto full_read_retry;
             }
             else
+            {
                 frame_num++;
-
+            }
+            
             if (recv_frame.type == Frame::DATA_FIRST)
                 multipart = true;
 
             if (recv_frame.type == Frame::DATA_LAST)
                 last = true;
+                
+            if ((recv_frame.type == Frame::DATA_FIRST) && (prev_frame.type == recv_frame.type))
+                continue;
+             
+            bool should_copy_data = true;
+   
+            if ((recv_frame.type == Frame::DATA_LAST) && (prev_frame.type == recv_frame.type))
+            {
+                should_copy_data = false;
+            }
+            
+            if (should_copy_data)
+            {
+                bytes_read += recv_frame.data.size();
+                if (bytes_read > buf_size)
+                    THROW(fplog::exceptions::Buffer_Overflow);
 
-            bytes_read += recv_frame.data.size();
-            if (bytes_read > buf_size)
-                THROW(fplog::exceptions::Buffer_Overflow);
-
-            memcpy(ptr, &recv_frame.data[0], recv_frame.data.size());
-            ptr += recv_frame.data.size();
-
+                memcpy(ptr, &recv_frame.data[0], recv_frame.data.size());
+                ptr += recv_frame.data.size();            
+            }
+            
+            prev_frame = recv_frame;
             Frame last_frame(recv_frame);
 
             bool ack_sent = false;
