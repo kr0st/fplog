@@ -46,7 +46,7 @@ namespace vsprot
         fplog::Transport_Interface* transport_;
         size_t MTU_;
         std::vector<char> write_buffer_, read_buffer_;
-        char header_[6];
+        unsigned char header_[6];
 
         Protocol(){}
     };

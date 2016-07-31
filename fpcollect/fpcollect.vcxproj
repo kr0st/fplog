@@ -125,6 +125,7 @@ copy $(OutDir)\..\boost\stage\lib\boost_regex*.dll ..\Stage\</Command>
     <ClInclude Include="Transport_Factory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="fpcollect.cpp" />
     <ClCompile Include="Mongo_Storage.cpp" />
     <ClCompile Include="Mongo_Stub.cpp" />

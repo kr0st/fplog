@@ -33,14 +33,9 @@ namespace fpcollect {
 
         if (msg_counter % 100 == 0)
         {
-            struct timespec tp;
-            int res = clock_gettime(CLOCK_MONOTONIC, &tp);
-            if (res == 0)
-            {
-                clocks = tp.tv_sec * 1000 + (tp.tv_nsec / 1000000);
-                if (ref_clocks == 0)
-                    ref_clocks = clocks;
-            }
+            clocks = generic_util::get_msec_time();
+            if (ref_clocks == 0)
+                ref_clocks = clocks;
         }
 
         if (clocks % 10000 < 1000)

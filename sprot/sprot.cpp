@@ -665,8 +665,8 @@ namespace vsprot
 
         int read_bytes = 0;
         size_t frame_size = 0;
-        
-        char temp_buf[MTU_];
+
+        static char* temp_buf = new char [MTU_];
 
         if (read_buffer_.size() != 0)
         {
@@ -677,7 +677,10 @@ namespace vsprot
             memcpy(&frame_size, &(read_buffer_[sizeof(header_)]), 4);
             
             if (frame_size > (read_bytes - sizeof(header_) - 4))
+            {
+                memcpy(temp_buf, &(read_buffer_[0]), read_bytes);
                 goto continue_reading;
+            }
 
             memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), read_bytes - sizeof(header_) - 4);
             
@@ -687,7 +690,7 @@ namespace vsprot
             return read_bytes - sizeof(header_) - 4;
         }
 
-        read_bytes = transport_->read(temp_buf, sizeof(temp_buf), timeout);
+        read_bytes = transport_->read(temp_buf, MTU_, timeout);
         
         if (read_bytes < (sizeof(header_) + 4))
             THROW(fplog::exceptions::Read_Failed);
@@ -700,18 +703,18 @@ namespace vsprot
         if (frame_size == 0)
             THROW(fplog::exceptions::Read_Failed);
 
-        read_buffer_.resize(frame_size + sizeof(header_) + 4 + MTU_); //more mem than needed to be able to hold start of a new frame
-        memcpy(&(read_buffer_[0]), temp_buf, read_bytes);
-    
     continue_reading:
-    
+
+        read_buffer_.resize(frame_size + sizeof(header_) + 4 + MTU_); //more mem than needed to be able to hold start of a new frame    
+        memcpy(&(read_buffer_[0]), temp_buf, read_bytes);
+
         char* ptr = &(read_buffer_[read_bytes]);        
         int delta = read_bytes - (frame_size + sizeof(header_) + 4);
         size_t just_read = 0;
         
         while (delta < 0)
         {
-            just_read = transport_->read(temp_buf, sizeof(temp_buf), timeout);
+            just_read = transport_->read(temp_buf, MTU_, timeout);
             read_bytes += just_read;
             
             memcpy(ptr, temp_buf, just_read);
