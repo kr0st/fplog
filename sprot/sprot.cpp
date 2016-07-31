@@ -727,14 +727,16 @@ namespace vsprot
 
             memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), frame_size);
         }
-
-        std::vector<char> dummy;
-        read_buffer_.swap(dummy);        
+        
+		{
+			std::vector<char> dummy;
+			read_buffer_.swap(dummy);
+		}        
 
         if (delta >= (sizeof(header_) + 4))
         {
             read_buffer_.resize(delta);
-            memcpy(&(read_buffer_[0]), &(temp_buf[just_read]), delta);
+            memcpy(&(read_buffer_[0]), &(temp_buf[just_read - delta]), delta);
         }
 
         return frame_size;

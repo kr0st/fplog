@@ -426,7 +426,7 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
-                transport_ = new spipc::Socket_Transport();
+                transport_ = new spipc::UDT_Transport();
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;
