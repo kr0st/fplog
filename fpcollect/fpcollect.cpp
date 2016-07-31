@@ -286,7 +286,7 @@ class Impl
                 return;
             }
 
-            sprot::Protocol protocol(transport);
+            vsprot::Protocol protocol(transport);
 
             size_t buf_sz = 30 * 1024; //30K buffer
             char *buf = new char [buf_sz];

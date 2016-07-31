@@ -374,7 +374,7 @@ class Impl
             log_transport_ = transport;
             if (protocol_)
                 delete protocol_;
-            protocol_ = new sprot::Protocol(log_transport_);
+            protocol_ = new vsprot::Protocol(log_transport_);
         }
 
         void start()
@@ -732,7 +732,7 @@ class Impl
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
         fplog::Transport_Interface* log_transport_;
-        sprot::Protocol* protocol_;
+        vsprot::Protocol* protocol_;
 };
 
 static Impl g_impl;

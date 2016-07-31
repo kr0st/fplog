@@ -638,28 +638,168 @@ namespace sprot
 
 namespace vsprot
 {
+    Protocol::Protocol(fplog::Transport_Interface* transport, size_t MTU): transport_(transport), MTU_(MTU)
+    {
+        write_buffer_.reserve(MTU_);
+        read_buffer_.reserve(MTU_);
+        
+        header_[0] = 0xDE;
+        header_[1] = 0xAD;
+        header_[2] = 0xBE;
+        header_[3] = 0xEF;
+        header_[4] = 0x02;
+        header_[5] = 0x9A;
+    }
+
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
         if (!buf)
             return 0;
 
-        if (transport_)
-            return transport_->read(buf, buf_size, timeout);
+        if (!transport_)
+            return 0;
 
-        return 0;
-    }
+        //just for testing to make sure if there is no data,
+        //the protocol is to blame, not something else
+        //return transport_->read(buf, buf_size, timeout);
+
+        int read_bytes = 0;
+        size_t frame_size = 0;
+        
+        char temp_buf[MTU_];
+
+        if (read_buffer_.size() != 0)
+        {
+            read_bytes = read_buffer_.size();
+            if ((read_bytes - sizeof(header_) - 4) > buf_size)
+                THROW(fplog::exceptions::Buffer_Overflow);
+            
+            memcpy(&frame_size, &(read_buffer_[sizeof(header_)]), 4);
+            
+            if (frame_size > (read_bytes - sizeof(header_) - 4))
+                goto continue_reading;
+
+            memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), read_bytes - sizeof(header_) - 4);
+            
+            std::vector<char> dummy;
+            read_buffer_.swap(dummy);
+
+            return read_bytes - sizeof(header_) - 4;
+        }
+
+        read_bytes = transport_->read(temp_buf, sizeof(temp_buf), timeout);
+        
+        if (read_bytes < (sizeof(header_) + 4))
+            THROW(fplog::exceptions::Read_Failed);
+        
+        if (memcmp(temp_buf, header_, sizeof(header_)) != 0)
+            THROW(fplog::exceptions::Read_Failed);
+
+        memcpy(&frame_size, &(temp_buf[sizeof(header_)]), 4);
+        
+        if (frame_size == 0)
+            THROW(fplog::exceptions::Read_Failed);
+
+        read_buffer_.resize(frame_size + sizeof(header_) + 4 + MTU_); //more mem than needed to be able to hold start of a new frame
+        memcpy(&(read_buffer_[0]), temp_buf, read_bytes);
     
+    continue_reading:
+    
+        char* ptr = &(read_buffer_[read_bytes]);        
+        int delta = read_bytes - (frame_size + sizeof(header_) + 4);
+        size_t just_read = 0;
+        
+        while (delta < 0)
+        {
+            just_read = transport_->read(temp_buf, sizeof(temp_buf), timeout);
+            read_bytes += just_read;
+            
+            memcpy(ptr, temp_buf, just_read);
+            ptr += just_read;
+            
+            delta = read_bytes - (frame_size + sizeof(header_) + 4);
+        }
+
+        if (delta >= 0)
+        {
+            if (frame_size > buf_size)
+                THROW(fplog::exceptions::Buffer_Overflow);
+
+            memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), frame_size);
+        }
+
+        std::vector<char> dummy;
+        read_buffer_.swap(dummy);        
+
+        if (delta >= (sizeof(header_) + 4))
+        {
+            read_buffer_.resize(delta);
+            memcpy(&(read_buffer_[0]), &(temp_buf[just_read]), delta);
+        }
+
+        return frame_size;
+    }
+
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
         if (!buf)
             return 0;
 
-        if (buf_size > MTU_)
-            THROW(fplog::exceptions::Buffer_Overflow);
+        if (!transport_)
+            return 0;
+          
+        //just for testing to make sure if there is no data,
+        //the protocol is to blame, not something else
+        //return transport_->write(buf, buf_size, timeout);
 
-        if (transport_)
-            return transport_->write(buf, buf_size, timeout);
+        {
+            std::vector<char> dummy;
+            write_buffer_.swap(dummy);
+        }
+        
+        write_buffer_.resize(buf_size + sizeof(header_) + 4); //4 bytes is frame size that follows the header
+        char* ptr = &(write_buffer_[0]), *start_ptr = ptr, *end_ptr = &(write_buffer_[write_buffer_.size() - 1]);
+        
+        memcpy(ptr, header_, sizeof(header_));
+        ptr += sizeof(header_);
+        
+        memcpy(ptr, &buf_size, sizeof(buf_size));
+        ptr += sizeof(buf_size);
+        memcpy(ptr, buf, buf_size);
+        
+        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
-        return 0;
+        auto check_time_out = [&timeout, &timer_start]()
+        {
+            unsigned long long int mult = 1;
+            
+            #ifdef _LINUX
+            mult = 100;
+            #endif
+            
+            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
+            if (timer_stop - timer_start >= converted_timeout)
+                THROW(fplog::exceptions::Timeout);
+        };
+
+        ptr = start_ptr;
+        size_t bytes_to_write = 1 + end_ptr - start_ptr;
+
+        while (bytes_to_write > 0)
+        {
+            check_time_out();
+            
+            size_t bytes = bytes_to_write;
+            if (bytes > MTU_)
+                bytes = MTU_;
+
+            size_t written = transport_->write(ptr, bytes, timeout);
+            ptr += written;
+
+            bytes_to_write -= written;
+        }
+
+        return buf_size;
     }
 };

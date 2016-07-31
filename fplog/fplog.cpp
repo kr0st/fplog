@@ -433,7 +433,7 @@ class FPLOG_API Fplog_Impl
                 params["ip"] = "127.0.0.1";
 
                 transport_->connect(params);
-                protocol_ = new sprot::Protocol(transport_);
+                protocol_ = new vsprot::Protocol(transport_);
 
                 inited_ = true;
             }
@@ -575,7 +575,7 @@ class FPLOG_API Fplog_Impl
         std::recursive_mutex mq_reader_mutex_;
 
         fplog::Transport_Interface* transport_;
-        sprot::Protocol* protocol_;
+        vsprot::Protocol* protocol_;
 
         void stop_reading_queue()
         {

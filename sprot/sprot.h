@@ -33,7 +33,8 @@ namespace vsprot
     {
         public:
             
-            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024):transport_(transport), MTU_(MTU){}
+            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024);
+                
             ~Protocol(){}
 
             virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
@@ -44,6 +45,8 @@ namespace vsprot
 
         fplog::Transport_Interface* transport_;
         size_t MTU_;
+        std::vector<char> write_buffer_, read_buffer_;
+        char header_[6];
 
         Protocol(){}
     };
