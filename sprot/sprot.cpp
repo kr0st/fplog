@@ -663,86 +663,92 @@ namespace vsprot
         //the protocol is to blame, not something else
         //return transport_->read(buf, buf_size, timeout);
 
-        int read_bytes = 0;
+        size_t _100_MB = 100 * 1024 * 1024;
         size_t frame_size = 0;
 
-        static char* temp_buf = new char [MTU_];
+        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
+    
+    check_buffer:
 
-        if (read_buffer_.size() != 0)
+        auto check_time_out = [&timeout, &timer_start]()
         {
-            read_bytes = read_buffer_.size();
-            if ((read_bytes - sizeof(header_) - 4) > buf_size)
-                THROW(fplog::exceptions::Buffer_Overflow);
+            unsigned long long int mult = 1;
             
-            memcpy(&frame_size, &(read_buffer_[sizeof(header_)]), 4);
+            #ifdef _LINUX
+            mult = 100;
+            #endif
             
-            if (frame_size > (read_bytes - sizeof(header_) - 4))
+            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
+            if (timer_stop - timer_start >= converted_timeout)
+                THROW(fplog::exceptions::Timeout);
+        };
+
+        if (read_buffer_.size() > (sizeof(header_) + 4))
+        {
+            for (auto it(read_buffer_.begin()); it != read_buffer_.end(); ++it)
             {
-                memcpy(temp_buf, &(read_buffer_[0]), read_bytes);
-                goto continue_reading;
+                if (memcmp(&(*it), header_, sizeof(header_)) == 0)
+                {                    
+                    memcpy(&frame_size, &(*it) + sizeof(header_), 4);
+                    if (frame_size >= _100_MB)
+                        continue;
+                    
+                    if ((read_buffer_.end() - it) < (frame_size + sizeof(header_) + 4))
+                        goto read_more;
+                        
+                    if (frame_size > buf_size)
+                        THROW(fplog::exceptions::Buffer_Overflow);
+                    
+                    memcpy(buf, &(*it) + sizeof(header_) + 4, frame_size);
+                    size_t new_size = (read_buffer_.end() - it) - sizeof(header_) - 4 - frame_size;
+                    
+                    std::vector<char> new_buffer;
+                    new_buffer.resize(new_size);
+                    memcpy(&(new_buffer[0]), &(*it) + sizeof(header_) + 4 + frame_size, new_size);
+                    
+                    read_buffer_.swap(new_buffer);
+                    return frame_size;
+                }
+            }
+            
+            {
+                std::vector<char> dummy;
+                read_buffer_.swap(dummy);
             }
 
-            memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), read_bytes - sizeof(header_) - 4);
+            return 0;
+        }
+        
+    read_more:
+
+        static char* temp_buf = new char[MTU_];
+
+        try
+        {
+            size_t bytes_read = transport_->read(temp_buf, MTU_, timeout);
+            check_time_out();
             
+            if (bytes_read > 0)
+            {
+                std::vector<char> new_buffer;
+                new_buffer.resize(bytes_read);
+                memcpy(&(new_buffer[0]), temp_buf, bytes_read);
+                
+                read_buffer_.insert(read_buffer_.end(), new_buffer.begin(), new_buffer.end());
+            }
+        }
+        catch(fplog::exceptions::Timeout&)
+        {
             std::vector<char> dummy;
             read_buffer_.swap(dummy);
-
-            return read_bytes - sizeof(header_) - 4;
-        }
-
-        read_bytes = transport_->read(temp_buf, MTU_, timeout);
-        
-        if (read_bytes < (sizeof(header_) + 4))
-            THROW(fplog::exceptions::Read_Failed);
-        
-        if (memcmp(temp_buf, header_, sizeof(header_)) != 0)
-            THROW(fplog::exceptions::Read_Failed);
-
-        memcpy(&frame_size, &(temp_buf[sizeof(header_)]), 4);
-        
-        if (frame_size == 0)
-            THROW(fplog::exceptions::Read_Failed);
-
-    continue_reading:
-
-        read_buffer_.resize(frame_size + sizeof(header_) + 4 + MTU_); //more mem than needed to be able to hold start of a new frame    
-        memcpy(&(read_buffer_[0]), temp_buf, read_bytes);
-
-        char* ptr = &(read_buffer_[read_bytes]);        
-        int delta = read_bytes - (frame_size + sizeof(header_) + 4);
-        size_t just_read = 0;
-        
-        while (delta < 0)
-        {
-            just_read = transport_->read(temp_buf, MTU_, timeout);
-            read_bytes += just_read;
             
-            memcpy(ptr, temp_buf, just_read);
-            ptr += just_read;
-            
-            delta = read_bytes - (frame_size + sizeof(header_) + 4);
+            throw;
         }
 
-        if (delta >= 0)
-        {
-            if (frame_size > buf_size)
-                THROW(fplog::exceptions::Buffer_Overflow);
-
-            memcpy(buf, &(read_buffer_[sizeof(header_) + 4]), frame_size);
-        }
+        goto check_buffer;
         
-		{
-			std::vector<char> dummy;
-			read_buffer_.swap(dummy);
-		}        
-
-        if (delta >= (sizeof(header_) + 4))
-        {
-            read_buffer_.resize(delta);
-            memcpy(&(read_buffer_[0]), &(temp_buf[just_read - delta]), delta);
-        }
-
-        return frame_size;
+        return 0;
     }
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)

@@ -34,7 +34,8 @@ namespace spipc
             UDT_Transport_Impl():
             client_sock_(-1),
             serv_sock_(-1),
-            localhost_(false)
+            localhost_(false),
+            disconnecting_(false)
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
             }
@@ -42,6 +43,7 @@ namespace spipc
             ~UDT_Transport_Impl()
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
+                disconnect();
             }
 
             void connect(const Params& params)
@@ -50,6 +52,8 @@ namespace spipc
 
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
                 std::string UIDstr;
+                
+                disconnecting_ = false;
 
                 if (params.find("uid") == params.end())
                 {
@@ -134,6 +138,8 @@ namespace spipc
             void disconnect()
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
+                
+                disconnecting_ = true;
 
                 if (check_socket(client_sock_))
                 {
@@ -154,6 +160,9 @@ namespace spipc
             size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
+                
+                if (disconnecting_)
+                    return 0;
 
                 accept_connection();
 
@@ -201,7 +210,10 @@ namespace spipc
             size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
-
+                
+                if (disconnecting_)
+                    return 0;
+                    
                 initiate_connection();
 
                 UDT::UDSET write_set;
@@ -260,6 +272,7 @@ namespace spipc
             std::string ip_str_;
 
             bool localhost_;
+            bool disconnecting_;
 
             bool check_socket(UDTSOCKET& socket)
             {
@@ -288,6 +301,9 @@ namespace spipc
 
                 while (!connected_)
                 {
+                    if (disconnecting_)
+                        THROWM(fplog::exceptions::Connect_Failed, "Failed to accept connection.");
+
                     if (retries <= 0)
                         THROWM(fplog::exceptions::Connect_Failed, "Failed to accept connection.");
 
@@ -304,6 +320,7 @@ namespace spipc
                     high_uid_ = true;
 
                     disconnect();
+                    disconnecting_ = false;
 
                     int err = getaddrinfo(NULL, port.c_str(), &hints, &res);
                     if (err != 0)
@@ -384,7 +401,10 @@ namespace spipc
                 while (!connected_)
                 {
                     addrinfo hints;
-
+                    
+                    if (disconnecting_)
+                        THROWM(fplog::exceptions::Connect_Failed, "Failed to accept connection.");
+                    
                     memset(&hints, 0, sizeof(struct addrinfo));
 
                     hints.ai_flags = AI_PASSIVE;
