@@ -686,22 +686,28 @@ namespace vsprot
 
         if (read_buffer_.size() > (sizeof(header_) + 4))
         {
-            for (auto it(read_buffer_.begin()); it <= (read_buffer_.end() - sizeof(header_) - 4); ++it)
-            {
-                if (memcmp(&(*it), header_, sizeof(header_)) == 0)
+
+                if (memcmp(&(read_buffer_[0]), header_, sizeof(header_)) == 0)
                 {                    
-                    memcpy(&frame_size, &(*it) + sizeof(header_), 4);
+                    memcpy(&frame_size, &(read_buffer_[0]) + sizeof(header_), 4);
                     if (frame_size >= _100_MB)
-                        continue;
-                    
-					size_t sz_buf = (read_buffer_.end() - it);
+                    {
+						{
+							std::vector<char> dummy;
+							read_buffer_.swap(dummy);
+						}
+
+						return 0;
+					}
+ 
+					size_t sz_buf = read_buffer_.size();
                     if ( sz_buf < (frame_size + sizeof(header_) + 4))
                         goto read_more;
                         
                     if (frame_size > buf_size)
                         THROW(fplog::exceptions::Buffer_Overflow);
                     
-                    memcpy(buf, &(*it) + sizeof(header_) + 4, frame_size);
+                    memcpy(buf, &(read_buffer_[0]) + sizeof(header_) + 4, frame_size);
 					
 					for (size_t i = 0; i < (frame_size - sizeof(header_)); ++i)
 					{
@@ -711,16 +717,15 @@ namespace vsprot
 						}
 					}
 					
-                    size_t new_size = (read_buffer_.end() - it) - sizeof(header_) - 4 - frame_size;
+                    size_t new_size = read_buffer_.size() - sizeof(header_) - 4 - frame_size;
                     
                     std::vector<char> new_buffer;
                     new_buffer.resize(new_size);
-                    memcpy(&(new_buffer[0]), &(*it) + sizeof(header_) + 4 + frame_size, new_size);
+                    memcpy(&(new_buffer[0]), &(read_buffer_[0]) + sizeof(header_) + 4 + frame_size, new_size);
                     
                     read_buffer_.swap(new_buffer);
                     return frame_size;
                 }
-            }
             
             {
                 std::vector<char> dummy;
@@ -744,8 +749,7 @@ namespace vsprot
                 std::vector<char> new_buffer;
                 new_buffer.resize(bytes_read);
                 memcpy(&(new_buffer[0]), temp_buf, bytes_read);
-                
-                read_buffer_.insert(read_buffer_.end(), new_buffer.begin(), new_buffer.end());
+				read_buffer_.insert(read_buffer_.end(), new_buffer.begin(), new_buffer.end());
             }
         }
         catch(fplog::exceptions::Timeout&)
