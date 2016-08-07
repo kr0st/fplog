@@ -686,7 +686,7 @@ namespace vsprot
 
         if (read_buffer_.size() > (sizeof(header_) + 4))
         {
-            for (auto it(read_buffer_.begin()); it != read_buffer_.end(); ++it)
+            for (auto it(read_buffer_.begin()); it <= (read_buffer_.end() - sizeof(header_) - 4); ++it)
             {
                 if (memcmp(&(*it), header_, sizeof(header_)) == 0)
                 {                    
@@ -694,13 +694,23 @@ namespace vsprot
                     if (frame_size >= _100_MB)
                         continue;
                     
-                    if ((read_buffer_.end() - it) < (frame_size + sizeof(header_) + 4))
+					size_t sz_buf = (read_buffer_.end() - it);
+                    if ( sz_buf < (frame_size + sizeof(header_) + 4))
                         goto read_more;
                         
                     if (frame_size > buf_size)
                         THROW(fplog::exceptions::Buffer_Overflow);
                     
                     memcpy(buf, &(*it) + sizeof(header_) + 4, frame_size);
+					
+					for (size_t i = 0; i < (frame_size - sizeof(header_)); ++i)
+					{
+						if (memcmp(&(((char*)buf)[i]), header_, sizeof(header_)) == 0)
+						{
+							break;
+						}
+					}
+					
                     size_t new_size = (read_buffer_.end() - it) - sizeof(header_) - 4 - frame_size;
                     
                     std::vector<char> new_buffer;
