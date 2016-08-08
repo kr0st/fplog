@@ -651,6 +651,35 @@ namespace vsprot
         header_[5] = 0x9A;
     }
 
+    bool validate_read_buffer(char* buf, size_t sz, char* header)
+    {
+        if (!buf)
+            return true;
+
+        for (char* ptr = buf; ptr < (buf + sz - 10); ptr++)
+        {
+            if (memcmp(ptr, header, 6) == 0)
+            {
+                ptr += 6;
+                
+                size_t frame_sz = 0;
+                memcpy(&frame_sz, ptr, 4);
+                
+                ptr += 4;
+                
+                for (char* ptr2 = ptr; (ptr2 < (buf + sz - 6)) && (ptr2 < (ptr + frame_sz - 6)); ptr2++)
+                {
+                    if (memcmp(ptr2, header, 6) == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
     {
         if (!buf)
@@ -699,34 +728,32 @@ namespace vsprot
 
 						return 0;
 					}
- 
-					size_t sz_buf = read_buffer_.size();
+                    
+                    validate_read_buffer(&(read_buffer_[0]), read_buffer_.size(), header_);
+					
+                    size_t sz_buf = read_buffer_.size();
                     if ( sz_buf < (frame_size + sizeof(header_) + 4))
+                    {
                         goto read_more;
+                    }
                         
                     if (frame_size > buf_size)
                         THROW(fplog::exceptions::Buffer_Overflow);
-                    
+
                     memcpy(buf, &(read_buffer_[0]) + sizeof(header_) + 4, frame_size);
-					
-					for (size_t i = 0; i < (frame_size - sizeof(header_)); ++i)
-					{
-						if (memcmp(&(((char*)buf)[i]), header_, sizeof(header_)) == 0)
-						{
-							break;
-						}
-					}
-					
                     size_t new_size = read_buffer_.size() - sizeof(header_) - 4 - frame_size;
-                    
+
                     std::vector<char> new_buffer;
                     new_buffer.resize(new_size);
                     memcpy(&(new_buffer[0]), &(read_buffer_[0]) + sizeof(header_) + 4 + frame_size, new_size);
-                    
+
                     read_buffer_.swap(new_buffer);
+
+                    validate_read_buffer(&(read_buffer_[0]), read_buffer_.size(), header_);
+
                     return frame_size;
                 }
-            
+
             {
                 std::vector<char> dummy;
                 read_buffer_.swap(dummy);
@@ -734,7 +761,7 @@ namespace vsprot
 
             return 0;
         }
-        
+
     read_more:
 
         static char* temp_buf = new char[MTU_];
@@ -742,6 +769,8 @@ namespace vsprot
         try
         {
             size_t bytes_read = transport_->read(temp_buf, MTU_, timeout);
+            validate_read_buffer(temp_buf, bytes_read, header_);
+            
             check_time_out();
             
             if (bytes_read > 0)
