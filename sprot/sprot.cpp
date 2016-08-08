@@ -680,98 +680,62 @@ namespace vsprot
         return true;
     }
 
-    size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
-    {
-        if (!buf)
-            return 0;
-
-        if (!transport_)
-            return 0;
-
-        //just for testing to make sure if there is no data,
-        //the protocol is to blame, not something else
-        //return transport_->read(buf, buf_size, timeout);
-
+	int Protocol::read_frame(char* buf, size_t buf_size)
+	{
         size_t _100_MB = 100 * 1024 * 1024;
         size_t frame_size = 0;
-
-        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
-    
-    check_buffer:
-
-        auto check_time_out = [&timeout, &timer_start]()
+        
+		if (read_buffer_.size() > (sizeof(header_) + 4))
         {
-            unsigned long long int mult = 1;
-            
-            #ifdef _LINUX
-            mult = 100;
-            #endif
-            
-            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
-            if (timer_stop - timer_start >= converted_timeout)
-                THROW(fplog::exceptions::Timeout);
-        };
-
-        if (read_buffer_.size() > (sizeof(header_) + 4))
-        {
-
-                if (memcmp(&(read_buffer_[0]), header_, sizeof(header_)) == 0)
-                {                    
-                    memcpy(&frame_size, &(read_buffer_[0]) + sizeof(header_), 4);
-                    if (frame_size >= _100_MB)
-                    {
-						{
-							std::vector<char> dummy;
-							read_buffer_.swap(dummy);
-						}
-
-						return 0;
+			if (memcmp(&(read_buffer_[0]), header_, sizeof(header_)) == 0)
+			{                    
+				memcpy(&frame_size, &(read_buffer_[0]) + sizeof(header_), 4);
+				if (frame_size >= _100_MB)
+				{
+					{
+						std::vector<char> dummy;
+						read_buffer_.swap(dummy);
 					}
-                    
-                    validate_read_buffer(&(read_buffer_[0]), read_buffer_.size(), header_);
-					
-                    size_t sz_buf = read_buffer_.size();
-                    if ( sz_buf < (frame_size + sizeof(header_) + 4))
-                    {
-                        goto read_more;
-                    }
-                        
-                    if (frame_size > buf_size)
-                        THROW(fplog::exceptions::Buffer_Overflow);
 
-                    memcpy(buf, &(read_buffer_[0]) + sizeof(header_) + 4, frame_size);
-                    size_t new_size = read_buffer_.size() - sizeof(header_) - 4 - frame_size;
+					return 0;
+				}
 
-                    std::vector<char> new_buffer;
-                    new_buffer.resize(new_size);
-                    memcpy(&(new_buffer[0]), &(read_buffer_[0]) + sizeof(header_) + 4 + frame_size, new_size);
+				size_t sz_buf = read_buffer_.size();
+				if ( sz_buf < (frame_size + sizeof(header_) + 4))
+					return 0;
 
-                    read_buffer_.swap(new_buffer);
+				if (frame_size > buf_size)
+					return ((int)buf_size - (int)frame_size);
 
-                    validate_read_buffer(&(read_buffer_[0]), read_buffer_.size(), header_);
+				memcpy(buf, &(read_buffer_[0]) + sizeof(header_) + 4, frame_size);
+				size_t new_size = read_buffer_.size() - sizeof(header_) - 4 - frame_size;
 
-                    return frame_size;
-                }
+				std::vector<char> new_buffer;
+				new_buffer.resize(new_size);
+				memcpy(&(new_buffer[0]), &(read_buffer_[0]) + sizeof(header_) + 4 + frame_size, new_size);
 
-            {
-                std::vector<char> dummy;
-                read_buffer_.swap(dummy);
-            }
+				read_buffer_ = new_buffer;
+				
+				if ((read_buffer_.size() >= (sizeof(header_) + 4)))
+				{
+					if (memcmp(&(read_buffer_[0]), header_, sizeof(header_)) != 0)
+						read_buffer_.clear();
+				}
 
-            return 0;
-        }
-
-    read_more:
-
-        static char* temp_buf = new char[MTU_];
+				return frame_size;
+			}
+		}
+		
+		return 0;
+	}
+	
+	size_t Protocol::internal_read(size_t timeout)
+	{
+        char* temp_buf = new char[MTU_];
 
         try
         {
             size_t bytes_read = transport_->read(temp_buf, MTU_, timeout);
-            validate_read_buffer(temp_buf, bytes_read, header_);
-            
-            check_time_out();
             
             if (bytes_read > 0)
             {
@@ -786,13 +750,54 @@ namespace vsprot
             std::vector<char> dummy;
             read_buffer_.swap(dummy);
             
-            throw;
+            delete [] temp_buf;
+			
+			throw;
         }
+		
+		delete [] temp_buf;
+	}
+	
+	size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)
+	{
+        if (!buf)
+            return 0;
 
-        goto check_buffer;
-        
-        return 0;
-    }
+        if (!transport_)
+            return 0;
+
+        time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
+
+        auto check_time_out = [&timeout, &timer_start]()
+        {
+            unsigned long long int mult = 1;
+            
+            #ifdef _LINUX
+            mult = 100;
+            #endif
+            
+            time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+            system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
+            if (timer_stop - timer_start >= converted_timeout)
+                THROW(fplog::exceptions::Timeout);
+        };
+		
+		while (true)
+		{
+			int bytes_read = read_frame(buf, buf_size);
+			
+			if (bytes_read > 0)
+				return bytes_read;
+		
+			if (bytes_read < 0)
+				THROW(fplog::exceptions::Buffer_Overflow);
+			
+			check_time_out();
+			internal_read(timeout);
+		}
+		
+		return 0;
+	}
 
     size_t Protocol::write(const void* buf, size_t buf_size, size_t timeout)
     {
@@ -802,6 +807,8 @@ namespace vsprot
         if (!transport_)
             return 0;
           
+		if (buf_size == 0)
+			return 0;
         //just for testing to make sure if there is no data,
         //the protocol is to blame, not something else
         //return transport_->write(buf, buf_size, timeout);

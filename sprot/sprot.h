@@ -47,6 +47,9 @@ namespace vsprot
         size_t MTU_;
         std::vector<char> write_buffer_, read_buffer_;
         unsigned char header_[6];
+		
+		int read_frame(char* buf, size_t buf_sz);
+		size_t internal_read(size_t timeout = infinite_wait);
 
         Protocol(){}
     };
