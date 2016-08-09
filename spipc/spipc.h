@@ -40,7 +40,7 @@ class SPIPC_API IPC: public fplog::Transport_Interface
         fplog::UID private_channel_id_;
         std::recursive_mutex mutex_;
         fplog::Transport_Interface* transport_;
-        vsprot::Protocol* protocol_;
+        fplog::Transport_Interface* protocol_;
         bool own_transport_;
 };
 

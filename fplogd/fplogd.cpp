@@ -368,13 +368,11 @@ class Impl
         {
         };
 
-        void set_log_transport(fplog::Transport_Interface* transport)
+        void set_log_transport(fplog::Transport_Interface* transport, fplog::Transport_Interface* protocol)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             log_transport_ = transport;
-            if (protocol_)
-                delete protocol_;
-            protocol_ = new vsprot::Protocol(log_transport_);
+            protocol_ = protocol;
         }
 
         void start()
@@ -625,7 +623,7 @@ class Impl
                     if (should_stop_)
                         return;
 
-                    while (!mq_.empty() && (batch.size() < 1))
+                    while (!mq_.empty() && (batch.size() < 30))
                     {
                         str = mq_.front();
                         mq_.pop();
@@ -633,7 +631,7 @@ class Impl
                     }
                 }
 
-                if (batch.size() < 1)
+                if (batch.size() < 30)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     continue;
@@ -732,7 +730,7 @@ class Impl
         std::vector<Thread_Data*> pool_;
         volatile bool should_stop_;
         fplog::Transport_Interface* log_transport_;
-        vsprot::Protocol* protocol_;
+        fplog::Transport_Interface* protocol_;
 };
 
 static Impl g_impl;
@@ -742,10 +740,29 @@ void start()
     Transport_Factory factory;
     fplog::Transport_Interface::Params params(get_log_transort_config());
     fplog::Transport_Interface* trans = factory.create(params);
+	
+	fplog::Transport_Interface* protocol = 0;
+	
+	for (auto param : params)
+	{
+		if (generic_util::find_str_no_case(param.first, "protocol"))
+		{
+			if (generic_util::find_str_no_case(param.second, "vsprot"))
+			{
+				protocol = new vsprot::Protocol(trans);
+			}
+			else
+				protocol = new sprot::Protocol(trans);
+		}
+	}
+	
+	if (!protocol)
+		protocol = new sprot::Protocol(trans);
+
     if (trans)
     {
         trans->connect(params);
-        g_impl.set_log_transport(trans);
+        g_impl.set_log_transport(trans, protocol);
         g_impl.start();
     }
 }

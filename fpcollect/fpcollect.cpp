@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <queue>
 #include <mutex>
+#include <memory>
 
 #include <fplog_exceptions.h>
 #include <fplog.h>
@@ -286,7 +287,25 @@ class Impl
                 return;
             }
 
-            vsprot::Protocol protocol(transport);
+			fplog::Transport_Interface* protocol = 0;
+			
+			for (auto param : data->params)
+			{
+				if (generic_util::find_str_no_case(param.first, "protocol"))
+				{
+					if (generic_util::find_str_no_case(param.second, "vsprot"))
+					{
+						protocol = new vsprot::Protocol(transport);
+					}
+					else
+						protocol = new sprot::Protocol(transport);
+				}
+			}
+			
+			if (!protocol)
+				protocol = new sprot::Protocol(transport);
+				
+			std::auto_ptr<fplog::Transport_Interface> autokill_proto(protocol);
 
             size_t buf_sz = 30 * 1024; //30K buffer
             char *buf = new char [buf_sz];
@@ -299,7 +318,7 @@ class Impl
                 {
                     static std::string old_str;
 
-                    protocol.read(buf, buf_sz - 1, 1000);
+                    protocol->read(buf, buf_sz - 1, 1000);
 
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     
