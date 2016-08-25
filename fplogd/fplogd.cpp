@@ -614,6 +614,8 @@ class Impl
             std::string emergency_log_file_path = get_log_error_file_full_path();
             std::vector<std::string*> batch;
 
+            size_t batch_flush_counter = 0;
+            
             while(true)
             {
                 std::string* str = 0;
@@ -634,8 +636,18 @@ class Impl
                 if (batch.size() < 30)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                    continue;
+                    
+                    if (batch.size() > 0)
+                        batch_flush_counter++;
+                    
+                    if (batch_flush_counter < 300)
+                        continue;
+                    else
+                        batch_flush_counter = 0; //we are sending messages even despite the fact that we do not have a full batch
+                        //this is done in order to prevent situations when some messages are not sent because they were last and thus stuck in the queue
                 }
+                else
+                    batch_flush_counter = 0;
 
                 JSONNode json_batch(JSON_ARRAY);
                 for (auto item: batch)
