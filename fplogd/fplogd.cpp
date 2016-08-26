@@ -379,10 +379,19 @@ class Impl
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             should_stop_ = false;
+            batch_size_ = 30;
 
             fplog::Transport_Interface::Params misc(get_misc_config());
             for (auto& param : misc)
             {
+                if (generic_util::find_str_no_case(param.first, "batch_size"))
+                {
+                    int batch_sz = std::stoi(param.second);
+                    
+                    if ((batch_sz > 0) && (batch_sz < 1000))
+                        batch_size_ = batch_sz;
+                }
+                
                 if (generic_util::find_str_no_case(param.first, "hostname"))
                 {
                     hostname_ = "auto";
@@ -457,6 +466,7 @@ class Impl
     private:
 
         std::string hostname_;
+        int batch_size_;
 
         struct Thread_Data
         {
@@ -625,7 +635,7 @@ class Impl
                     if (should_stop_)
                         return;
 
-                    while (!mq_.empty() && (batch.size() < 30))
+                    while (!mq_.empty() && (batch.size() < batch_size_))
                     {
                         str = mq_.front();
                         mq_.pop();
@@ -633,7 +643,7 @@ class Impl
                     }
                 }
 
-                if (batch.size() < 30)
+                if (batch.size() < batch_size_)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     
