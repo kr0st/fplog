@@ -629,21 +629,42 @@ class Impl
             while(true)
             {
                 std::string* str = 0;
+                bool send_batch = false;
 
                 {
                     std::lock_guard<std::recursive_mutex> lock(mutex_);
                     if (should_stop_)
                         return;
 
-                    while (!mq_.empty() && (batch.size() < batch_size_))
+                    while (!mq_.empty() && (batch.size() < batch_size_) && !send_batch)
                     {
                         str = mq_.front();
-                        mq_.pop();
-                        batch.push_back(str);
+                        
+                        //This is needed for sending larger messages - large messages are sent independently,
+                        //separate from the batch, i.e. large message cannot be part of the batch along with other messages
+                        //because in that case batch byte size could become too great to be optimal for sending over any transport.
+                        if (str->length() >= (batch_size_ * 300 / 2))
+                        {
+                            if (batch.size() == 0)
+                            {
+                                send_batch = true;
+                                mq_.pop();
+                                batch.push_back(str);
+                            }
+                            else
+                            {
+                                send_batch = true;
+                            }
+                        }
+                        else
+                        {
+                            mq_.pop();
+                            batch.push_back(str);
+                        }
                     }
                 }
 
-                if (batch.size() < batch_size_)
+                if ((batch.size() < batch_size_) && !send_batch)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     
