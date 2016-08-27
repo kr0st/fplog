@@ -45,11 +45,49 @@ static unsigned long long get_msec_time_impl()
 //check out console cmd: date +%:z
 static int get_system_timezone_impl()
 {
-    return 180;
+    FILE* tz = 0;
+    char cmd[] = "date +%:z";
+    char line[256];
+    memset(line, 0, sizeof(line));
+
+    tz = popen(cmd, "r");
+        
+    if (tz != 0)
+    {
+        if (fgets(line, 256, tz))
+        {
+            char hours[256];
+            char minutes[256];
+            
+            memset(hours, 0, sizeof(hours));
+            memset(minutes, 0, sizeof(minutes));
+            
+            int separator = -1;
+            for (int i = 0; i < sizeof(line); ++i)
+                if (line[i] == ':')
+                {
+                    separator = i;
+                    break;
+                }
+
+            if (separator > 0)
+            {
+                int len = strlen(line);
+                if (len > 0)
+                {
+                    memcpy(hours, line, separator);
+                    memcpy(minutes, line + separator + 1, len - separator - 1);
+                    
+                    int h = std::stoi(hours), m = std::stoi(minutes);
+                    return 60 * h + m;
+                }
+            }
+        }
+    }
+
+    return 0;
 }
 
-//TODO: Linux implementation
-//Use clock_gettime(CLOCK_MONOTONIC)
 static unsigned long long get_msec_time_impl()
 {
     struct timespec tp;
@@ -90,9 +128,20 @@ std::string get_iso8601_timestamp()
     struct tm* tm(localtime(&elapsed_time));
     char timestamp[200] = {0};
 
+    static int tz = get_system_timezone();
+    static int call_counter = 0;
+
+    call_counter++;
+
+    if (call_counter > 200)
+    {
+        call_counter = 0;
+        tz = get_system_timezone();
+    }
+
     snprintf(timestamp, sizeof(timestamp) - 1, "%04d-%02d-%02dT%02d:%02d:%02d.%lld%s",
         tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, get_msec_time() % 1000,
-        timezone_from_minutes_to_iso8601(get_system_timezone()).c_str());
+        timezone_from_minutes_to_iso8601(tz).c_str());
 
     return timestamp;
 }
