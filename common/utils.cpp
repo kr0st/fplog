@@ -39,10 +39,6 @@ static unsigned long long get_msec_time_impl()
 
 #else
 
-//TODO: Linux implementation
-//some hints at http://linux.die.net/man/3/gmtime and http://linux.die.net/man/3/timelocal
-//returns timezone in minutes, not hours!
-//check out console cmd: date +%:z
 static int get_system_timezone_impl()
 {
     FILE* tz = 0;
@@ -56,6 +52,8 @@ static int get_system_timezone_impl()
     {
         if (fgets(line, 256, tz))
         {
+            pclose(tz);
+            
             char hours[256];
             char minutes[256];
             
@@ -83,6 +81,8 @@ static int get_system_timezone_impl()
                 }
             }
         }
+        else
+            pclose(tz);
     }
 
     return 0;

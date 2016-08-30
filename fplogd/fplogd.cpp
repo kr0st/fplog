@@ -104,7 +104,28 @@ bool IsProcessRunning(const char *processName)
     CloseHandle(snapshot);
     return exists;
 #else
-//TODO: Linux implementation!
+ 
+    FILE* proc = 0;
+    std::string cmd;
+    cmd = "ps cax | grep " + std::string(processName);
+
+    char line[256];
+    memset(line, 0, sizeof(line));
+
+    proc = popen(cmd.c_str(), "r");
+  
+    if (proc != 0)
+    {
+        if (fgets(line, 256, proc))
+        {
+            pclose(proc);
+            std::string str(line);
+            return (str.find(processName) != std::string::npos);
+        }
+        else
+            pclose(proc);
+    }
+
     return false;
 #endif
 }
@@ -732,7 +753,14 @@ class Impl
 
                             try
                             {
-                                protocol_->write(error_str.c_str(), error_str.size() + 1, 200);
+                                if (log_transport_ && protocol_)
+                                {
+                                    protocol_->write(error_str.c_str(), error_str.size() + 1, 200);
+                                }
+                                else
+                                {
+                                    THROW(fplog::exceptions::Transport_Missing);
+                                }
                             }
                             catch (fplog::exceptions::Generic_Exception& e)
                             {
@@ -779,7 +807,7 @@ class Impl
 static Impl g_impl;
 
 void start()
-{
+{    
     Transport_Factory factory;
     fplog::Transport_Interface::Params params(get_log_transort_config());
     fplog::Transport_Interface* trans = factory.create(params);
