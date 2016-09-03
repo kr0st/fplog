@@ -510,6 +510,10 @@ void stop()
 int main()
 {
     fpcollect::start();
+    
     _getch();
+    generic_util::process_suicide(13000);
+
     fpcollect::stop();
+    generic_util::suicide_prevention();
 }

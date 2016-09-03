@@ -3,7 +3,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <boost/algorithm/string.hpp>
+#include <mutex>
+#include <thread>
+#include <chrono>
+#include <iostream>
 
+using namespace std::chrono;
 
 #ifdef _WIN32
 #include <windows.h>
@@ -99,8 +104,82 @@ static unsigned long long get_msec_time_impl()
 
 #endif
 
+static bool prevent_suicide = false;
+static std::recursive_mutex suicide_mutex;
+static std::thread* suicide_thread = 0;
+
+void cause_of_death(size_t timeout)
+{
+    time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
+
+    auto check_time_out = [&timeout, &timer_start]()
+    {
+        unsigned long long int mult = 1;
+        
+        #ifdef _LINUX
+        mult = 100;
+        #endif
+        
+        time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
+        system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
+        if (timer_stop - timer_start >= converted_timeout)
+            throw std::out_of_range(std::string("Waited for ") + std::to_string(timeout) + std::string("ms, not all threads finished on time, had to terminate the process."));
+    };
+    
+    try
+    {
+        while (true)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            {
+                std::lock_guard<std::recursive_mutex> lock(suicide_mutex);
+                if (prevent_suicide)
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    return;
+                }
+            }
+
+            check_time_out();
+        }
+    }
+    catch(std::out_of_range&)
+    {
+        std::cout << "goodbye, cruel world" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
 namespace generic_util
 {
+
+void process_suicide(size_t timeout, int)
+{
+    std::lock_guard<std::recursive_mutex> lock(suicide_mutex);
+    if (suicide_thread)
+        return; //suicide in progress, do not interrupt (T_T)
+    
+    suicide_thread = new std::thread(cause_of_death, timeout);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+}
+
+void suicide_prevention()
+{
+    if (!suicide_thread)
+        return;
+
+    {
+        std::lock_guard<std::recursive_mutex> lock(suicide_mutex);
+        prevent_suicide = true;
+    }
+    
+    suicide_thread->join();
+    
+    delete suicide_thread;
+    suicide_thread = 0;
+    
+    prevent_suicide = false;
+}
 
 unsigned long long get_msec_time() { return get_msec_time_impl(); }
 int get_system_timezone() { return get_system_timezone_impl(); }

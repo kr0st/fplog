@@ -9,6 +9,9 @@
 namespace generic_util
 {
 
+void process_suicide(size_t timeout, int signal = 15);
+void suicide_prevention();
+    
 static inline bool compare_no_case(char ch1, char ch2){ return std::toupper(ch1) == std::toupper(ch2); }
 static inline bool find_str_no_case(const std::string& search_where, const std::string& search_what)
 {

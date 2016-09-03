@@ -848,6 +848,10 @@ void stop()
 int main()
 {
     fplogd::start();
+    
     _getch();
+    generic_util::process_suicide(13000);
+    
     fplogd::stop();
+    generic_util::suicide_prevention();
 }
