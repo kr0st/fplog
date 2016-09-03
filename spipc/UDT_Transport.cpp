@@ -346,13 +346,17 @@ namespace spipc
 
                         THROWM(fplog::exceptions::Connect_Failed, std::string("Socket cannot accept connections, err = " + std::to_string(UDT::getlasterror().getErrorCode())).c_str());
                     }
-
+re_accept:
                     if (UDT::INVALID_SOCK == (client_sock_ = UDT::accept(serv_sock_, (sockaddr*)&clientaddr, &addrlen)))
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds(100));
                         retries--;
-                        continue;
+                        if (retries <= 0)
+                            THROWM(fplog::exceptions::Connect_Failed, "Failed to accept connection.");
+                        goto re_accept;
                     }
+                    else
+                        retries = 5;
 
                     char clienthost[NI_MAXHOST];
                     char clientservice[NI_MAXSERV];
@@ -385,8 +389,7 @@ namespace spipc
                         UDT::close(client_sock_);
 
                         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                        retries--;
-                        continue;
+                        goto re_accept;
                     }
                     else
                     {
