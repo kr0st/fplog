@@ -1,6 +1,10 @@
 #include "Queue_Controller.h"
 #include <string.h>
 
+Queue_Controller::Queue_Controller(Algo algo = Remove_Newest, size_t timeout = 30000)
+{
+}
+
 bool Queue_Controller::empty()
 {
    return mq_.empty();
