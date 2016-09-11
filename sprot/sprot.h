@@ -20,10 +20,6 @@
 #define SPROT_API 
 #endif
 
-#ifdef _DEBUG
-#define private public
-#endif
-
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
@@ -57,8 +53,15 @@ namespace vsprot
 
 namespace sprot
 {
+    namespace testing
+    {
+        bool crc_test();
+    };
+
     class SPROT_API Protocol: public fplog::Transport_Interface
     {
+        friend bool testing::crc_test();
+
         public:
 
             struct Frame
