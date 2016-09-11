@@ -784,7 +784,7 @@ namespace vsprot
 		
 		while (true)
 		{
-			int bytes_read = read_frame(buf, buf_size);
+			int bytes_read = read_frame((char*)buf, buf_size);
 			
 			if (bytes_read > 0)
 				return bytes_read;
