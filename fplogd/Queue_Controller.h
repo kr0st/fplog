@@ -1,5 +1,6 @@
 #include <string>
 #include <queue>
+#include <memory>
 
 using namespace std;
 
@@ -7,27 +8,75 @@ class Queue_Controller
 {
     public: 
 
-        enum Algo
+        class Algo
         {
-            Remove_Newest = 5463,
-            Remove_Oldest,
-            Remove_Newest_Below_Priority,
-            Remove_Oldest_Below_Priority
-        };
+            public:
+            
+                struct Result
+                {
+                    size_t current_size = 0;
+                    size_t removed_count = 0;
+                };
+                
+                Algo(queue<string*>& mq, size_t max_size, size_t current_size = 0): mq_(mq), max_size_(max_size), current_size_(current_size){}
+                virtual Result process_queue(size_t current_size) = 0;
 
-        Queue_Controller(Algo algo = Remove_Newest, size_t timeout = 30000);
+
+            private:
+                
+                Algo();
+            
+
+            protected:    
+            
+                queue<string*>& mq_;
+                size_t max_size_;
+                int current_size_;
+        };
+        
+        class Remove_Newest: public Algo
+        {
+            public:
+                    
+                    Remove_Newest(queue<string*>& mq, size_t max_size, size_t current_size = 0): Algo(mq, max_size, current_size) {}
+                    Result process_queue(size_t current_size);
+        };
+        
+        class Remove_Oldest;
+        class Remove_Newest_Below_Priority;
+        class Remove_Oldest_Below_Priority;
+
+        Queue_Controller(size_t size_limit = 20000000, size_t timeout = 30000);
 
         bool empty();
         string *front();
         void pop();
         void push(string *str);
+        
+        void change_algo(shared_ptr<Algo> algo){ algo_ = algo; }
 
 
     private:
 
-        int mq_size = 0;
-        const int queue_limiter = 20000000;
+        int mq_size_ = 0;
+        size_t max_size_ = 0;
         std::queue<std::string*> mq_;
-        
+        shared_ptr<Algo> algo_;
+        size_t emergency_time_trigger_ = 0;
+
         bool state_of_emergency();
+        void handle_emergency();
 };
+
+/*class Queue_Controller::Remove_Oldest: public Algo
+{
+};
+
+class Queue_Controller::Remove_Newest_Below_Priority: public Algo
+{
+};
+
+class Queue_Controller::Remove_Oldest_Below_Priority: public Algo
+{
+};
+*/
