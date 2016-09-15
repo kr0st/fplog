@@ -38,6 +38,7 @@ int _getch() {
 //#include <test_util.h>
 #include <spipc/UDT_Transport.h>
 #include <spipc/socket_transport.h>
+#include <fplogd/Queue_Controller.h>
 
 using namespace std;
 
@@ -556,12 +557,62 @@ bool batching_test()
     return true;
 }
 
+bool queue_controller_test()
+{
+    {
+        Queue_Controller qc(200, 3);
+        
+        std::string msg("Ten bytes.");
+        
+        for (int i = 0; i < 30; ++i)
+            qc.push(new std::string(msg));
+        
+        std::vector<std::string*> v;
+        
+        while (!qc.empty())
+        {
+            v.push_back(qc.front());
+            qc.pop();
+        }
+        
+        if (v.size() != 30)
+        {
+            cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+            return false;
+        }
+        
+        for (int i = 0; i < 30; ++i)
+            qc.push(new std::string(msg));
+            
+        std::this_thread::sleep_for(chrono::seconds(4));
+        
+        qc.push(new std::string(msg));
+        v.clear();
+        
+        while (!qc.empty())
+        {
+            v.push_back(qc.front());
+            qc.pop();
+        }
+
+        if (v.size() != 20)
+        {
+            cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
 void run_all_tests()
 {
     initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
 
+    if (!queue_controller_test())
+        printf("queue_controller_test failed!\n");
+        
     if (!filter_test())
         printf("filter_test failed!\n");
 
@@ -713,9 +764,11 @@ bool socket_test()
 
 int main()
 {
+    fplog::testing::queue_controller_test();
+    
     //fplog::testing::run_all_tests();
 
-    fplog::testing::manual_test();
+    //fplog::testing::manual_test();
     
     //fplog::testing::performance_test();
     

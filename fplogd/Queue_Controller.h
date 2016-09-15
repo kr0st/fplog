@@ -1,7 +1,9 @@
 #include <string>
 #include <queue>
 #include <memory>
+#include <chrono>
 
+using namespace std::chrono;
 using namespace std;
 
 class Queue_Controller
@@ -60,10 +62,13 @@ class Queue_Controller
 
         int mq_size_ = 0;
         size_t max_size_ = 0;
+        
         std::queue<std::string*> mq_;
         shared_ptr<Algo> algo_;
+        
         size_t emergency_time_trigger_ = 0;
-
+        time_point<system_clock, system_clock::duration> timer_start_;
+        
         bool state_of_emergency();
         void handle_emergency();
 };

@@ -30,8 +30,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="../fplog/fplog_test.cpp"/>
+    <File Name="../fplogd/Queue_Controller.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="include"/>
+  <VirtualDirectory Name="include">
+    <File Name="../fplogd/Queue_Controller.h"/>
+  </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
