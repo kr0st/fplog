@@ -55,7 +55,8 @@ namespace sprot
     terminating_(false),
     evil_twin_(0),
     twin_size_(0),
-    ack_after_(frames_before_ack)
+    ack_after_(frames_before_ack),
+    frame_num_(0)
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -438,11 +439,9 @@ namespace sprot
 
     void Protocol::write_data(const void* buf, size_t buf_size, Frame::Type type, size_t timeout)
     {
-        static int frame_num = 0;
-
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
-        auto check_time_out = [&timeout, &timer_start]()
+        auto check_time_out = [&timeout, &timer_start, this]()
         {
             unsigned long long int mult = 1;
             
@@ -454,7 +453,7 @@ namespace sprot
             system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
             if (timer_stop - timer_start >= converted_timeout)
             {
-                frame_num = 0;
+                frame_num_ = 0;
                 THROW(fplog::exceptions::Timeout);
             }
         };
@@ -470,14 +469,14 @@ namespace sprot
             try
             {
                 write_frame(send_frame);
-                frame_num++;
+                frame_num_++;
                 break;
             }
             catch (fplog::exceptions::Generic_Exception&)
             {
                 if (retry_count == 0)
                 {
-                    frame_num = 0;
+                    frame_num_ = 0;
                     THROW(fplog::exceptions::Write_Failed);
                 }
                 retry_count--;
@@ -500,14 +499,14 @@ namespace sprot
                 }
                 catch (sprot::exceptions::Wrong_Sequence&)
                 {
-                    frame_num = 0;
+                    frame_num_ = 0;
                     return false;
                 }
                 catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (retry_count == 0)
                     {
-                        frame_num = 0;
+                        frame_num_ = 0;
                         THROW(fplog::exceptions::Read_Failed);
                     }
                         retry_count--;
@@ -517,19 +516,19 @@ namespace sprot
             return true;
         };
 
-        if ((frame_num % ack_after_ == 0) || (type == Frame::DATA_LAST))
+        if ((frame_num_ % ack_after_ == 0) || (type == Frame::DATA_LAST))
         {
             sequence_num_++;
             
             if (!frame_read())
             {
-                frame_num = 0;
+                frame_num_ = 0;
                 THROW(exceptions::Invalid_Frame);
             }
 
             if (recv_frame.type != Frame::ACK)
             {
-                frame_num = 0;
+                frame_num_ = 0;
                 THROW(exceptions::Invalid_Frame);
             }
             
@@ -546,14 +545,14 @@ namespace sprot
                 {
                     write_frame(send_frame);
                     sequence_num_++;
-                    frame_num = 0;
+                    frame_num_ = 0;
                     break;
                 }
                 catch (fplog::exceptions::Generic_Exception& e)
                 {
                     if (retry_count == 0)
                     {
-                        frame_num = 0;
+                        frame_num_ = 0;
                         THROW(fplog::exceptions::Write_Failed);
                     }
                     retry_count--;

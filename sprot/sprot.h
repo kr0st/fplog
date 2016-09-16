@@ -116,6 +116,7 @@ namespace sprot
             std::recursive_mutex mutex_;
             
             int ack_after_;
+            int frame_num_;
 
             Frame make_frame(const Frame::Type type, unsigned char* data = 0, size_t data_length = 0);
             Frame make_frame(const unsigned char* buf, size_t length);
