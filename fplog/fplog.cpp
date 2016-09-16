@@ -426,14 +426,14 @@ class FPLOG_API Fplog_Impl
             else
             {
                 own_transport_ = true;
-                transport_ = new spipc::UDT_Transport();
+                transport_ = new spipc::Socket_Transport();
 
                 fplog::Transport_Interface::Params params;
                 params["uid"] = uid;
                 params["ip"] = "127.0.0.1";
 
                 transport_->connect(params);
-                protocol_ = new vsprot::Protocol(transport_);
+                protocol_ = new sprot::Protocol(transport_);
 
                 inited_ = true;
             }

@@ -18,8 +18,8 @@ namespace spipc {
 IPC::IPC(fplog::Transport_Interface* transport, size_t MTU)
 {
     own_transport_ = (transport == 0);
-    transport_ = own_transport_ ? new UDT_Transport() : transport;
-    protocol_ = new vsprot::Protocol(transport_, MTU);
+    transport_ = own_transport_ ? new Socket_Transport() : transport;
+    protocol_ = new sprot::Protocol(transport_, MTU);
 }
 
 IPC::~IPC()
