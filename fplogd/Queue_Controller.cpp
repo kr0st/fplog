@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stack>
 #include <vector>
+#include <iostream>
+#include <algorithm>
 
 static const size_t buf_sz = -1;
 
@@ -10,7 +12,7 @@ max_size_(size_limit),
 emergency_time_trigger_(timeout),
 timer_start_(chrono::milliseconds(0))
 {
-    algo_ = make_shared<Remove_Newest>(mq_, max_size_);
+    algo_ = make_shared<Remove_Newest>(*this);
 }
 
 bool Queue_Controller::empty()
@@ -155,6 +157,8 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
         v.push_back(mq_.front());
         mq_.pop();
     }
+
+    std::reverse(v.begin(), v.end());
     
     while (cs >= max_size_)
     {
@@ -178,7 +182,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
     }
 
     for (vector<string*>::iterator it(v.begin()); it != v.end(); ++it)
+    {
         mq_.push(*it);
+    }
 
     if (cs < 0)
         cs = 0;

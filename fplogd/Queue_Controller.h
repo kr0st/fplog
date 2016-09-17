@@ -40,7 +40,7 @@ class Queue_Controller
         {
             public:
                     
-                    Remove_Newest(queue<string*>& mq, size_t max_size, size_t current_size = 0): Algo(mq, max_size, current_size) {}
+                    Remove_Newest(Queue_Controller& qc): Algo(qc.mq_, qc.max_size_, qc.mq_size_) {}
                     Result process_queue(size_t current_size);
         };
         
@@ -59,7 +59,7 @@ class Queue_Controller
 
 
     private:
-
+    
         int mq_size_ = 0;
         size_t max_size_ = 0;
         
@@ -77,7 +77,7 @@ class Queue_Controller::Remove_Oldest: public Algo
 {
     public:
             
-            Remove_Oldest(queue<string*>& mq, size_t max_size, size_t current_size = 0): Algo(mq, max_size, current_size) {}
+            Remove_Oldest(Queue_Controller& qc): Algo(qc.mq_, qc.max_size_, qc.mq_size_) {}
             Result process_queue(size_t current_size);
 };
 

@@ -557,51 +557,126 @@ bool batching_test()
     return true;
 }
 
-bool queue_controller_test()
+bool remove_newest_test()
 {
-    {
-        Queue_Controller qc(200, 3);
-        
-        std::string msg("Ten bytes.");
-        
-        for (int i = 0; i < 30; ++i)
-            qc.push(new std::string(msg));
-        
-        std::vector<std::string*> v;
-        
-        while (!qc.empty())
-        {
-            v.push_back(qc.front());
-            qc.pop();
-        }
-        
-        if (v.size() != 30)
-        {
-            cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
-            return false;
-        }
-        
-        for (int i = 0; i < 30; ++i)
-            qc.push(new std::string(msg));
-            
-        std::this_thread::sleep_for(chrono::seconds(4));
-        
+    Queue_Controller qc(200, 3);
+    
+    std::string msg("Ten bytes.");
+    
+    for (int i = 0; i < 30; ++i)
         qc.push(new std::string(msg));
-        v.clear();
+    
+    std::vector<std::string*> v;
+    
+    while (!qc.empty())
+    {
+        v.push_back(qc.front());
+        qc.pop();
+    }
+    
+    if (v.size() != 30)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    }
+    
+    for (int i = 0; i < 30; ++i)
+        qc.push(new std::string(msg));
         
-        while (!qc.empty())
+    std::this_thread::sleep_for(chrono::seconds(4));
+    
+    qc.push(new std::string(msg));
+    v.clear();
+    
+    while (!qc.empty())
+    {
+        v.push_back(qc.front());
+        qc.pop();
+    }
+
+    if (v.size() != 20)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    }    
+
+    return true;
+}
+
+bool remove_oldest_test()
+{
+    Queue_Controller qc(200, 3);
+
+    qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest>(qc));
+
+    qc.push(new std::string("Old msg 1."));
+    qc.push(new std::string("Old msg 2."));
+    qc.push(new std::string("Old msg 3."));
+    qc.push(new std::string("Old msg 4."));
+    qc.push(new std::string("Old msg 5."));
+    qc.push(new std::string("Old msg 6."));
+    qc.push(new std::string("Old msg 7."));
+    qc.push(new std::string("Old msg 8."));
+    qc.push(new std::string("Old msg 9."));
+    qc.push(new std::string("Old msg 10"));
+    
+    std::string msg("Ten bytes.");
+    
+    for (int i = 0; i < 14; ++i)
+        qc.push(new std::string(msg));
+    
+    std::this_thread::sleep_for(chrono::seconds(4));
+    
+    qc.push(new std::string(msg));
+    
+    std::vector<std::string*> v;    
+    while (!qc.empty())
+    {
+        v.push_back(qc.front());
+        qc.pop();
+    }
+
+    bool correct_found = false;    
+    for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
+    {
+        if ((**it).find("Old msg 5.") != string::npos)
         {
-            v.push_back(qc.front());
-            qc.pop();
+            cout << "Remove_Oldest: incorrect string detected: " << **it << std::endl;
+            return false;
         }
 
-        if (v.size() != 20)
-        {
-            cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
-            return false;
-        }
+        if ((**it).find("Old msg 6.") != string::npos)
+            correct_found = true;
     }
+
+    if (!correct_found)
+    {
+        cout << "Remove_Oldest: unable to locate expected string" << endl;
+        return false;
+    }
+    
+    if (v.size() != 20)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    }
+
     return true;
+}
+
+bool queue_controller_test()
+{
+    if (!remove_newest_test())
+    {
+        cout << "Queue_Controller test of Remove_Newest algo failed!" << std::endl;
+        return false;
+    }    
+
+    if (!remove_oldest_test())
+    {
+        cout << "Queue_Controller test of Remove_Oldest algo failed!" << std::endl;
+        return false;
+    }    
 }
 
 void run_all_tests()
@@ -764,11 +839,11 @@ bool socket_test()
 
 int main()
 {
-    //fplog::testing::queue_controller_test();
+    fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
-    fplog::testing::manual_test();
+    //fplog::testing::manual_test();
     
     //fplog::testing::performance_test();
     
