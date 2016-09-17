@@ -1,5 +1,7 @@
 #include "Queue_Controller.h"
 #include <string.h>
+#include <stack>
+#include <vector>
 
 static const size_t buf_sz = -1;
 
@@ -132,6 +134,52 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
         delete str;
     }
     
+    if (cs < 0)
+        cs = 0;
+
+    res.current_size = cs;
+    return res;
+}
+
+Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(size_t current_size)
+{
+    Result res;
+    res.current_size = 0;
+    res.removed_count = 0;
+    
+    int cs = current_size;
+
+    vector<string*> v;
+    while (!mq_.empty())
+    {
+        v.push_back(mq_.front());
+        mq_.pop();
+    }
+    
+    while (cs >= max_size_)
+    {
+        string* str = v.back();
+        v.pop_back();
+
+        if (str)
+        {
+            #ifdef _LINUX
+            int buf_length = strnlen(str->c_str(), buf_sz);
+            #else
+            int buf_length = strnlen_s(str->c_str(), buf_sz);
+            #endif
+        
+            cs -= buf_length;
+        }
+
+        res.removed_count++;
+
+        delete str;
+    }
+
+    for (vector<string*>::iterator it(v.begin()); it != v.end(); ++it)
+        mq_.push(*it);
+
     if (cs < 0)
         cs = 0;
 

@@ -73,10 +73,15 @@ class Queue_Controller
         void handle_emergency();
 };
 
-/*class Queue_Controller::Remove_Oldest: public Algo
+class Queue_Controller::Remove_Oldest: public Algo
 {
+    public:
+            
+            Remove_Oldest(queue<string*>& mq, size_t max_size, size_t current_size = 0): Algo(mq, max_size, current_size) {}
+            Result process_queue(size_t current_size);
 };
 
+/*
 class Queue_Controller::Remove_Newest_Below_Priority: public Algo
 {
 };

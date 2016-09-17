@@ -764,11 +764,11 @@ bool socket_test()
 
 int main()
 {
-    fplog::testing::queue_controller_test();
+    //fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
-    //fplog::testing::manual_test();
+    fplog::testing::manual_test();
     
     //fplog::testing::performance_test();
     
