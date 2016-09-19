@@ -13,6 +13,11 @@ emergency_time_trigger_(timeout),
 timer_start_(chrono::milliseconds(0))
 {
     algo_ = make_shared<Remove_Newest>(*this);
+    
+    algo_fallback_ = make_shared<Remove_Newest>(*this);
+    //algo_fallback is filler until someone changes the main algo:
+    //Remove_Newest and Remove_Oldest could not fail to remove items in normal conditions,
+    //however other algos could fail to remove items if conditions of removal are not fully met.
 }
 
 bool Queue_Controller::empty()
@@ -90,10 +95,8 @@ bool Queue_Controller::state_of_emergency()
         }
         catch (std::out_of_range&)
         {
-            timer_start_ = time_point<system_clock, system_clock::duration>(chrono::milliseconds(0));
             return true;
         }
-
     }
     else
         timer_start_ = time_point<system_clock, system_clock::duration>(chrono::milliseconds(0));
@@ -104,6 +107,11 @@ bool Queue_Controller::state_of_emergency()
 void Queue_Controller::handle_emergency()
 {
     Algo::Result res = algo_->process_queue(mq_size_);
+    mq_size_ = res.current_size;
+
+    if (state_of_emergency())
+        res = algo_fallback_->process_queue(mq_size_);
+
     mq_size_ = res.current_size;
 }
 
@@ -191,4 +199,15 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
 
     res.current_size = cs;
     return res;
+}
+
+void Queue_Controller::change_algo(shared_ptr<Algo> algo, Algo::Fallback_Options::Type fallback_algo)
+{
+    algo_ = algo;
+    
+    if (fallback_algo == Algo::Fallback_Options::Remove_Newest)
+        algo_fallback_ = make_shared<Remove_Newest>(*this);
+
+    if (fallback_algo == Algo::Fallback_Options::Remove_Oldest)
+        algo_fallback_ = make_shared<Remove_Oldest>(*this);
 }

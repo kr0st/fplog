@@ -607,7 +607,7 @@ bool remove_oldest_test()
 {
     Queue_Controller qc(200, 3);
 
-    qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest>(qc));
+    qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest>(qc), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
 
     qc.push(new std::string("Old msg 1."));
     qc.push(new std::string("Old msg 2."));

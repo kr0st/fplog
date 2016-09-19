@@ -20,6 +20,15 @@ class Queue_Controller
                     size_t removed_count = 0;
                 };
                 
+                struct Fallback_Options
+                {
+                    enum Type
+                    {
+                        Remove_Newest = 765,
+                        Remove_Oldest
+                    };
+                };
+                
                 Algo(queue<string*>& mq, size_t max_size, size_t current_size = 0): mq_(mq), max_size_(max_size), current_size_(current_size){}
                 virtual Result process_queue(size_t current_size) = 0;
 
@@ -55,7 +64,7 @@ class Queue_Controller
         void pop();
         void push(string *str);
         
-        void change_algo(shared_ptr<Algo> algo){ algo_ = algo; }
+        void change_algo(shared_ptr<Algo> algo, Algo::Fallback_Options::Type fallback_algo);
 
 
     private:
@@ -65,6 +74,7 @@ class Queue_Controller
         
         std::queue<std::string*> mq_;
         shared_ptr<Algo> algo_;
+        shared_ptr<Algo> algo_fallback_;
         
         size_t emergency_time_trigger_ = 0;
         time_point<system_clock, system_clock::duration> timer_start_;
