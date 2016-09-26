@@ -246,6 +246,62 @@ bool Priority_Filter::should_pass(const Message& msg)
     return false;
 }
 
+void Priority_Filter::construct_numeric()
+{
+    prio_numeric_.push_back(Prio::emergency);
+    prio_numeric_.push_back(Prio::alert);
+    prio_numeric_.push_back(Prio::critical);
+    prio_numeric_.push_back(Prio::error);
+    prio_numeric_.push_back(Prio::warning);
+    prio_numeric_.push_back(Prio::notice);
+    prio_numeric_.push_back(Prio::info);
+    prio_numeric_.push_back(Prio::debug);
+}
+
+void Priority_Filter::add_all_above(const char* prio, bool inclusive)
+{
+    std::vector<std::string>::reverse_iterator it;
+    
+    for (; it != prio_numeric_.rend(); ++it)
+        if (it->find(std::string(prio)) != std::string::npos)
+            break;
+    
+    if (it == prio_numeric_.rend())
+        return;
+        
+    if (inclusive)
+        prio_.insert(prio);
+
+    ++it;
+
+    for (; it != prio_numeric_.rend(); ++it)
+    {
+        prio_.insert(*it);
+    }
+}
+
+void Priority_Filter::add_all_below(const char* prio, bool inclusive)
+{
+    std::vector<std::string>::iterator it;
+    
+    for (; it != prio_numeric_.end(); ++it)
+        if (it->find(std::string(prio)) != std::string::npos)
+            break;
+    
+    if (it == prio_numeric_.end())
+        return;
+        
+    if (inclusive)
+        prio_.insert(prio);
+
+    ++it;
+
+    for (; it != prio_numeric_.end(); ++it)
+    {
+        prio_.insert(*it);
+    }
+}
+
 Message& Message::set_timestamp(const char* timestamp)
 {
     if (timestamp)

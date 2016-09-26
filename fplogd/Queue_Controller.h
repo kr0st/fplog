@@ -91,11 +91,15 @@ class Queue_Controller::Remove_Oldest: public Algo
             Result process_queue(size_t current_size);
 };
 
-/*
 class Queue_Controller::Remove_Newest_Below_Priority: public Algo
 {
+    public:
+        
+            Remove_Newest_Below_Priority(): Algo(qc.mq_, qc.max_size_, qc.mq_size_) {}
+            Result process_queue(size_t current_size);
 };
 
+/*
 class Queue_Controller::Remove_Oldest_Below_Priority: public Algo
 {
 };

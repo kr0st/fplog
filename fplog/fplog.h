@@ -336,17 +336,23 @@ class FPLOG_API Priority_Filter: public Filter_Base
 {
     public:
 
-        Priority_Filter(const char* filter_id): Filter_Base(filter_id){}
+        Priority_Filter(const char* filter_id): Filter_Base(filter_id){ construct_numeric(); }
 
         virtual bool should_pass(const Message& msg);
 
         void add(const char* prio){ if (prio) prio_.insert(prio); }
         void remove(const char* prio) { if (prio){ std::set<std::string>::iterator it(prio_.find(prio)); if (it != prio_.end()) { prio_.erase(it); }}}
 
+        void add_all_above(const char* prio, bool inclusive = false);
+        void add_all_below(const char* prio, bool inclusive = false);
+
 
     private:
 
         std::set<std::string> prio_;
+        std::vector<std::string> prio_numeric_;
+        
+        void construct_numeric();
 };
 
 //One time per application call.
