@@ -61,6 +61,7 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
@@ -127,6 +128,7 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">

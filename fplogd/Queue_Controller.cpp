@@ -1,9 +1,13 @@
 #include "Queue_Controller.h"
+
 #include <string.h>
 #include <stack>
 #include <vector>
 #include <iostream>
 #include <algorithm>
+
+#include <fplog.h>
+
 
 static const size_t buf_sz = -1;
 
@@ -125,6 +129,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
     
     while (cs >= max_size_)
     {
+        if (mq_.empty())
+            break;
+            
         string* str = mq_.front();
         mq_.pop();
 
@@ -170,6 +177,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
     
     while (cs >= max_size_)
     {
+        if (v.empty())
+            break;
+
         string* str = v.back();
         v.pop_back();
 
@@ -194,6 +204,59 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
         mq_.push(*it);
     }
 
+    if (cs < 0)
+        cs = 0;
+
+    res.current_size = cs;
+    return res;
+}
+
+void Queue_Controller::Remove_Newest_Below_Priority::make_filter()
+{
+    filter_ = std::make_shared<fplog::Priority_Filter>("Remove_Newest_Below_Priority");
+    filter_->add_all_below(prio_.c_str(), inclusive_);
+}
+
+Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::process_queue(size_t current_size)
+{
+    Result res;
+    res.current_size = 0;
+    res.removed_count = 0;
+    
+    std::queue<std::string*> mq;
+    
+    int cs = current_size;
+    
+    while (cs >= max_size_)
+    {
+        if (mq_.empty())
+            break;
+
+        string* str = mq_.front();
+
+        if (str)
+        {
+            #ifdef _LINUX
+            int buf_length = strnlen(str->c_str(), buf_sz);
+            #else
+            int buf_length = strnlen_s(str->c_str(), buf_sz);
+            #endif
+
+            fplog::Message msg(*str);
+            if (filter_->should_pass(msg))
+            {
+                cs -= buf_length;
+                res.removed_count++;
+            }
+            else
+                mq.push(str);
+        }
+
+        delete str;
+    }
+
+    mq_ = mq;
+    
     if (cs < 0)
         cs = 0;
 

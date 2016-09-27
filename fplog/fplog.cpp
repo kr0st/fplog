@@ -268,7 +268,9 @@ void Priority_Filter::add_all_above(const char* prio, bool inclusive)
     
     if (it == prio_numeric_.rend())
         return;
-        
+
+    prio_.clear();
+
     if (inclusive)
         prio_.insert(prio);
 
@@ -290,7 +292,9 @@ void Priority_Filter::add_all_below(const char* prio, bool inclusive)
     
     if (it == prio_numeric_.end())
         return;
-        
+
+    prio_.clear();
+
     if (inclusive)
         prio_.insert(prio);
 

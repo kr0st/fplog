@@ -72,7 +72,8 @@ class Queue_Controller
         int mq_size_ = 0;
         size_t max_size_ = 0;
         
-        std::queue<std::string*> mq_;
+        queue<string*> mq_;
+        
         shared_ptr<Algo> algo_;
         shared_ptr<Algo> algo_fallback_;
         
@@ -91,12 +92,31 @@ class Queue_Controller::Remove_Oldest: public Algo
             Result process_queue(size_t current_size);
 };
 
+namespace fplog
+{
+    class Priority_Filter;
+};
+
 class Queue_Controller::Remove_Newest_Below_Priority: public Algo
 {
     public:
         
-            Remove_Newest_Below_Priority(): Algo(qc.mq_, qc.max_size_, qc.mq_size_) {}
+            Remove_Newest_Below_Priority(Queue_Controller& qc, const char* prio, bool inclusive):
+            Algo(qc.mq_, qc.max_size_, qc.mq_size_), prio_(prio), inclusive_(inclusive) { make_filter(); }
+            ~Remove_Newest_Below_Priority();
+            
             Result process_queue(size_t current_size);
+
+
+    private:
+
+            Remove_Newest_Below_Priority();
+            void make_filter();
+
+            std::string prio_;
+            bool inclusive_;
+            
+            std::shared_ptr<fplog::Priority_Filter> filter_;
 };
 
 /*
