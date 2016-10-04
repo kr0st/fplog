@@ -260,7 +260,7 @@ void Priority_Filter::construct_numeric()
 
 void Priority_Filter::add_all_above(const char* prio, bool inclusive)
 {
-    std::vector<std::string>::reverse_iterator it;
+    std::vector<std::string>::reverse_iterator it(prio_numeric_.begin());
     
     for (; it != prio_numeric_.rend(); ++it)
         if (it->find(std::string(prio)) != std::string::npos)
@@ -284,12 +284,12 @@ void Priority_Filter::add_all_above(const char* prio, bool inclusive)
 
 void Priority_Filter::add_all_below(const char* prio, bool inclusive)
 {
-    std::vector<std::string>::iterator it;
-    
+    std::vector<std::string>::iterator it(prio_numeric_.begin());
+
     for (; it != prio_numeric_.end(); ++it)
         if (it->find(std::string(prio)) != std::string::npos)
             break;
-    
+
     if (it == prio_numeric_.end())
         return;
 

@@ -559,7 +559,7 @@ bool batching_test()
 
 bool remove_newest_test()
 {
-    Queue_Controller qc(200, 3);
+    Queue_Controller qc(200, 3000);
     
     std::string msg("Ten bytes.");
     
@@ -605,7 +605,7 @@ bool remove_newest_test()
 
 bool remove_oldest_test()
 {
-    Queue_Controller qc(200, 3);
+    Queue_Controller qc(200, 3000);
 
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest>(qc), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
 
@@ -664,9 +664,183 @@ bool remove_oldest_test()
     return true;
 }
 
+bool remove_newest_below_prio_test()
+{
+    srand(21);
+    Queue_Controller qc(3000, 3000);
+    qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest_Below_Priority>(qc, fplog::Prio::warning), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
+
+    std::string msg("Ten bytes.");
+    
+    for (int i = 0; i < 30; ++i)
+    {
+        int r = rand();
+        r = r % 4;
+        
+        if (r == 0)
+            qc.push(new std::string(FPL_TRACE(msg.c_str()).as_string()));
+            
+        if (r == 1)
+            qc.push(new std::string(FPL_INFO(msg.c_str()).as_string()));
+            
+        if (r == 2)
+            qc.push(new std::string(FPL_WARN(msg.c_str()).as_string()));
+            
+        if (r == 3)
+            qc.push(new std::string(FPL_ERROR(msg.c_str()).as_string()));
+    }
+    
+    std::vector<std::string*> v;
+    
+    while (!qc.empty())
+    {
+        v.push_back(qc.front());
+        qc.pop();
+    }
+    
+    if (v.size() != 30)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    }
+    
+    for (int i = 0; i < 30; ++i)
+    {
+        int r = rand();
+        r = r % 4;
+        
+        std::string* str = 0;
+        
+        if (r == 0)
+            str = new std::string(FPL_TRACE(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 1)
+            str = new std::string(FPL_INFO(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 2)
+            str = new std::string(FPL_WARN(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 3)
+            str = new std::string(FPL_ERROR(msg.c_str()).add("num", i).as_string());
+            
+        qc.push(str);
+            
+        std::cout << *str << std::endl;
+    }
+
+    std::this_thread::sleep_for(chrono::seconds(4));
+    
+    std::cout << "************************" << std::endl;
+    
+    qc.push(new std::string(msg));
+    v.clear();
+    
+    while (!qc.empty())
+    {
+        std::cout << *qc.front() << std::endl;
+        v.push_back(qc.front());
+        qc.pop();
+    }
+
+    /*if (v.size() != 20)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    } */   
+
+    return true;
+}
+
+bool remove_oldest_below_prio_test()
+{
+    srand(13);
+    Queue_Controller qc(3600, 3000);
+    qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest_Below_Priority>(qc, fplog::Prio::warning), Queue_Controller::Algo::Fallback_Options::Remove_Oldest);
+
+    std::string msg("Ten bytes.");
+    
+    for (int i = 0; i < 30; ++i)
+    {
+        int r = rand();
+        r = r % 4;
+        
+        if (r == 0)
+            qc.push(new std::string(FPL_TRACE(msg.c_str()).as_string()));
+            
+        if (r == 1)
+            qc.push(new std::string(FPL_INFO(msg.c_str()).as_string()));
+            
+        if (r == 2)
+            qc.push(new std::string(FPL_WARN(msg.c_str()).as_string()));
+            
+        if (r == 3)
+            qc.push(new std::string(FPL_ERROR(msg.c_str()).as_string()));
+    }
+    
+    std::vector<std::string*> v;
+    
+    while (!qc.empty())
+    {
+        v.push_back(qc.front());
+        qc.pop();
+    }
+    
+    if (v.size() != 30)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    }
+    
+    for (int i = 0; i < 30; ++i)
+    {
+        int r = rand();
+        r = r % 4;
+        
+        std::string* str = 0;
+        
+        if (r == 0)
+            str = new std::string(FPL_TRACE(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 1)
+            str = new std::string(FPL_INFO(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 2)
+            str = new std::string(FPL_WARN(msg.c_str()).add("num", i).as_string());
+            
+        if (r == 3)
+            str = new std::string(FPL_ERROR(msg.c_str()).add("num", i).as_string());
+            
+        qc.push(str);
+            
+        std::cout << *str << std::endl;
+    }
+
+    std::this_thread::sleep_for(chrono::seconds(4));
+    
+    std::cout << "************************" << std::endl;
+    
+    qc.push(new std::string(msg));
+    v.clear();
+    
+    while (!qc.empty())
+    {
+        std::cout << *qc.front() << std::endl;
+        v.push_back(qc.front());
+        qc.pop();
+    }
+
+    /*if (v.size() != 20)
+    {
+        cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
+        return false;
+    } */   
+
+    return true;
+}
+
 bool queue_controller_test()
 {
-    if (!remove_newest_test())
+    /*if (!remove_newest_test())
     {
         cout << "Queue_Controller test of Remove_Newest algo failed!" << std::endl;
         return false;
@@ -676,7 +850,19 @@ bool queue_controller_test()
     {
         cout << "Queue_Controller test of Remove_Oldest algo failed!" << std::endl;
         return false;
-    }    
+    }
+    
+    if (!remove_newest_below_prio_test())
+    {
+        cout << "Queue_Controller test of Remove_Newest_Below_Priority algo failed!" << std::endl;
+        return false;
+    }*/
+
+    if (!remove_oldest_below_prio_test())
+    {
+        cout << "Queue_Controller test of Remove_Oldest_Below_Priority algo failed!" << std::endl;
+        return false;
+    }
 }
 
 void run_all_tests()

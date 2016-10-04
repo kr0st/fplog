@@ -119,7 +119,7 @@ void Queue_Controller::handle_emergency()
     mq_size_ = res.current_size;
 }
 
-Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(size_t current_size)
+Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(size_t current_size)
 {
     Result res;
     res.current_size = 0;
@@ -158,7 +158,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
     return res;
 }
 
-Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(size_t current_size)
+Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(size_t current_size)
 {
     Result res;
     res.current_size = 0;
@@ -173,7 +173,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
         mq_.pop();
     }
 
-    std::reverse(v.begin(), v.end());
+    //std::reverse(v.begin(), v.end());
     
     while (cs >= max_size_)
     {
@@ -211,6 +211,62 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
     return res;
 }
 
+void Queue_Controller::Remove_Oldest_Below_Priority::make_filter()
+{
+    filter_ = std::make_shared<fplog::Priority_Filter>("Remove_Oldest_Below_Priority");
+    filter_->add_all_below(prio_.c_str(), inclusive_);
+}
+
+Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest_Below_Priority::process_queue(size_t current_size)
+{
+    Result res;
+    res.current_size = 0;
+    res.removed_count = 0;
+    
+    std::queue<std::string*> mq;
+    
+    int cs = current_size;
+    
+    while (!mq_.empty())
+    {
+        string* str = mq_.front();
+
+        if (str)
+        {
+            if (cs >= max_size_)
+            {
+                #ifdef _LINUX
+                int buf_length = strnlen(str->c_str(), buf_sz);
+                #else
+                int buf_length = strnlen_s(str->c_str(), buf_sz);
+                #endif
+
+                fplog::Message msg(*str);
+                if (filter_->should_pass(msg))
+                {
+                    cs -= buf_length;
+                    res.removed_count++;
+                    delete str;
+                }
+                else
+                    mq.push(str);
+            }
+            else
+                mq.push(str);
+        }
+        
+        mq_.pop();
+    }
+
+    mq_ = mq;
+    
+    if (cs < 0)
+        cs = 0;
+
+    res.current_size = cs;
+    return res;
+}
+
 void Queue_Controller::Remove_Newest_Below_Priority::make_filter()
 {
     filter_ = std::make_shared<fplog::Priority_Filter>("Remove_Newest_Below_Priority");
@@ -223,40 +279,66 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
     res.current_size = 0;
     res.removed_count = 0;
     
-    std::queue<std::string*> mq;
+    std::vector<std::string*> v;
+    
+    for (std::string* str = 0; !mq_.empty(); mq_.pop())
+    {
+        str = mq_.front();
+        if (!str)
+            continue;
+        v.push_back(str);
+    }
+        
+    for (std::vector<std::string*>::reverse_iterator it(v.rbegin()); it != v.rend(); ++it)
+        mq_.push(*it);
+
+    {
+        std::vector<std::string*> empty;
+        v.swap(empty);
+    }
     
     int cs = current_size;
     
-    while (cs >= max_size_)
+    while (!mq_.empty())
     {
-        if (mq_.empty())
-            break;
-
         string* str = mq_.front();
 
         if (str)
         {
-            #ifdef _LINUX
-            int buf_length = strnlen(str->c_str(), buf_sz);
-            #else
-            int buf_length = strnlen_s(str->c_str(), buf_sz);
-            #endif
 
-            fplog::Message msg(*str);
-            if (filter_->should_pass(msg))
+            if (cs >= max_size_)
             {
-                cs -= buf_length;
-                res.removed_count++;
+                #ifdef _LINUX
+                int buf_length = strnlen(str->c_str(), buf_sz);
+                #else
+                int buf_length = strnlen_s(str->c_str(), buf_sz);
+                #endif
+
+                fplog::Message msg(*str);
+                if (filter_->should_pass(msg))
+                {
+                    cs -= buf_length;
+                    res.removed_count++;
+                    delete str;
+                }
+                else
+                    v.push_back(str);
             }
             else
-                mq.push(str);
+                v.push_back(str);
         }
 
-        delete str;
+        mq_.pop();
     }
 
-    mq_ = mq;
-    
+    for (std::vector<std::string*>::reverse_iterator it(v.rbegin()); it != v.rend(); ++it)
+        mq_.push(*it);
+
+    {
+        std::vector<std::string*> empty;
+        v.swap(empty);
+    }
+
     if (cs < 0)
         cs = 0;
 
