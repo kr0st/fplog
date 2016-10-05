@@ -560,7 +560,8 @@ bool batching_test()
 bool remove_newest_test()
 {
     Queue_Controller qc(200, 3000);
-    
+    qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest>(qc), Queue_Controller::Algo::Fallback_Options::Remove_Oldest);
+
     std::string msg("Ten bytes.");
     
     for (int i = 0; i < 30; ++i)
@@ -579,8 +580,11 @@ bool remove_newest_test()
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
     }
+
+    qc.push(new std::string("The oldest one"));
+    qc.push(new std::string("The oldest two"));
     
-    for (int i = 0; i < 30; ++i)
+    for (int i = 0; i < 28; ++i)
         qc.push(new std::string(msg));
         
     std::this_thread::sleep_for(chrono::seconds(4));
@@ -591,6 +595,7 @@ bool remove_newest_test()
     while (!qc.empty())
     {
         v.push_back(qc.front());
+        //cout << *qc.front() << std::endl;
         qc.pop();
     }
 
@@ -598,7 +603,20 @@ bool remove_newest_test()
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
-    }    
+    }
+
+    bool correct_found = false;    
+    for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
+    {
+        if ((**it).find("The oldest one") != string::npos)
+            correct_found = true;
+    }
+
+    if (!correct_found)
+    {
+        cout << "Remove_Newest: unable to locate expected string" << endl;
+        return false;
+    }
 
     return true;
 }
@@ -633,6 +651,7 @@ bool remove_oldest_test()
     while (!qc.empty())
     {
         v.push_back(qc.front());
+        //cout << *qc.front() << std::endl;
         qc.pop();
     }
 
@@ -667,7 +686,7 @@ bool remove_oldest_test()
 bool remove_newest_below_prio_test()
 {
     srand(21);
-    Queue_Controller qc(3000, 3000);
+    Queue_Controller qc(3600, 3000);
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest_Below_Priority>(qc, fplog::Prio::warning), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
 
     std::string msg("Ten bytes.");
@@ -725,29 +744,48 @@ bool remove_newest_below_prio_test()
             
         qc.push(str);
             
-        std::cout << *str << std::endl;
+        //std::cout << *str << std::endl;
     }
 
     std::this_thread::sleep_for(chrono::seconds(4));
     
-    std::cout << "************************" << std::endl;
+    //std::cout << "************************" << std::endl;
     
     qc.push(new std::string(msg));
     v.clear();
     
     while (!qc.empty())
     {
-        std::cout << *qc.front() << std::endl;
+        //std::cout << *qc.front() << std::endl;
         v.push_back(qc.front());
         qc.pop();
     }
 
-    /*if (v.size() != 20)
+    if (v.size() != 20)
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
-    } */   
+    }
 
+    bool correct_found = false;    
+    for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
+    {
+        if ((**it).find("\"num\":10") != string::npos)
+        {
+            cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
+            return false;
+        }
+
+        if ((**it).find("\"num\":0") != string::npos)
+            correct_found = true;
+    }
+
+    if (!correct_found)
+    {
+        cout << "Remove_Oldest_Below_Priority: unable to locate expected string" << endl;
+        return false;
+    }
+    
     return true;
 }
 
@@ -812,39 +850,58 @@ bool remove_oldest_below_prio_test()
             
         qc.push(str);
             
-        std::cout << *str << std::endl;
+        //std::cout << *str << std::endl;
     }
 
     std::this_thread::sleep_for(chrono::seconds(4));
     
-    std::cout << "************************" << std::endl;
+    //std::cout << "************************" << std::endl;
     
     qc.push(new std::string(msg));
     v.clear();
     
     while (!qc.empty())
     {
-        std::cout << *qc.front() << std::endl;
+        //std::cout << *qc.front() << std::endl;
         v.push_back(qc.front());
         qc.pop();
     }
 
-    /*if (v.size() != 20)
+    if (v.size() != 20)
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
-    } */   
+    }
 
+    bool correct_found = false;    
+    for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
+    {
+        if ((**it).find("\"num\":4") != string::npos)
+        {
+            cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
+            return false;
+        }
+
+        if ((**it).find("\"num\":25") != string::npos)
+            correct_found = true;
+    }
+
+    if (!correct_found)
+    {
+        cout << "Remove_Oldest_Below_Priority: unable to locate expected string" << endl;
+        return false;
+    }
+    
     return true;
 }
 
 bool queue_controller_test()
 {
-    /*if (!remove_newest_test())
+    if (!remove_newest_test())
     {
         cout << "Queue_Controller test of Remove_Newest algo failed!" << std::endl;
         return false;
-    }    
+    }
 
     if (!remove_oldest_test())
     {
@@ -856,7 +913,7 @@ bool queue_controller_test()
     {
         cout << "Queue_Controller test of Remove_Newest_Below_Priority algo failed!" << std::endl;
         return false;
-    }*/
+    }
 
     if (!remove_oldest_below_prio_test())
     {

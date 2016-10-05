@@ -16,10 +16,9 @@ max_size_(size_limit),
 emergency_time_trigger_(timeout),
 timer_start_(chrono::milliseconds(0))
 {
-    algo_ = make_shared<Remove_Newest>(*this);
-    
-    algo_fallback_ = make_shared<Remove_Newest>(*this);
-    //algo_fallback is filler until someone changes the main algo:
+    algo_ = make_shared<Remove_Oldest_Below_Priority>(*this, fplog::Prio::warning);
+
+    algo_fallback_ = make_shared<Remove_Oldest>(*this);
     //Remove_Newest and Remove_Oldest could not fail to remove items in normal conditions,
     //however other algos could fail to remove items if conditions of removal are not fully met.
 }
@@ -173,8 +172,6 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
         mq_.pop();
     }
 
-    //std::reverse(v.begin(), v.end());
-    
     while (cs >= max_size_)
     {
         if (v.empty())
@@ -288,7 +285,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
             continue;
         v.push_back(str);
     }
-        
+
     for (std::vector<std::string*>::reverse_iterator it(v.rbegin()); it != v.rend(); ++it)
         mq_.push(*it);
 
@@ -296,7 +293,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
         std::vector<std::string*> empty;
         v.swap(empty);
     }
-    
+
     int cs = current_size;
     
     while (!mq_.empty())
