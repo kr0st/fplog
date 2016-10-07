@@ -15,6 +15,7 @@
 
 #include <fplog_exceptions.h>
 #include <fplog.h>
+#include <fplogd/Queue_Controller.h>
 
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -455,7 +456,7 @@ class Impl
         }
 
         std::recursive_mutex mutex_;
-        std::queue<std::string*> mq_;
+        Queue_Controller mq_;
 
         std::thread overload_checker_;
         std::thread mq_reader_;

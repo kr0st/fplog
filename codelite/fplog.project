@@ -32,12 +32,18 @@
     <File Name="../fplog/fplog.cpp"/>
     <File Name="../fplog/shared_sequence_number.cpp"/>
     <File Name="../common/utils.cpp"/>
+    <File Name="../fplogd/Queue_Controller.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../fplog/fplog.h"/>
     <File Name="../fplog/shared_sequence_number.h"/>
     <File Name="../common/utils.h"/>
+    <File Name="../fplogd/Queue_Controller.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -50,12 +56,13 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11;-fpermissive;-m32" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
+        <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
@@ -115,12 +122,13 @@
     </Configuration>
     <Configuration Name="Release" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11;-fpermissive;-m32" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
+        <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
@@ -179,8 +187,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
 </CodeLite_Project>

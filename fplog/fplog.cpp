@@ -11,6 +11,7 @@
 #include <mutex>
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
+#include <../fplogd/Queue_Controller.h>
 
 namespace fplog
 {
@@ -619,7 +620,7 @@ class FPLOG_API Fplog_Impl
 
         std::string appname_;
 
-        std::queue<std::string*> mq_;
+        Queue_Controller mq_;
         std::thread* mq_reader_;
 
         struct Logger_Settings
