@@ -353,3 +353,107 @@ void Queue_Controller::change_algo(shared_ptr<Algo> algo, Algo::Fallback_Options
     if (fallback_algo == Algo::Fallback_Options::Remove_Oldest)
         algo_fallback_ = make_shared<Remove_Oldest>(*this);
 }
+
+void Queue_Controller::change_params(size_t size_limit, size_t timeout)
+{
+    max_size_ = size_limit;
+    emergency_time_trigger_ = timeout;
+}
+
+shared_ptr<Queue_Controller::Algo> Queue_Controller::make_algo(const std::string& name, const std::string& param)
+{
+    shared_ptr<Queue_Controller::Algo> empty;
+    std::map<std::string, shared_ptr<Queue_Controller::Algo>> algos;
+
+    if (!param.empty())
+    {
+        algos["remove_oldest_below_prio"] = make_shared<Remove_Oldest_Below_Priority>(*this, param.c_str());
+        algos["remove_newest_below_prio"] = make_shared<Remove_Newest_Below_Priority>(*this, param.c_str());
+    }
+
+    algos["remove_oldest"] = make_shared<Remove_Oldest>(*this);
+    algos["remove_newest"] = make_shared<Remove_Newest>(*this);
+
+    std::map<std::string, shared_ptr<Queue_Controller::Algo>>::iterator it(algos.find(name));
+    if (it != algos.end())
+        return it->second;
+
+    return empty;
+}
+
+void Queue_Controller::apply_config(const fplog::Transport_Interface::Params& params)
+{
+    std::string emergency_prio;
+    std::string emergency_algo;
+    std::string emergency_fallback_algo;
+    
+    std::vector<std::string> prios;
+    
+    prios.push_back(fplog::Prio::emergency);
+    prios.push_back(fplog::Prio::alert);
+    prios.push_back(fplog::Prio::critical);
+    prios.push_back(fplog::Prio::error);
+    prios.push_back(fplog::Prio::warning);
+    prios.push_back(fplog::Prio::notice);
+    prios.push_back(fplog::Prio::info);
+    prios.push_back(fplog::Prio::debug);
+    
+    for (auto param : params)
+    {
+        try
+        {
+            if (generic_util::find_str_no_case(param.first, "max_queue_size"))
+            {
+                max_size_ = std::stoul(param.second);
+            }
+
+            if (generic_util::find_str_no_case(param.first, "emergency_timeout"))
+            {
+                emergency_time_trigger_ = std::stoul(param.second);
+            }
+
+            if (generic_util::find_str_no_case(param.first, "emergency_prio"))
+            {
+                emergency_prio = param.second;
+                std::vector<std::string>::iterator it(std::find(prios.begin(), prios.end(), emergency_prio));
+                if (it == prios.end())
+                    emergency_prio.clear();
+            }
+
+            if (generic_util::find_str_no_case(param.first, "emergency_fallback_algo"))
+            {
+                emergency_fallback_algo = param.second;
+                
+                if (generic_util::find_str_no_case(emergency_fallback_algo, "remove_oldest") == std::string::npos)
+                    if (generic_util::find_str_no_case(emergency_fallback_algo, "remove_newest") == std::string::npos)
+                        emergency_fallback_algo.clear();
+            }
+
+            if (generic_util::find_str_no_case(param.first, "emergency_algo"))
+            {
+                emergency_algo = param.second;
+
+                if (emergency_prio.empty())
+                {
+                    if (generic_util::find_str_no_case(emergency_algo, "remove_oldest") == std::string::npos)
+                        if (generic_util::find_str_no_case(emergency_algo, "remove_newest") == std::string::npos)
+                            emergency_algo.clear();
+                }
+            }
+        }
+        catch (std::exception&)
+        {
+            continue;
+        }
+    }
+
+    if (!emergency_fallback_algo.empty())
+    {
+        algo_fallback_ = make_algo(emergency_fallback_algo, emergency_prio);
+    }
+
+    if (!emergency_algo.empty())
+    {
+        algo_ = make_algo(emergency_algo, emergency_prio);
+    }
+}

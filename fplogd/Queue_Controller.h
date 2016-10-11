@@ -2,6 +2,7 @@
 #include <queue>
 #include <memory>
 #include <chrono>
+#include <fplog_transport.h>
 
 using namespace std::chrono;
 using namespace std;
@@ -65,23 +66,34 @@ class Queue_Controller
         void push(string *str);
         
         void change_algo(shared_ptr<Algo> algo, Algo::Fallback_Options::Type fallback_algo);
+        void change_params(size_t size_limit, size_t timeout);
+        
+        //configuration params as follows:
+        //max_queue_size = [any positive integer]
+        //emergency_timeout = [any positive integer]
+        //emergency_algo = one of { remove_oldest, remove_newest, remove_oldest_below_prio, remove_newest_below_prio }
+        //emergency_fallback_algo = one of { remove_oldest, remove_newest }
+        //emergency_prio = use one of the fplog::Prio constants //only needed if algo is based on prio
+        void apply_config(const fplog::Transport_Interface::Params& config);
 
 
     private:
-    
+
         int mq_size_ = 0;
         size_t max_size_ = 0;
-        
+
         queue<string*> mq_;
-        
+
         shared_ptr<Algo> algo_;
         shared_ptr<Algo> algo_fallback_;
-        
+
         size_t emergency_time_trigger_ = 0;
         time_point<system_clock, system_clock::duration> timer_start_;
-        
+
         bool state_of_emergency();
         void handle_emergency();
+        
+        shared_ptr<Algo> make_algo(const std::string& name, const std::string& param);
 };
 
 
