@@ -93,9 +93,35 @@ static std::string get_home_dir()
 #endif
 }
 
+static char* g_config_file_misc_section_name = "misc";
+
 using namespace boost::interprocess;
 
 namespace fpcollect {
+
+fplog::Transport_Interface::Params get_misc_config()
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+    fplog::Transport_Interface::Params res;
+
+    std::string home(get_home_dir());
+    read_ini(home + g_config_file_name, pt);
+
+    for (auto& section: pt)
+    {
+        if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
+            continue;
+
+        for (auto& key: section.second)
+        {
+            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+            res.insert(param);
+        }
+    }
+
+    return res;
+}
 
 fplog::Transport_Interface::Params get_log_storage_config()
 {
@@ -219,6 +245,9 @@ class Impl
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             should_stop_ = false;
+
+            fplog::Transport_Interface::Params misc(get_misc_config());
+            mq_.apply_config(misc);
 
             std::vector<fplog::Transport_Interface::Params> params(get_connections());
             for (auto param : params)

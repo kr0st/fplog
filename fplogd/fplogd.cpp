@@ -403,6 +403,9 @@ class Impl
             batch_size_ = 30;
 
             fplog::Transport_Interface::Params misc(get_misc_config());
+
+            mq_.apply_config(misc);
+
             for (auto& param : misc)
             {
                 if (generic_util::find_str_no_case(param.first, "batch_size"))

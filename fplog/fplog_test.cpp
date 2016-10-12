@@ -900,15 +900,15 @@ bool controller_apply_config_test()
     srand(21);
     Queue_Controller qc(1, 1);
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest>(qc), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
-    
+
     fplog::Transport_Interface::Params params;
-    
+
     params["max_queue_size"] = "3600";
     params["emergency_timeout"] = "3000";
     params["emergency_algo"] = "remove_newest_below_prio";
     params["emergency_fallback_algo"] = "remove_newest";
     params["emergency_prio"] = std::string(fplog::Prio::warning);
-    
+
     qc.apply_config(params);
 
     std::string msg("Ten bytes.");

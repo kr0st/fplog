@@ -605,8 +605,11 @@ class FPLOG_API Fplog_Impl
 
             return 0;
         }
+
         void set_test_mode(bool mode);
         void wait_until_queues_are_empty();
+        void change_config(const fplog::Transport_Interface::Params& config);
+
 
     private:
 
@@ -800,6 +803,16 @@ Filter_Base* find_filter(const char* filter_id)
         return 0;
 
     return g_fplog_impl->find_filter(filter_id);
+}
+
+void change_config(const fplog::Transport_Interface::Params& config)
+{
+    std::lock_guard<std::recursive_mutex> lock(g_api_mutex);
+
+    if (!g_fplog_impl)
+        return;
+
+    return g_fplog_impl->change_config(config);
 }
 
 class Lua_Filter::Lua_Filter_Impl
@@ -1042,6 +1055,12 @@ FPLOG_API void Fplog_Impl::wait_until_queues_are_empty()
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
+}
+
+FPLOG_API void Fplog_Impl::change_config(const fplog::Transport_Interface::Params& config)
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    mq_.apply_config(config);
 }
 
 };

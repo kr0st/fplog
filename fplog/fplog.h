@@ -387,4 +387,6 @@ FPLOG_API const char* get_facility();
 //Should be used from any thread that opened logger, calling from other threads will have no effect.
 FPLOG_API void write(const Message& msg);
 
+FPLOG_API void change_config(const fplog::Transport_Interface::Params& config);
+
 };
