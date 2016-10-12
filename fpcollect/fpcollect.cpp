@@ -15,7 +15,7 @@
 
 #include <fplog_exceptions.h>
 #include <fplog.h>
-#include <fplogd/Queue_Controller.h>
+#include <fplog/Queue_Controller.h>
 
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>

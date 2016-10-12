@@ -11,7 +11,7 @@
 #include <mutex>
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
-#include <../fplogd/Queue_Controller.h>
+#include "Queue_Controller.h"
 
 namespace fplog
 {

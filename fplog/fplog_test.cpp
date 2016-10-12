@@ -38,7 +38,7 @@ int _getch() {
 //#include <test_util.h>
 #include <spipc/UDT_Transport.h>
 #include <spipc/socket_transport.h>
-#include <fplogd/Queue_Controller.h>
+#include "Queue_Controller.h"
 
 using namespace std;
 
@@ -1204,13 +1204,13 @@ bool socket_test()
 
 int main()
 {
-    fplog::testing::queue_controller_test();
+    //fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
     
-    //fplog::testing::performance_test();
+    fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

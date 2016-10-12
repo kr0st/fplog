@@ -31,12 +31,12 @@
   <VirtualDirectory Name="src">
     <File Name="../fplogd/fplogd.cpp"/>
     <File Name="../fplogd/Transport_Factory.cpp"/>
-    <File Name="../fplogd/Queue_Controller.cpp"/>
+    <File Name="../fplog/Queue_Controller.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../fplogd/fplogd.h"/>
     <File Name="../fplogd/Transport_Factory.h"/>
-    <File Name="../fplogd/Queue_Controller.h"/>
+    <File Name="../fplog/Queue_Controller.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="sprot"/>
