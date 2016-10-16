@@ -39,6 +39,7 @@ int _getch() {
 #include <spipc/UDT_Transport.h>
 #include <spipc/socket_transport.h>
 #include "Queue_Controller.h"
+#include <random>
 
 using namespace std;
 
@@ -685,7 +686,9 @@ bool remove_oldest_test()
 
 bool remove_newest_below_prio_test()
 {
-    srand(21);
+    std::minstd_rand rng;
+    rng.seed(21);
+
     Queue_Controller qc(3600, 3000);
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest_Below_Priority>(qc, fplog::Prio::warning), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
 
@@ -693,7 +696,7 @@ bool remove_newest_below_prio_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         if (r == 0)
@@ -725,7 +728,7 @@ bool remove_newest_below_prio_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         std::string* str = 0;
@@ -770,13 +773,13 @@ bool remove_newest_below_prio_test()
     bool correct_found = false;    
     for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
     {
-        if ((**it).find("\"num\":10") != string::npos)
+        if ((**it).find("\"num\":26") != string::npos)
         {
             cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
             return false;
         }
 
-        if ((**it).find("\"num\":0") != string::npos)
+        if ((**it).find("\"num\":2") != string::npos)
             correct_found = true;
     }
 
@@ -791,7 +794,9 @@ bool remove_newest_below_prio_test()
 
 bool remove_oldest_below_prio_test()
 {
-    srand(13);
+    std::minstd_rand rng;
+    rng.seed(13);
+
     Queue_Controller qc(3600, 3000);
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Oldest_Below_Priority>(qc, fplog::Prio::warning), Queue_Controller::Algo::Fallback_Options::Remove_Oldest);
 
@@ -799,7 +804,7 @@ bool remove_oldest_below_prio_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         if (r == 0)
@@ -831,7 +836,7 @@ bool remove_oldest_below_prio_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         std::string* str = 0;
@@ -882,7 +887,7 @@ bool remove_oldest_below_prio_test()
             return false;
         }
 
-        if ((**it).find("\"num\":25") != string::npos)
+        if ((**it).find("\"num\":26") != string::npos)
             correct_found = true;
     }
 
@@ -897,7 +902,9 @@ bool remove_oldest_below_prio_test()
 
 bool controller_apply_config_test()
 {
-    srand(21);
+    std::minstd_rand rng;
+    rng.seed(21);
+
     Queue_Controller qc(1, 1);
     qc.change_algo(std::make_shared<Queue_Controller::Remove_Newest>(qc), Queue_Controller::Algo::Fallback_Options::Remove_Newest);
 
@@ -915,7 +922,7 @@ bool controller_apply_config_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         if (r == 0)
@@ -947,7 +954,7 @@ bool controller_apply_config_test()
     
     for (int i = 0; i < 30; ++i)
     {
-        int r = rand();
+        int r = rng();
         r = r % 4;
         
         std::string* str = 0;
@@ -992,13 +999,13 @@ bool controller_apply_config_test()
     bool correct_found = false;    
     for (std::vector<std::string*>::iterator it(v.begin()); it != v.end(); ++it)
     {
-        if ((**it).find("\"num\":10") != string::npos)
+        if ((**it).find("\"num\":26") != string::npos)
         {
             cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
             return false;
         }
 
-        if ((**it).find("\"num\":0") != string::npos)
+        if ((**it).find("\"num\":2") != string::npos)
             correct_found = true;
     }
 
@@ -1204,13 +1211,13 @@ bool socket_test()
 
 int main()
 {
-    //fplog::testing::queue_controller_test();
+    fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
     
-    fplog::testing::performance_test();
+    //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

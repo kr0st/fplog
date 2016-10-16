@@ -4,10 +4,28 @@
 #include <chrono>
 #include <fplog_transport.h>
 
+#ifdef FPLOG_EXPORT
+
+#ifdef _LINUX
+#define FPLOG_API __attribute__ ((visibility("default")))
+#else
+#define FPLOG_API __declspec(dllexport)
+#endif
+
+#else
+
+#ifdef _LINUX
+#define FPLOG_API 
+#else
+#define FPLOG_API __declspec(dllimport)
+#endif
+
+#endif
+
 using namespace std::chrono;
 using namespace std;
 
-class Queue_Controller
+class FPLOG_API Queue_Controller
 {
     public: 
 
@@ -46,7 +64,7 @@ class Queue_Controller
                 int current_size_;
         };
 
-        class Remove_Oldest: public Algo
+        class FPLOG_API Remove_Oldest: public Algo
         {
             public:
                     
@@ -54,9 +72,9 @@ class Queue_Controller
                     Result process_queue(size_t current_size);
         };        
 
-        class Remove_Newest;
-        class Remove_Newest_Below_Priority;
-        class Remove_Oldest_Below_Priority;
+        class FPLOG_API Remove_Newest;
+        class FPLOG_API Remove_Newest_Below_Priority;
+        class FPLOG_API Remove_Oldest_Below_Priority;
 
         Queue_Controller(size_t size_limit = 20000000, size_t timeout = 30000);
 
@@ -65,7 +83,7 @@ class Queue_Controller
         void pop();
         void push(string *str);
         
-        void change_algo(shared_ptr<Algo> algo, Algo::Fallback_Options::Type fallback_algo);
+        void change_algo(std::shared_ptr<Algo> algo, Algo::Fallback_Options::Type fallback_algo);
         void change_params(size_t size_limit, size_t timeout);
         
         //configuration params as follows:
@@ -84,8 +102,8 @@ class Queue_Controller
 
         queue<string*> mq_;
 
-        shared_ptr<Algo> algo_;
-        shared_ptr<Algo> algo_fallback_;
+        std::shared_ptr<Algo> algo_;
+        std::shared_ptr<Algo> algo_fallback_;
 
         size_t emergency_time_trigger_ = 0;
         time_point<system_clock, system_clock::duration> timer_start_;
@@ -93,7 +111,7 @@ class Queue_Controller
         bool state_of_emergency();
         void handle_emergency();
         
-        shared_ptr<Algo> make_algo(const std::string& name, const std::string& param);
+        std::shared_ptr<Algo> make_algo(const std::string& name, const std::string& param);
 };
 
 
@@ -153,4 +171,3 @@ class Queue_Controller::Remove_Oldest_Below_Priority: public Algo
             
             std::shared_ptr<fplog::Priority_Filter> filter_;
 };
-

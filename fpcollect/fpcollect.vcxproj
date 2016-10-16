@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog\</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage;$(OutDir)..\mongo\lib;</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog\</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage;$(OutDir)..\mongo\lib;</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>$(ProjectName)</TargetName>

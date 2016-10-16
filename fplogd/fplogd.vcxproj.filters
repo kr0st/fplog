@@ -30,9 +30,6 @@
     <ClInclude Include="..\common\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Queue_Controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fplogd.cpp">
@@ -42,9 +39,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\common\utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Queue_Controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
