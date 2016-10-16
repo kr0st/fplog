@@ -13,6 +13,6 @@ Now just launch Visual Studio 2015 and build the *fplog* solution, everything sh
 In case there were errors, you’re on your own, pal, I’ve tried to make dependency building script as transparent as possible, read ‘make_dep.bat’ and try to understand what went wrong.
 
 ###### Linux
-CodeLite IDE is used for building now, however there is no automatic building of dependencies now. If you would like to build dependencies manually then you would need same libraries and their versions as in Windows build, take a look at ‘make_dep.bat’, build everything and replicate the resulting folder structure as on Windows.
+CodeLite IDE is used for building the solution, however there is no automatic building of dependencies yet. If you would like to build dependencies manually then you would need same libraries and their versions as in Windows build, take a look at ‘make_dep.bat’, build everything and replicate the resulting folder structure as on Windows.
 
 I will introduce automatic dependency building on Linux too, just not there yet.
