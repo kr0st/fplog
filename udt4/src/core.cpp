@@ -690,7 +690,7 @@ void CUDT::connect(const sockaddr* serv_addr)
       throw e;
 }
 
-int CUDT::connect(const CPacket& response) throw ()
+int CUDT::connect(const CPacket& response)
 {
    // this is the 2nd half of a connection request. If the connection is setup successfully this returns 0.
    // returning -1 means there is an error.
@@ -1658,7 +1658,7 @@ void CUDT::CCUpdate()
       return;
    const double minSP = 1000000.0 / (double(m_llMaxBW) / m_iMSS) * m_ullCPUFrequency;
    if (m_ullInterval < minSP)
-       m_ullInterval = minSP;
+       m_ullInterval = (unsigned long long)minSP;
 }
 
 void CUDT::initSynch()

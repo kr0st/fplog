@@ -503,7 +503,7 @@ class Console_Output: public fplog::Transport_Interface
         virtual size_t write(const void* buf, size_t buf_size, size_t timeout = infinite_wait)
         {
             if (buf && (buf_size > 0))
-                printf("%s\n", buf);
+                printf("%s\n", (const char*)buf);
             return buf_size;
         }
 };

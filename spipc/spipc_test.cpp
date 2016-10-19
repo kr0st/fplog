@@ -225,11 +225,6 @@ void writer_ipc_thread(const fplog::UID uid)
         }
         catch(fplog::exceptions::Generic_Exception& e)
         {
-            printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
-            goto retry_write;
-        }
-        catch(sprot::exceptions::Exception& e)
-        {
             printf("EXCEPTION in writer_ipc_thread: %s\n", e.what().c_str());
             goto retry_write;
         }
@@ -280,11 +275,6 @@ void reader_ipc_thread(const fplog::UID uid)
             ipc.read(read_buf, sizeof(read_buf), 3000);
         }
         catch(fplog::exceptions::Generic_Exception& e)
-        {
-            printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
-            goto retry_read;
-        }
-        catch(sprot::exceptions::Exception& e)
         {
             printf("EXCEPTION in reader_ipc_thread: %s\n", e.what().c_str());
             goto retry_read;
@@ -435,7 +425,7 @@ retry:
         worker.join();
         return false;
     }
-    catch(fplog::exceptions::Buffer_Overflow& e)
+    catch(fplog::exceptions::Buffer_Overflow&)
     {
         retries++;
         delete read_buf;

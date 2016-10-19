@@ -541,7 +541,7 @@ class FPLOG_API Fplog_Impl
                                 protocol_->write(str.c_str(), str.size(), 400);
                                 break;
                             }
-                            catch(fplog::exceptions::Generic_Exception& e)
+                            catch(fplog::exceptions::Generic_Exception&)
                             {
                                 send_retries--;
                                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -862,8 +862,8 @@ class Lua_Filter::Lua_Filter_Impl
             lua_getglobal(lua_state_, "filter_result");
             if (lua_isboolean(lua_state_, -1))
             {
-                bool res = lua_toboolean(lua_state_, -1);
-                return res;
+                int res = lua_toboolean(lua_state_, -1);
+                return (bool)res;
             }
 
             return false;
@@ -971,7 +971,7 @@ class Chai_Filter::Chai_Filter_Impl
             {
                 chai_->eval(full_script);
             }
-            catch (chaiscript::exception::eval_error& e)
+            catch (chaiscript::exception::eval_error&)
             {
                 std_format = "var log_msg=\"%s\";\nvar fplog_message = from_json(log_msg);\n";
                 goto retry_parsing;

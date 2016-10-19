@@ -379,7 +379,7 @@ namespace sprot
                 bytes_left = buf_size - copied;
             }
         }
-        catch(fplog::exceptions::Generic_Exception& e)
+        catch(fplog::exceptions::Generic_Exception&)
         {
             if (full_retries == 0)
                 THROW(fplog::exceptions::Write_Failed);
@@ -416,7 +416,7 @@ namespace sprot
         memcpy(fptr, &frame.sequence, sizeof(frame.sequence));
         fptr += sizeof(frame.sequence);
 
-        unsigned short data_sz = frame.data.size();
+        unsigned short data_sz = (unsigned short)frame.data.size();
         if (data_sz > 0)
         {
             memcpy(fptr, &data_sz, sizeof(data_sz));
@@ -548,7 +548,7 @@ namespace sprot
                     frame_num_ = 0;
                     break;
                 }
-                catch (fplog::exceptions::Generic_Exception& e)
+                catch (fplog::exceptions::Generic_Exception&)
                 {
                     if (retry_count == 0)
                     {
@@ -581,7 +581,7 @@ namespace sprot
         memcpy(fptr, &frame.sequence, sizeof(frame.sequence));
         fptr += sizeof(frame.sequence);
 
-        unsigned short data_sz = frame.data.size();
+        unsigned short data_sz = (unsigned short)frame.data.size();
         if (data_sz > 0)
         {
             memcpy(fptr, &data_sz, sizeof(data_sz));
@@ -731,10 +731,11 @@ namespace vsprot
 	size_t Protocol::internal_read(size_t timeout)
 	{
         char* temp_buf = new char[MTU_];
+        size_t bytes_read = 0;
 
         try
         {
-            size_t bytes_read = transport_->read(temp_buf, MTU_, timeout);
+            bytes_read = transport_->read(temp_buf, MTU_, timeout);
             
             if (bytes_read > 0)
             {
@@ -755,6 +756,7 @@ namespace vsprot
         }
 		
 		delete [] temp_buf;
+        return bytes_read;
 	}
 	
 	size_t Protocol::read(void* buf, size_t buf_size, size_t timeout)

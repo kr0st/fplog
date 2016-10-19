@@ -660,14 +660,14 @@ class Impl
                     if (should_stop_)
                         return;
 
-                    while (!mq_.empty() && (batch.size() < batch_size_) && !send_batch)
+                    while (!mq_.empty() && ((int)(batch.size()) < batch_size_) && !send_batch)
                     {
                         str = mq_.front();
                         
                         //This is needed for sending larger messages - large messages are sent independently,
                         //separate from the batch, i.e. large message cannot be part of the batch along with other messages
                         //because in that case batch byte size could become too great to be optimal for sending over any transport.
-                        if (str->length() >= (batch_size_ * 300 / 2))
+                        if ((int)(str->length()) >= (batch_size_ * 300 / 2))
                         {
                             if (batch.size() == 0)
                             {
@@ -688,7 +688,7 @@ class Impl
                     }
                 }
 
-                if ((batch.size() < batch_size_) && !send_batch)
+                if (((int)(batch.size()) < batch_size_) && !send_batch)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     
@@ -735,7 +735,7 @@ class Impl
                             size_t timeout = 400;
                             size_t str_len = str->size();
 
-                            protocol_->write(str->c_str(), str_len + 1, timeout * (1 + str_len / 3096)) * (6 - retries);
+                            protocol_->write(str->c_str(), str_len + 1, timeout * (1 + str_len / 3096) * (6 - retries));
                         }
                         else
                         {
@@ -765,7 +765,7 @@ class Impl
                                     THROW(fplog::exceptions::Transport_Missing);
                                 }
                             }
-                            catch (fplog::exceptions::Generic_Exception& e)
+                            catch (fplog::exceptions::Generic_Exception&)
                             {
                                 if (retries_error <= 0)
                                 {

@@ -448,7 +448,7 @@ unsigned multi_threaded_filter_performance_test(perf_test_thread_func thread_fun
     
     auto duration = duration_cast<seconds>(t2 - t1).count();
 
-    return duration;
+    return (unsigned int)duration;
 }
 
 void filter_perft_test_summary()
@@ -1049,6 +1049,8 @@ bool queue_controller_test()
         cout << "Queue_Controller::apply_config test failed!" << std::endl;
         return false;
     }
+
+    return true;
 }
 
 void run_all_tests()

@@ -87,7 +87,7 @@ bool Queue_Controller::state_of_emergency()
             throw std::out_of_range("emergency timout!");
     };
 
-    if (mq_size_ > max_size_)
+    if (mq_size_ > (int)max_size_)
     {
         if (timer_start_ == time_point<system_clock, system_clock::duration>(chrono::milliseconds(0)))
             timer_start_ = system_clock::now();
@@ -126,7 +126,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
     
     int cs = current_size;
     
-    while (cs >= max_size_)
+    while (cs >= (int)max_size_)
     {
         if (mq_.empty())
             break;
@@ -172,7 +172,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
         mq_.pop();
     }
 
-    while (cs >= max_size_)
+    while (cs >= (int)max_size_)
     {
         if (v.empty())
             break;
@@ -230,7 +230,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest_Below_Priority::p
 
         if (str)
         {
-            if (cs >= max_size_)
+            if (cs >= (int)max_size_)
             {
                 #ifdef _LINUX
                 int buf_length = strnlen(str->c_str(), buf_sz);
@@ -303,7 +303,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
         if (str)
         {
 
-            if (cs >= max_size_)
+            if (cs >= (int)max_size_)
             {
                 #ifdef _LINUX
                 int buf_length = strnlen(str->c_str(), buf_sz);
@@ -424,8 +424,8 @@ void Queue_Controller::apply_config(const fplog::Transport_Interface::Params& pa
             {
                 emergency_fallback_algo = param.second;
                 
-                if (generic_util::find_str_no_case(emergency_fallback_algo, "remove_oldest") == std::string::npos)
-                    if (generic_util::find_str_no_case(emergency_fallback_algo, "remove_newest") == std::string::npos)
+                if (!generic_util::find_str_no_case(emergency_fallback_algo, "remove_oldest"))
+                    if (!generic_util::find_str_no_case(emergency_fallback_algo, "remove_newest"))
                         emergency_fallback_algo.clear();
             }
 
@@ -435,8 +435,8 @@ void Queue_Controller::apply_config(const fplog::Transport_Interface::Params& pa
 
                 if (emergency_prio.empty())
                 {
-                    if (generic_util::find_str_no_case(emergency_algo, "remove_oldest") == std::string::npos)
-                        if (generic_util::find_str_no_case(emergency_algo, "remove_newest") == std::string::npos)
+                    if (!generic_util::find_str_no_case(emergency_algo, "remove_oldest"))
+                        if (!generic_util::find_str_no_case(emergency_algo, "remove_newest"))
                             emergency_algo.clear();
                 }
             }
