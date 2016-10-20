@@ -8,7 +8,11 @@
 namespace spipc { namespace testing {
 
 std::recursive_mutex g_test_mutex;
+
 std::vector<std::string> g_written_items;
+std::vector<std::string> g_read_items;
+std::map<fplog::UID, std::vector<std::string>> g_ipc_written;
+std::map<fplog::UID, std::vector<std::string>> g_ipc_read;
 
 void th1_mem_trans_test(Shared_Memory_Transport* trans)
 {
@@ -35,8 +39,6 @@ void th1_mem_trans_test(Shared_Memory_Transport* trans)
     std::lock_guard<std::recursive_mutex> lock(g_test_mutex);
     g_written_items.insert(g_written_items.end(), written_items.begin(), written_items.end());
 }
-
-std::vector<std::string> g_read_items;
 
 void th2_mem_trans_test(Shared_Memory_Transport* trans)
 {
@@ -164,9 +166,6 @@ void th2_mem_trans_test(Shared_Memory_Transport* trans)
 
     return true;
 }*/
-
-std::map<fplog::UID, std::vector<std::string>> g_ipc_written;
-std::map<fplog::UID, std::vector<std::string>> g_ipc_read;
 
 void writer_ipc_thread(const fplog::UID uid)
 {
@@ -402,7 +401,7 @@ bool Buffer_Overflow_Test()
     int retries = 0;
 retry:
 
-    if (retries > 1)
+    if (retries > 5)
     {
         printf("buffer_overflow_test.read() failed.\n");
         worker.join();
@@ -411,7 +410,7 @@ retry:
 
     try
     {
-        buffer_overflow_test.read(read_buf, read_buf_sz);
+        read_buf_sz = buffer_overflow_test.read(read_buf, read_buf_sz);
         if ((sizeof(data_5mb) != read_buf_sz) || memcmp(read_buf, data_5mb, sizeof(data_5mb)) != 0)
         {
             printf("buffer_overflow_test.read() got corrupted data.\n");
@@ -422,8 +421,7 @@ retry:
     catch(fplog::exceptions::Read_Failed)
     {
         printf("buffer_overflow_test.read() failed.\n");
-        worker.join();
-        return false;
+        goto retry;
     }
     catch(fplog::exceptions::Buffer_Overflow&)
     {
@@ -436,11 +434,17 @@ retry:
 
     worker.join();
 
+    delete [] read_buf;
     return true;
 }
 
-void run_all_tests()
+bool run_all_tests()
 {
+    g_written_items.clear();
+    g_read_items.clear();
+    g_ipc_written.clear();
+    g_ipc_read.clear();
+
     //spipc::Shared_Memory_Transport::global_init();
 
     /*try
@@ -457,12 +461,16 @@ void run_all_tests()
     try
     {
         if (!N_threads_IPC_test())
+        {
             printf("N_threads_IPC_test failed.\n");
+            return false;
+        }
     }
     catch (sprot::exceptions::Exception& e)
     {
         printf("ERROR: N_threads_IPC_test failed with exception.\n");
         printf("%s\n", e.what().c_str());
+        return false;
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(13000));
@@ -470,21 +478,26 @@ void run_all_tests()
     try
     {
         if (!Buffer_Overflow_Test())
+        {
             printf("Buffer_Overflow_Test failed.\n");
+            return false;
+        }
     }
     catch (sprot::exceptions::Exception& e)
     {
         printf("ERROR: Buffer_Overflow_Test failed with exception.\n");
         printf("%s\n", e.what().c_str());
+        return false;
     }
 
     printf("spipc tests finished OK.\n");
+    return true;
 }
 
 }};
 
 int main(int argc, char* argv[])
 {
-    spipc::testing::run_all_tests();
+    while(spipc::testing::run_all_tests());
 	return 0;
 }

@@ -242,19 +242,19 @@ namespace sprot
                         memcpy(evil_twin_, buf, twin_size_);
                     };
 
+                    duplicate_frame();
+
                     //First we will try to guess if we get all the data except the last ACK
                     //if we did get all the data - return successfully anyway.
-                    if ((last_frame.type == Frame::DATA_SINGLE) && !multipart)
-                    {
-                        duplicate_frame();
-                        return bytes_read;
-                    }
 
+                    //however this specific case was disabled because it seem to worsens the situation
+                    //and it is better to fail the whole read than to try such kind of recovery
+                    //if ((last_frame.type == Frame::DATA_SINGLE) && !multipart)
+                        //return bytes_read;
+
+                    //this is much safer assumption, thus is still enabled
                     if ((last_frame.type == Frame::DATA_LAST) && multipart)
-                    {
-                        duplicate_frame();
                         return bytes_read;
-                    }
 
                     goto full_read_retry;
                 }

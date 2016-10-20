@@ -87,11 +87,11 @@ namespace sprot
             {
                 enum Type
                 {
-                    Operation = 300 //ms
+                    Operation = 500 //ms
                 };
             };
 
-            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024, int frames_before_ack = 12);
+            Protocol(fplog::Transport_Interface* transport, size_t MTU = 1024, int frames_before_ack = 4);
             virtual ~Protocol();
 
             virtual size_t read(void* buf, size_t buf_size, size_t timeout = infinite_wait);
