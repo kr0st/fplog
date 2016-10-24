@@ -85,7 +85,7 @@ namespace sprot
 
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
 
-        int full_retries = 5;
+        int full_retries = 100;
         size_t bytes_read = 0;
         unsigned char* ptr = (unsigned char*)buf;
     
@@ -326,7 +326,7 @@ namespace sprot
             return 0;
 
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
-        int full_retries = 5;
+        int full_retries = 100;
 
     full_write_retry:
 
