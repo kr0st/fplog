@@ -107,7 +107,7 @@ int CEPoll::add_usock(const int eid, const UDTSOCKET& u, const int* events)
    return 0;
 }
 
-int CEPoll::add_ssock(const int eid, const SYSSOCKET& s, const int*)
+int CEPoll::add_ssock(const int eid, const SYSSOCKET& s, const int* events)
 {
    CGuard pg(m_EPollLock);
 
