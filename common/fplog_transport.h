@@ -60,7 +60,7 @@ struct UID
     }
 
     #undef max
-    UID UID::from_string(std::string& str)
+    UID from_string(std::string& str)
     {
         unsigned long long limit = std::numeric_limits<unsigned long long>::max();
         high = limit;
