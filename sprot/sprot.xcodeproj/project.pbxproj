@@ -14,6 +14,19 @@
 		786BECB21DC8FC1100851D81 /* fplog_transport.h in Headers */ = {isa = PBXBuildFile; fileRef = 786BECB01DC8FC1100851D81 /* fplog_transport.h */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		78071E0B1DCE7C0400F61F6E /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		786137981DC8F866004E0204 /* libsprot.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libsprot.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		786BECA61DC8FA1700851D81 /* sprot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sprot.cpp; sourceTree = "<group>"; };
@@ -78,6 +91,8 @@
 				786137941DC8F866004E0204 /* Sources */,
 				786137951DC8F866004E0204 /* Frameworks */,
 				786137961DC8F866004E0204 /* Headers */,
+				78071E0C1DCE7C8900F61F6E /* ShellScript */,
+				78071E0B1DCE7C0400F61F6E /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -119,6 +134,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		78071E0C1DCE7C8900F61F6E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo ${TARGET_BUILD_DIR}";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		786137941DC8F866004E0204 /* Sources */ = {
