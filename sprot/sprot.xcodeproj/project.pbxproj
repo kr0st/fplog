@@ -14,6 +14,16 @@
 		786BECB21DC8FC1100851D81 /* fplog_transport.h in Headers */ = {isa = PBXBuildFile; fileRef = 786BECB01DC8FC1100851D81 /* fplog_transport.h */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		786C6A471DD39115003DAAB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 786C6A431DD39115003DAAB8 /* sprot_test.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 78E000C81DD3901200FE156F;
+			remoteInfo = sprot_test;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		78071E0B1DCE7C0400F61F6E /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -34,6 +44,7 @@
 		786BECA81DC8FA1700851D81 /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
 		786BECAF1DC8FC1100851D81 /* fplog_exceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_exceptions.h; path = ../common/fplog_exceptions.h; sourceTree = "<group>"; };
 		786BECB01DC8FC1100851D81 /* fplog_transport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_transport.h; path = ../common/fplog_transport.h; sourceTree = "<group>"; };
+		786C6A431DD39115003DAAB8 /* sprot_test.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = sprot_test.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +61,7 @@
 		7861378F1DC8F866004E0204 = {
 			isa = PBXGroup;
 			children = (
+				786C6A431DD39115003DAAB8 /* sprot_test.xcodeproj */,
 				786BECAF1DC8FC1100851D81 /* fplog_exceptions.h */,
 				786BECB01DC8FC1100851D81 /* fplog_transport.h */,
 				786BECA61DC8FA1700851D81 /* sprot.cpp */,
@@ -63,6 +75,14 @@
 			isa = PBXGroup;
 			children = (
 				786137981DC8F866004E0204 /* libsprot.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		786C6A441DD39115003DAAB8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				786C6A481DD39115003DAAB8 /* sprot_test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -88,9 +108,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 786137A31DC8F866004E0204 /* Build configuration list for PBXNativeTarget "sprot" */;
 			buildPhases = (
+				786137961DC8F866004E0204 /* Headers */,
 				786137941DC8F866004E0204 /* Sources */,
 				786137951DC8F866004E0204 /* Frameworks */,
-				786137961DC8F866004E0204 /* Headers */,
 				78071E0C1DCE7C8900F61F6E /* ShellScript */,
 				78071E0B1DCE7C0400F61F6E /* Copy Files */,
 			);
@@ -128,12 +148,28 @@
 			mainGroup = 7861378F1DC8F866004E0204;
 			productRefGroup = 786137991DC8F866004E0204 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 786C6A441DD39115003DAAB8 /* Products */;
+					ProjectRef = 786C6A431DD39115003DAAB8 /* sprot_test.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				786137971DC8F866004E0204 /* sprot */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		786C6A481DD39115003DAAB8 /* sprot_test */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = sprot_test;
+			remoteRef = 786C6A471DD39115003DAAB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		78071E0C1DCE7C8900F61F6E /* ShellScript */ = {
@@ -263,6 +299,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = Yes;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
+				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -279,6 +316,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
+				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -1,8 +1,3 @@
-#include "targetver.h"
-
-#include <windows.h>
-#include <tchar.h>
-
 #include "sprot.h"
 
 #include <mutex>
@@ -50,7 +45,7 @@ namespace sprot { namespace testing
     }
 }};
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
     sprot::testing::run_all_tests();
 
