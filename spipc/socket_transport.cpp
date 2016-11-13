@@ -271,7 +271,7 @@ retry:
     if (res != 1)
         THROW(fplog::exceptions::Read_Failed);
 
-    res = recvfrom(socket_, (char*)buf, buf_size, 0, (sockaddr*)&remote_addr, &addr_len);
+    res = recvfrom((int)socket_, (void*)buf, buf_size, 0, (sockaddr*)&remote_addr, (socklen_t *)&addr_len);
     if (res != SOCKET_ERROR)
     {
         remote_addr.sin_port = ntohs(remote_addr.sin_port);

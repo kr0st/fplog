@@ -2,6 +2,15 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:spipc/spipc.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:lua/lua.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:udt4/udt.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:libjson/libjson.xcodeproj">
    </FileRef>
    <FileRef

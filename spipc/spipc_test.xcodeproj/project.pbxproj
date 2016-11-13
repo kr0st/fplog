@@ -7,14 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		786C6A4A1DD3912F003DAAB8 /* sprot_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786C6A491DD3912F003DAAB8 /* sprot_test.cpp */; };
-		786C6A4E1DD394E6003DAAB8 /* fplog_exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 786C6A4C1DD394E6003DAAB8 /* fplog_exceptions.h */; };
-		786C6A4F1DD394E6003DAAB8 /* fplog_transport.h in Headers */ = {isa = PBXBuildFile; fileRef = 786C6A4D1DD394E6003DAAB8 /* fplog_transport.h */; };
-		786C6A521DD4EC8E003DAAB8 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 786C6A511DD4EC8E003DAAB8 /* libsprot.dylib */; };
+		781A180E1DD8E7310049BB40 /* spipc_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 781A180D1DD8E7310049BB40 /* spipc_test.cpp */; };
+		781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A18111DD8E9BD0049BB40 /* libspipc.dylib */; };
+		781A18141DD8E9FB0049BB40 /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A18131DD8E9FB0049BB40 /* libboost_system.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		78E000C61DD3901200FE156F /* CopyFiles */ = {
+		781A17FB1DD8E6350049BB40 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -26,135 +25,120 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		786C6A491DD3912F003DAAB8 /* sprot_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sprot_test.cpp; sourceTree = SOURCE_ROOT; };
-		786C6A4C1DD394E6003DAAB8 /* fplog_exceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_exceptions.h; path = ../common/fplog_exceptions.h; sourceTree = "<group>"; };
-		786C6A4D1DD394E6003DAAB8 /* fplog_transport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_transport.h; path = ../common/fplog_transport.h; sourceTree = "<group>"; };
-		786C6A511DD4EC8E003DAAB8 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
-		78E000C81DD3901200FE156F /* sprot_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sprot_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		781A17FD1DD8E6350049BB40 /* spipc_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spipc_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		781A180D1DD8E7310049BB40 /* spipc_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spipc_test.cpp; sourceTree = SOURCE_ROOT; };
+		781A18111DD8E9BD0049BB40 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
+		781A18131DD8E9FB0049BB40 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		78E000C51DD3901200FE156F /* Frameworks */ = {
+		781A17FA1DD8E6350049BB40 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				786C6A521DD4EC8E003DAAB8 /* libsprot.dylib in Frameworks */,
+				781A18141DD8E9FB0049BB40 /* libboost_system.dylib in Frameworks */,
+				781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		786C6A501DD4EC8E003DAAB8 /* Frameworks */ = {
+		781A17F41DD8E6350049BB40 = {
 			isa = PBXGroup;
 			children = (
-				786C6A511DD4EC8E003DAAB8 /* libsprot.dylib */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		78E000BF1DD3901200FE156F = {
-			isa = PBXGroup;
-			children = (
-				786C6A4C1DD394E6003DAAB8 /* fplog_exceptions.h */,
-				786C6A4D1DD394E6003DAAB8 /* fplog_transport.h */,
-				78E000CA1DD3901200FE156F /* sprot_test */,
-				78E000C91DD3901200FE156F /* Products */,
-				786C6A501DD4EC8E003DAAB8 /* Frameworks */,
+				781A17FF1DD8E6350049BB40 /* spipc_test */,
+				781A17FE1DD8E6350049BB40 /* Products */,
+				781A18101DD8E9BD0049BB40 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		78E000C91DD3901200FE156F /* Products */ = {
+		781A17FE1DD8E6350049BB40 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				78E000C81DD3901200FE156F /* sprot_test */,
+				781A17FD1DD8E6350049BB40 /* spipc_test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		78E000CA1DD3901200FE156F /* sprot_test */ = {
+		781A17FF1DD8E6350049BB40 /* spipc_test */ = {
 			isa = PBXGroup;
 			children = (
-				786C6A491DD3912F003DAAB8 /* sprot_test.cpp */,
+				781A180D1DD8E7310049BB40 /* spipc_test.cpp */,
 			);
-			path = sprot_test;
+			path = spipc_test;
+			sourceTree = "<group>";
+		};
+		781A18101DD8E9BD0049BB40 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				781A18131DD8E9FB0049BB40 /* libboost_system.dylib */,
+				781A18111DD8E9BD0049BB40 /* libspipc.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		786C6A4B1DD394B1003DAAB8 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				786C6A4E1DD394E6003DAAB8 /* fplog_exceptions.h in Headers */,
-				786C6A4F1DD394E6003DAAB8 /* fplog_transport.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		78E000C71DD3901200FE156F /* sprot_test */ = {
+		781A17FC1DD8E6350049BB40 /* spipc_test */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 78E000CF1DD3901200FE156F /* Build configuration list for PBXNativeTarget "sprot_test" */;
+			buildConfigurationList = 781A18041DD8E6350049BB40 /* Build configuration list for PBXNativeTarget "spipc_test" */;
 			buildPhases = (
-				786C6A4B1DD394B1003DAAB8 /* Headers */,
-				78E000C41DD3901200FE156F /* Sources */,
-				78E000C51DD3901200FE156F /* Frameworks */,
-				786C6A531DD4ECD1003DAAB8 /* Run Script */,
-				78E000C61DD3901200FE156F /* CopyFiles */,
+				781A17F91DD8E6350049BB40 /* Sources */,
+				781A17FA1DD8E6350049BB40 /* Frameworks */,
+				781A17FB1DD8E6350049BB40 /* CopyFiles */,
+				781A180F1DD8E76F0049BB40 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = sprot_test;
-			productName = sprot_test;
-			productReference = 78E000C81DD3901200FE156F /* sprot_test */;
+			name = spipc_test;
+			productName = spipc_test;
+			productReference = 781A17FD1DD8E6350049BB40 /* spipc_test */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		78E000C01DD3901200FE156F /* Project object */ = {
+		781A17F51DD8E6350049BB40 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Rostislav Kuratch";
 				TargetAttributes = {
-					78E000C71DD3901200FE156F = {
-						CreatedOnToolsVersion = 8.1;
+					781A17FC1DD8E6350049BB40 = {
+						CreatedOnToolsVersion = 8.0;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 78E000C31DD3901200FE156F /* Build configuration list for PBXProject "sprot_test" */;
+			buildConfigurationList = 781A17F81DD8E6350049BB40 /* Build configuration list for PBXProject "spipc_test" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 78E000BF1DD3901200FE156F;
-			productRefGroup = 78E000C91DD3901200FE156F /* Products */;
+			mainGroup = 781A17F41DD8E6350049BB40;
+			productRefGroup = 781A17FE1DD8E6350049BB40 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				78E000C71DD3901200FE156F /* sprot_test */,
+				781A17FC1DD8E6350049BB40 /* spipc_test */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		786C6A531DD4ECD1003DAAB8 /* Run Script */ = {
+		781A180F1DD8E76F0049BB40 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -164,18 +148,18 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		78E000C41DD3901200FE156F /* Sources */ = {
+		781A17F91DD8E6350049BB40 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				786C6A4A1DD3912F003DAAB8 /* sprot_test.cpp in Sources */,
+				781A180E1DD8E7310049BB40 /* spipc_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		78E000CD1DD3901200FE156F /* Debug */ = {
+		781A18021DD8E6350049BB40 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -222,7 +206,7 @@
 			};
 			name = Debug;
 		};
-		78E000CE1DD3901200FE156F /* Release */ = {
+		781A18031DD8E6350049BB40 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -262,12 +246,22 @@
 			};
 			name = Release;
 		};
-		78E000D01DD3901200FE156F /* Debug */ = {
+		781A18051DD8E6350049BB40 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.62.0/include/;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.62.0/include/,
+					../,
+					./,
+					../udt4/src/,
+					../udt4/app/,
+					../common/,
+				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.62.0/lib/,
+					/usr/local/Cellar/boost/1.62.0/lib,
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
@@ -276,12 +270,22 @@
 			};
 			name = Debug;
 		};
-		78E000D11DD3901200FE156F /* Release */ = {
+		781A18061DD8E6350049BB40 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.62.0/include/;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.62.0/include/,
+					../,
+					./,
+					../udt4/src/,
+					../udt4/app/,
+					../common/,
+				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.62.0/lib/,
+					/usr/local/Cellar/boost/1.62.0/lib,
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
@@ -293,25 +297,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		78E000C31DD3901200FE156F /* Build configuration list for PBXProject "sprot_test" */ = {
+		781A17F81DD8E6350049BB40 /* Build configuration list for PBXProject "spipc_test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				78E000CD1DD3901200FE156F /* Debug */,
-				78E000CE1DD3901200FE156F /* Release */,
+				781A18021DD8E6350049BB40 /* Debug */,
+				781A18031DD8E6350049BB40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		78E000CF1DD3901200FE156F /* Build configuration list for PBXNativeTarget "sprot_test" */ = {
+		781A18041DD8E6350049BB40 /* Build configuration list for PBXNativeTarget "spipc_test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				78E000D01DD3901200FE156F /* Debug */,
-				78E000D11DD3901200FE156F /* Release */,
+				781A18051DD8E6350049BB40 /* Debug */,
+				781A18061DD8E6350049BB40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 78E000C01DD3901200FE156F /* Project object */;
+	rootObject = 781A17F51DD8E6350049BB40 /* Project object */;
 }
