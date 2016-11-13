@@ -18,7 +18,7 @@ class Transport_Interface
         typedef std::map<std::string, std::string> Params;
         
         static Params empty_params;
-        static const size_t infinite_wait = static_cast<size_t>(-1);
+        static const size_t infinite_wait = 4294967295;
 
         virtual void connect(const Params& params) {}
         virtual void disconnect() {}

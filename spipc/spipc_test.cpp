@@ -240,7 +240,7 @@ void writer_ipc_thread(const fplog::UID uid)
     g_ipc_written[uid] = ipc_written;
     
     fclose(fwriter);
-    printf("thread with fplog::UID [%lld/%lld] written %d values.\n", uid.high, uid.low, ipc_written.size());
+    printf("thread with fplog::UID [%lld/%lld] written %lu values.\n", uid.high, uid.low, ipc_written.size());
 }
 
 void reader_ipc_thread(const fplog::UID uid)
@@ -293,7 +293,7 @@ void reader_ipc_thread(const fplog::UID uid)
     g_ipc_read[uid] = read_items;
 
     fclose(freader);
-    printf("thread with fplog::UID [%lld/%lld] read %d values.\n", uid.high, uid.low, read_items.size());
+    printf("thread with fplog::UID [%lld/%lld] read %lu values.\n", uid.high, uid.low, read_items.size());
 }
 
 bool N_threads_IPC_test()
@@ -360,8 +360,9 @@ bool N_threads_IPC_test()
 
 void buffer_overflow_test_worker()
 {
-    char data_5mb[5 * 1024 * 1024] = {0};
-    for (int i = 0; i < sizeof(data_5mb); ++i)
+    char* data_5mb = new char[5 * 1024 * 1024];
+    size_t data_sz = 5 * 1024 * 1024;
+    for (int i = 0; i < data_sz; ++i)
         data_5mb[i] = 65 + i % 23;
 
     spipc::IPC buffer_overflow_test;
@@ -372,19 +373,22 @@ void buffer_overflow_test_worker()
     try
     {
         buffer_overflow_test.connect(uid);
-        buffer_overflow_test.write(data_5mb, sizeof(data_5mb));
+        buffer_overflow_test.write(data_5mb, data_sz);
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     }
     catch(fplog::exceptions::Generic_Exception& e)
     {
         printf("buffer_overflow_test_worker failed! reason: %s\n", e.what().c_str());
     }
+    
+    delete [] data_5mb;
 }
 
 bool Buffer_Overflow_Test()
 {
-    char data_5mb[5 * 1024 * 1024] = {0};
-    for (int i = 0; i < sizeof(data_5mb); ++i)
+    char* data_5mb = new char[5 * 1024 * 1024];
+    size_t data_sz = 5 * 1024 * 1024;
+    for (int i = 0; i < data_sz; ++i)
         data_5mb[i] = 65 + i % 23;
 
     size_t read_buf_sz = 256 * 1024;
@@ -411,7 +415,7 @@ retry:
     try
     {
         read_buf_sz = buffer_overflow_test.read(read_buf, read_buf_sz);
-        if ((sizeof(data_5mb) != read_buf_sz) || memcmp(read_buf, data_5mb, sizeof(data_5mb)) != 0)
+        if ((data_sz != read_buf_sz) || (memcmp(read_buf, data_5mb, data_sz) != 0))
         {
             printf("buffer_overflow_test.read() got corrupted data.\n");
             worker.join();
@@ -426,8 +430,8 @@ retry:
     catch(fplog::exceptions::Buffer_Overflow&)
     {
         retries++;
-        delete read_buf;
-        read_buf_sz = sizeof(data_5mb);
+        delete [] read_buf;
+        read_buf_sz = data_sz;
         read_buf = new char[read_buf_sz];
         goto retry;
     }
@@ -435,6 +439,8 @@ retry:
     worker.join();
 
     delete [] read_buf;
+    delete [] data_5mb;
+    
     return true;
 }
 
