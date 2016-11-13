@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:libjson/libjson.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:sprot/sprot.xcodeproj">
    </FileRef>
 </Workspace>
