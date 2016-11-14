@@ -21,6 +21,16 @@
 		7825F66C1DDA455100154B34 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7825F66B1DDA455100154B34 /* libsprot.dylib */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		78C74DB71DDA47BA001B3D38 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 78C74DB31DDA47BA001B3D38 /* fplog_test.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 78C74DA71DDA475D001B3D38;
+			remoteInfo = fplog_test;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		7825F6431DDA410700154B34 /* libfplog.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfplog.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		7825F6511DDA41C100154B34 /* fplog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fplog.cpp; sourceTree = SOURCE_ROOT; };
@@ -35,6 +45,7 @@
 		7825F6671DDA450800154B34 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		7825F6691DDA453C00154B34 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
 		7825F66B1DDA455100154B34 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
+		78C74DB31DDA47BA001B3D38 /* fplog_test.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = fplog_test.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +67,7 @@
 		7825F63A1DDA410700154B34 = {
 			isa = PBXGroup;
 			children = (
+				78C74DB31DDA47BA001B3D38 /* fplog_test.xcodeproj */,
 				7825F6451DDA410700154B34 /* fplog */,
 				7825F6441DDA410700154B34 /* Products */,
 				7825F6621DDA44ED00154B34 /* Frameworks */,
@@ -94,6 +106,14 @@
 				7825F6641DDA44ED00154B34 /* liblua.dylib */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		78C74DB41DDA47BA001B3D38 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				78C74DB81DDA47BA001B3D38 /* fplog_test */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,12 +175,28 @@
 			mainGroup = 7825F63A1DDA410700154B34;
 			productRefGroup = 7825F6441DDA410700154B34 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 78C74DB41DDA47BA001B3D38 /* Products */;
+					ProjectRef = 78C74DB31DDA47BA001B3D38 /* fplog_test.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				7825F6421DDA410700154B34 /* fplog */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		78C74DB81DDA47BA001B3D38 /* fplog_test */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = fplog_test;
+			remoteRef = 78C74DB71DDA47BA001B3D38 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		7825F6611DDA44B900154B34 /* Run Script */ = {
