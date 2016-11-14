@@ -152,7 +152,7 @@ class FPLOG_API Message
 
         Message& add_batch(JSONNode& batch);
         bool has_batch();
-        JSONNode Message::get_batch();
+        JSONNode get_batch();
 
         Message& set_text(std::string& text);
         Message& set_text(const char* text);
