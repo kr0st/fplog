@@ -225,6 +225,10 @@ void Socket_Transport::disconnect()
     connected_ = false;
 }
 
+#ifndef socklen_t
+typedef int socklen_t;
+#endif
+
 size_t Socket_Transport::read(void* buf, size_t buf_size, size_t timeout)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -271,7 +275,7 @@ retry:
     if (res != 1)
         THROW(fplog::exceptions::Read_Failed);
 
-    res = recvfrom((int)socket_, (void*)buf, buf_size, 0, (sockaddr*)&remote_addr, (socklen_t *)&addr_len);
+    res = recvfrom((int)socket_, (char*)buf, buf_size, 0, (sockaddr*)&remote_addr, (socklen_t *)&addr_len);
     if (res != SOCKET_ERROR)
     {
         remote_addr.sin_port = ntohs(remote_addr.sin_port);
