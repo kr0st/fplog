@@ -266,6 +266,7 @@
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
 				);
+				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -290,6 +291,7 @@
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
 				);
+				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

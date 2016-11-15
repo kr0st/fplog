@@ -301,6 +301,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
 				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
+				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -318,6 +319,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
 				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
+				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

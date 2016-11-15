@@ -75,15 +75,11 @@ bool Queue_Controller::state_of_emergency()
 
     auto check_time_out = [&timeout, this]()
     {
-        unsigned long long int mult = 1;
+        auto timer_start_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(timer_start_);
+        auto timer_stop_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+        std::chrono::milliseconds timeout_ms(timeout);
         
-        #ifdef _LINUX
-        mult = 100;
-        #endif
-        
-        time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-        system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000 * mult);
-        if (timer_stop - this->timer_start_ >= converted_timeout)
+        if (timer_stop_ms - timer_start_ms >= timeout_ms)
             throw std::out_of_range("emergency timout!");
     };
 

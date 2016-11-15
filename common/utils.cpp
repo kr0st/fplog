@@ -1,7 +1,6 @@
 #include "utils.h"
 
 #include <stdio.h>
-#include <time.h>
 #include <boost/algorithm/string.hpp>
 #include <mutex>
 #include <thread>
@@ -95,11 +94,7 @@ static int get_system_timezone_impl()
 
 static unsigned long long get_msec_time_impl()
 {
-    struct timespec tp;
-    int res = clock_gettime(CLOCK_MONOTONIC, &tp);
-    if (res != 0)
-        return 0;
-    return tp.tv_sec * 1000 + (tp.tv_nsec / 1000000);
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 #endif
