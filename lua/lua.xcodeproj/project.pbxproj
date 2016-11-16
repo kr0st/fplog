@@ -466,7 +466,9 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INSTALL_PATH = "@rpath";
-				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
+				OTHER_CFLAGS = "-D_OSX";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -481,7 +483,9 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INSTALL_PATH = "@rpath";
-				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
+				OTHER_CFLAGS = "-D_OSX";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

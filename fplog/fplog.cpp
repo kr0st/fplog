@@ -883,7 +883,13 @@ class Lua_Filter::Lua_Filter_Impl
             lua_state_ = luaL_newstate();
             luaL_openlibs(lua_state_);
 
-            luaL_dostring(lua_state_, "json = require(\"json\")\n");        
+            luaL_dostring(lua_state_, "json = require(\"json\")\n");
+            
+            std::string lua_error(get_lua_error());
+            if (!lua_error.empty())
+            {
+                printf("lua_err on init = %s\n", lua_error.c_str());
+            }
 
             inited_ = (lua_state_ != 0);
         }

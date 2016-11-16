@@ -12,6 +12,15 @@
 #include <stddef.h>
 
 
+#ifdef _OSX
+
+#define LUA_COMPAT_ALL
+#define LUA_EXPORTS
+#define LUA_LIB
+
+#endif
+
+
 /*
 ** ==================================================================
 ** Search for "@@" to find all configurable definitions.
