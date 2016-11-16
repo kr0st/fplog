@@ -336,6 +336,7 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D_LINUX",
 					"$(OTHER_CFLAGS)",
+					"-D_OSX",
 				);
 				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -366,6 +367,7 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D_LINUX",
 					"$(OTHER_CFLAGS)",
+					"-D_OSX",
 				);
 				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
