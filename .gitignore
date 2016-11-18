@@ -15,6 +15,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+Stage/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -182,3 +183,6 @@ $RECYCLE.BIN/
 
 #Boost
 boost/
+
+*.dylib
+*.xcuserstate
