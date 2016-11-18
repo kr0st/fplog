@@ -46,7 +46,13 @@ static unsigned long long get_msec_time_impl()
 static int get_system_timezone_impl()
 {
     FILE* tz = 0;
-    char cmd[] = "date +%:z";
+
+    #ifdef _OSX
+	char cmd[] = "gdate +%:z";
+    #else
+	char cmd[] = "date +%:z";
+    #endif
+
     char line[256];
     memset(line, 0, sizeof(line));
 
@@ -213,7 +219,7 @@ std::string get_iso8601_timestamp()
         tz = get_system_timezone();
     }
 
-    snprintf(timestamp, sizeof(timestamp) - 1, "%04d-%02d-%02dT%02d:%02d:%02d.%lld%s",
+    snprintf(timestamp, sizeof(timestamp) - 1, "%04d-%02d-%02dT%02d:%02d:%02d.%03lld%s",
         tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, get_msec_time() % 1000,
         timezone_from_minutes_to_iso8601(tz).c_str());
 
