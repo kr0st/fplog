@@ -764,7 +764,7 @@ bool remove_newest_below_prio_test()
         qc.pop();
     }
 
-    if (v.size() != 20)
+    if (v.size() != 19)
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
@@ -775,7 +775,7 @@ bool remove_newest_below_prio_test()
     {
         if ((**it).find("\"num\":26") != string::npos)
         {
-            cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
+            cout << "Remove_Newest_Below_Priority: incorrect string detected: " << **it << std::endl;
             return false;
         }
 
@@ -785,7 +785,7 @@ bool remove_newest_below_prio_test()
 
     if (!correct_found)
     {
-        cout << "Remove_Oldest_Below_Priority: unable to locate expected string" << endl;
+        cout << "Remove_Newest_Below_Priority: unable to locate expected string" << endl;
         return false;
     }
     
@@ -872,7 +872,7 @@ bool remove_oldest_below_prio_test()
         qc.pop();
     }
 
-    if (v.size() != 20)
+    if (v.size() != 19)
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
@@ -887,7 +887,7 @@ bool remove_oldest_below_prio_test()
             return false;
         }
 
-        if ((**it).find("\"num\":26") != string::npos)
+        if ((**it).find("\"num\":29") != string::npos)
             correct_found = true;
     }
 
@@ -1001,7 +1001,7 @@ bool controller_apply_config_test()
     {
         if ((**it).find("\"num\":26") != string::npos)
         {
-            cout << "Remove_Oldest_Below_Priority: incorrect string detected: " << **it << std::endl;
+            cout << "Remove_Newest_Below_Priority: incorrect string detected: " << **it << std::endl;
             return false;
         }
 
@@ -1011,7 +1011,7 @@ bool controller_apply_config_test()
 
     if (!correct_found)
     {
-        cout << "Remove_Oldest_Below_Priority: unable to locate expected string" << endl;
+        cout << "Remove_Newest_Below_Priority: unable to locate expected string" << endl;
         return false;
     }
     
