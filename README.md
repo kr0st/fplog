@@ -17,7 +17,7 @@ CodeLite IDE is used for building the solution, however there is no automatic bu
 
 I will introduce automatic dependency building on Linux too, just not there yet.
 
-##### macOS
+###### macOS
 Please install Xcode and Homebrew. fplog is an Xcode workspace, so just load it up and select which project you'd like to build.
 You will need to execute couple of commands in the terminal before attempting the build and run:
 
