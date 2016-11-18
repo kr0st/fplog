@@ -16,3 +16,11 @@ In case there were errors, you’re on your own, pal, I’ve tried to make depen
 CodeLite IDE is used for building the solution, however there is no automatic building of dependencies yet. If you would like to build dependencies manually then you would need same libraries and their versions as in Windows build, take a look at ‘make_dep.bat’, build everything and replicate the resulting folder structure as on Windows.
 
 I will introduce automatic dependency building on Linux too, just not there yet.
+
+##### macOS
+Please install Xcode and Homebrew. fplog is an Xcode workspace, so just load it up and select which project you'd like to build.
+You will need to execute couple of commands in the terminal before attempting the build and run:
+
+    brew install coreutils
+    brew install boost
+
