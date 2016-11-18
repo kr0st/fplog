@@ -266,7 +266,7 @@
 				781A173C1DD8C9360049BB40 /* Sources */,
 				781A173D1DD8C9360049BB40 /* Frameworks */,
 				781A173E1DD8C9360049BB40 /* Headers */,
-				781A17C41DD8CA0A0049BB40 /* ShellScript */,
+				781A17C41DD8CA0A0049BB40 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -310,18 +310,19 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		781A17C41DD8CA0A0049BB40 /* ShellScript */ = {
+		781A17C41DD8CA0A0049BB40 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp ${SOURCE_ROOT}/json.lua ${SOURCE_ROOT}/../Stage/";
 		};
 /* End PBXShellScriptBuildPhase section */
 
