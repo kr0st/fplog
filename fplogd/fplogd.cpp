@@ -214,7 +214,13 @@ void GetPrimaryIp(char* buffer, size_t buflen)
     assert(err != -1);
 
     sockaddr_in name;
+
+#ifdef _OSX
+    socklen_t namelen = sizeof(name);
+#else
     int namelen = sizeof(name);
+#endif
+
     err = getsockname(sock, (sockaddr*) &name, &namelen);
     assert(err != -1);
 

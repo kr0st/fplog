@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:fplogd/fplogd.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:fplog/fplog.xcodeproj">
    </FileRef>
    <FileRef
