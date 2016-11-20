@@ -26,7 +26,7 @@ You will need to execute a number of commands in the terminal before attempting 
 
 ###### Fixing UDT
 
-As many BSD-based systems, macOS has much smaller socket buffer initially, compared to Windows or Linux. We are going to fixit by launching a terminal and executing the below commands (spoiler alert - your Mac will reboot):
+As many BSD-based systems, macOS has much smaller socket buffer initially, compared to Windows or Linux. We are going to fix it by launching a terminal and executing the below commands (spoiler alert - your Mac will reboot):
 
     sudo nvram boot-args="ncl=131072"
     sudo shutdown -r now
