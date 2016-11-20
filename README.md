@@ -3,7 +3,7 @@ JSON-based logging solution for PC and embedded devices that uses NoSQL for logs
 
 # building
 
-###### Windows
+### Windows
 First of all you need to have all dependencies built. In order to do that please open command prompt but not just any command prompt, you will need ‘Developer Command Prompt for VS2015’. Afterwards get to the autobuild folder inside fplog solution top directory.
 
 There is a ‘win’ subfolder, just cd there and run ‘make_dep.bat’. If you’re lucky, after about half an hour (or much faster on 4 or 8 cored CPUs) there are no error messages inside command prompt window and a new folder sitting inside ‘autobuild’ directory, called ‘build’. This is a temporary folder that can be safely deleted, freeing up couple of gigabytes.
@@ -12,15 +12,27 @@ Now just launch Visual Studio 2015 and build the *fplog* solution, everything sh
 
 In case there were errors, you’re on your own, pal, I’ve tried to make dependency building script as transparent as possible, read ‘make_dep.bat’ and try to understand what went wrong.
 
-###### Linux
+### Linux
 CodeLite IDE is used for building the solution, however there is no automatic building of dependencies yet. If you would like to build dependencies manually then you would need same libraries and their versions as in Windows build, take a look at ‘make_dep.bat’, build everything and replicate the resulting folder structure as on Windows.
 
 I will introduce automatic dependency building on Linux too, just not there yet.
 
-###### macOS
+### macOS
 Please install Xcode and Homebrew. fplog is an Xcode workspace, so just load it up and select which project you'd like to build.
-You will need to execute couple of commands in the terminal before attempting the build and run:
+You will need to execute a number of commands in the terminal before attempting the build and run:
 
     brew install coreutils
     brew install boost
 
+###### Fixing UDT
+
+As many BSD-based systems, macOS has much smaller socket buffer initially, compared to Windows or Linux. We are going to fixit by launching a terminal and executing the below commands (spoiler alert - your Mac will reboot):
+
+    sudo nvram boot-args="ncl=131072"
+    sudo shutdown -r now
+
+After the reboot open the terminal again and run these commands:
+
+    sudo sysctl -w kern.ipc.maxsockbuf=16777216
+    sudo sysctl -w net.inet.tcp.sendspace=1048576
+    sudo sysctl -w net.inet.tcp.recvspace=1048576
