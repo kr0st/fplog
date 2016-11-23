@@ -697,6 +697,12 @@ namespace vsprot
 				memcpy(buf, &(read_buffer_[0]) + sizeof(header_) + 4, frame_size);
 				size_t new_size = read_buffer_.size() - sizeof(header_) - 4 - frame_size;
 
+                if (new_size == 0)
+                {
+                    read_buffer_.clear();
+                    return frame_size;
+                }
+
 				std::vector<char> new_buffer;
 				new_buffer.resize(new_size);
 				memcpy(&(new_buffer[0]), &(read_buffer_[0]) + sizeof(header_) + 4 + frame_size, new_size);
