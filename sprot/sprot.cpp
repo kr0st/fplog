@@ -806,9 +806,9 @@ namespace vsprot
 
         {
             std::vector<char> dummy;
-            write_buffer_.swap(dummy);
+            write_buffer_ = dummy;
         }
-        
+
         write_buffer_.resize(buf_size + sizeof(header_) + 4); //4 bytes is frame size that follows the header
         char* ptr = &(write_buffer_[0]), *start_ptr = ptr, *end_ptr = &(write_buffer_[write_buffer_.size() - 1]);
         
