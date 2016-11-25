@@ -681,7 +681,7 @@ namespace vsprot
 				{
 					{
 						std::vector<char> dummy;
-						read_buffer_.swap(dummy);
+						read_buffer_ = dummy;
 					}
 
 					return 0;

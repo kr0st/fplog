@@ -35,7 +35,8 @@ namespace spipc
             client_sock_(-1),
             serv_sock_(-1),
             localhost_(false),
-            disconnecting_(false)
+            disconnecting_(false),
+            connected_(false)
             {
                 std::lock_guard<std::recursive_mutex> lock(mutex_);
             }
