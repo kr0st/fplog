@@ -36,3 +36,11 @@ After the reboot open the terminal again and run these commands:
     sudo sysctl -w kern.ipc.maxsockbuf=16777216
     sudo sysctl -w net.inet.tcp.sendspace=1048576
     sudo sysctl -w net.inet.tcp.recvspace=1048576
+
+However this will not fix the issue permanently, in order to that, you will have to put the above settings inside sysctl.conf file and put this file inside /etc/. Here is how the content of sysctl.conf should look like:
+
+    kern.ipc.maxsockbuf=16777216
+    net.inet.tcp.sendspace=1048576
+    net.inet.tcp.recvspace=1048576
+
+Most likely you do not have sysctl.conf inside your /etc/ folder, just create it and paste the settings there. You will need root access in order to save or edit the file inside /etc/, sudo should help you in this regard.
