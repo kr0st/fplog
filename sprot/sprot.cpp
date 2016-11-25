@@ -814,9 +814,12 @@ namespace vsprot
         
         memcpy(ptr, header_, sizeof(header_));
         ptr += sizeof(header_);
-        
-        memcpy(ptr, &buf_size, sizeof(buf_size));
-        ptr += sizeof(buf_size);
+
+        //sizeof(size_t) gives 8 on 64bit OSX, this was causing communication errors between 32 and 64 bit builds
+        //hardcoded size to 4 to make sure you can send using 32 bit solution and receive using 64 bit exeutable (and vice versa)
+        memcpy(ptr, &buf_size, 4);
+        ptr += 4;
+
         memcpy(ptr, buf, buf_size);
         
         time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
