@@ -22,7 +22,9 @@ Please install Xcode and Homebrew. fplog is an Xcode workspace, so just load it 
 You will need to execute a number of commands in the terminal before attempting the build and run:
 
     brew install coreutils
-    brew install boost
+    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d6cad1de88cbca5ffc7028328997198fa826be61/Formula/boost.rb
+
+The last line installs boost of a specific version, 1.62.0. At the moment of writing this instruction there is no simpler or proper Homebrew way of installing a specific version of any given package. What I am doing is using commit history on GitHub in order to install the package at the moment in history when it referenced Boost v1.62.0.
 
 ###### Fixing UDT
 
