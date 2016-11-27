@@ -26,6 +26,18 @@ You will need to execute a number of commands in the terminal before attempting 
 
 The last line installs boost of a specific version, 1.62.0. At the moment of writing this instruction there is no simpler or proper Homebrew way of installing a specific version of any given package. What I am doing is using commit history on GitHub in order to install the package at the moment in history when it referenced Boost v1.62.0.
 
+###### Building MongoDB client
+
+Execute the following commands from the root folder of fplog repo:
+
+    git clone -b releases/legacy https://github.com/mongodb/mongo-cxx-driver.git
+    cd ./mongo-cxx-driver
+    brew install scons
+    scons install
+    cp -r ./build/install/ ../mongo/
+
+Note that it depends on Boost, so you have to install Boost libraries first.
+
 ###### Fixing UDT
 
 As many BSD-based systems, macOS has much smaller socket buffer initially, compared to Windows or Linux. We are going to fix it by launching a terminal and executing the below commands (spoiler alert - your Mac will reboot):
