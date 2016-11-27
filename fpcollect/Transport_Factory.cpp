@@ -28,7 +28,7 @@ class Console_Output: public fplog::Transport_Interface
 
                 std::cout << str << std::endl << std::endl;
 
-                delete str;
+                delete [] str;
                 return buf_size;
             }
 };
