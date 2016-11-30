@@ -669,6 +669,7 @@ class Impl
                     while (!mq_.empty() && ((int)(batch.size()) < batch_size_) && !send_batch)
                     {
                         str = mq_.front();
+                        append_hostname(str);
                         
                         //This is needed for sending larger messages - large messages are sent independently,
                         //separate from the batch, i.e. large message cannot be part of the batch along with other messages
@@ -718,6 +719,8 @@ class Impl
 
                 if (str)
                 {
+                    append_hostname(str);
+
                     {
                         std::vector<std::string*> empty_batch;
                         
@@ -729,8 +732,6 @@ class Impl
 
                     std::auto_ptr<std::string> str_ptr(str);
                     int retries = 5;
-                    
-                    append_hostname(str);
 
                 retry:
 
