@@ -476,12 +476,14 @@ void manual_test()
 
     std::string str;
     printf("Type log message to send. Input quit to exit.\n");
+    
+    std::cin >> str;
     while (str != "quit")
     {
         try
         {
-            std::cin >> str;
             fplog::write(FPL_TRACE("%s", str.c_str()));
+            std::cin >> str;
         }
         catch (fplog::exceptions::Generic_Exception& e)
         {
