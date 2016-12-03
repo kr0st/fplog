@@ -133,9 +133,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 781A17D91DD8D9660049BB40 /* Build configuration list for PBXNativeTarget "spipc" */;
 			buildPhases = (
+				781A17CC1DD8D9660049BB40 /* Headers */,
 				781A17CA1DD8D9660049BB40 /* Sources */,
 				781A17CB1DD8D9660049BB40 /* Frameworks */,
-				781A17CC1DD8D9660049BB40 /* Headers */,
 				781A17E81DD8DA5A0049BB40 /* ShellScript */,
 			);
 			buildRules = (
@@ -207,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -320,7 +320,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/boost/1.62.0/include/,
 					../,
@@ -351,7 +351,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/boost/1.62.0/include/,
 					../,
@@ -364,6 +364,7 @@
 					"$(inherited)",
 					/usr/local/Cellar/boost/1.62.0/lib,
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D_LINUX",
 					"$(OTHER_CFLAGS)",

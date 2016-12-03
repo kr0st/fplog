@@ -187,7 +187,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -297,6 +297,7 @@
 		78A567931DEB534800967937 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/boost/1.62.0/include/,
 					../,
@@ -327,6 +328,7 @@
 		78A567941DEB534800967937 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/boost/1.62.0/include/,
 					../,
@@ -345,6 +347,7 @@
 					/usr/local/Cellar/boost/1.62.0/lib,
 					../mongo/lib,
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",

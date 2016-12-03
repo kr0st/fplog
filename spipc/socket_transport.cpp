@@ -234,9 +234,11 @@ size_t Socket_Transport::read(void* buf, size_t buf_size, size_t timeout)
     time_point<system_clock, system_clock::duration> timer_start(system_clock::now());
     auto check_time_out = [&timeout, &timer_start]()
     {
-        time_point<system_clock, system_clock::duration> timer_stop(system_clock::now());
-        system_clock::duration converted_timeout(static_cast<unsigned long long>(timeout) * 10000);
-        if (timer_stop - timer_start >= converted_timeout)
+        auto timer_start_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(timer_start);
+        auto timer_stop_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+        std::chrono::milliseconds timeout_ms(timeout);
+        
+        if (timer_stop_ms - timer_start_ms >= timeout_ms)
             THROW(fplog::exceptions::Timeout);
     };
 
@@ -264,7 +266,7 @@ retry:
     timeval to;
     to.tv_sec = timeout / 1000;
     to.tv_usec = (timeout % 1000) * 1000;
-
+    
     int res = select(socket_ + 1, &fdset, 0, 0, &to);
     if (res == 0)
         THROW(fplog::exceptions::Timeout);

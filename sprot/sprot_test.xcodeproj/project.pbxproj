@@ -159,7 +159,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -265,6 +265,7 @@
 		78E000D01DD3901200FE156F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.62.0/include/;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -280,9 +281,11 @@
 		78E000D11DD3901200FE156F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = /usr/local/Cellar/boost/1.62.0/include/;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",

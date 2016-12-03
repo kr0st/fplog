@@ -111,7 +111,7 @@
 				786137961DC8F866004E0204 /* Headers */,
 				786137941DC8F866004E0204 /* Sources */,
 				786137951DC8F866004E0204 /* Frameworks */,
-				78071E0C1DCE7C8900F61F6E /* ShellScript */,
+				78071E0C1DCE7C8900F61F6E /* Run Script */,
 				78071E0B1DCE7C0400F61F6E /* Copy Files */,
 			);
 			buildRules = (
@@ -172,18 +172,19 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		78071E0C1DCE7C8900F61F6E /* ShellScript */ = {
+		78071E0C1DCE7C8900F61F6E /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -297,7 +298,7 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = Yes;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
 				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
@@ -315,10 +316,11 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/boost/1.62.0/include/;
 				INSTALL_PATH = "@rpath";
 				NEW_SETTING = "";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
