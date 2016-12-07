@@ -23,8 +23,9 @@ You will need to execute a number of commands in the terminal before attempting 
 
     brew install coreutils
     brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d6cad1de88cbca5ffc7028328997198fa826be61/Formula/boost.rb
+    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/8b0c14c9a96b32d981786cd65cbcc8961df20e46/Formula/boost-python.rb
 
-The last line installs boost of a specific version, 1.62.0. At the moment of writing this instruction there is no simpler or proper Homebrew way of installing a specific version of any given package. What I am doing is using commit history on GitHub in order to install the package at the moment in history when it referenced Boost v1.62.0.
+The last 2 lines install boost (and boost-python) of a specific version, 1.62.0. At the moment of writing this instruction there is no simpler or proper Homebrew way of installing a specific version of any given package. What I am doing is using commit history on GitHub in order to install the package at the moment in history when it referenced Boost v1.62.0.
 
 ###### Building MongoDB client
 
