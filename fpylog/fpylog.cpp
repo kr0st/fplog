@@ -8,13 +8,15 @@
 
 #include "fpylog.h"
 
+#include <iostream>
 #include <boost/python.hpp>
 using namespace boost::python;
 
+
 BOOST_PYTHON_MODULE(hello)
 {
-    class_<World>("World")
-    .def("greet", &World::greet)
-    .def("set", &World::set)
+    class_<fpylog::World>("World")
+    .def("greet", &fpylog::World::greet)
+    .def("set", &fpylog::World::set)
     ;
 }

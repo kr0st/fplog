@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
+		78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		781338BA1DF72F2B00578629 /* libfpylog.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
+		78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.62.0/lib/libboost_python-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,6 +24,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +36,7 @@
 			children = (
 				781338BC1DF72F2B00578629 /* fpylog */,
 				781338BB1DF72F2B00578629 /* Products */,
+				78CF73841DF8844C00D53A7D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -51,6 +55,14 @@
 				789512491DF734A100A51CBE /* fpylog.cpp */,
 			);
 			path = fpylog;
+			sourceTree = "<group>";
+		};
+		78CF73841DF8844C00D53A7D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,6 +247,8 @@
 		781338C61DF72F2B00578629 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
@@ -242,7 +256,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.62.0/include,
 					../,
 					./,
 					../udt4/src/,
@@ -257,6 +271,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/boost/1.62.0/lib,
+					"/usr/local/Cellar/boost-python/1.62.0/lib",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -270,6 +285,8 @@
 		781338C71DF72F2B00578629 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
@@ -277,7 +294,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.62.0/include,
 					../,
 					./,
 					../udt4/src/,
@@ -292,6 +309,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/boost/1.62.0/lib,
+					"/usr/local/Cellar/boost-python/1.62.0/lib",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
