@@ -13,7 +13,7 @@
 using namespace boost::python;
 
 
-BOOST_PYTHON_MODULE(hello)
+BOOST_PYTHON_MODULE(fpylog)
 {
     class_<fpylog::World>("World")
     .def("greet", &fpylog::World::greet)
