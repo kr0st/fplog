@@ -27,6 +27,7 @@ You will need to execute a number of commands in the terminal before attempting 
     brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/8b0c14c9a96b32d981786cd65cbcc8961df20e46/Formula/boost-python.rb
 
 The second line installs Homebrew version of Python 2.7. The actual version is 2.7.12_2 found in /usr/local/Cellar/python/2.7.12_2/. This might be problematic in case you already have some different version of Python installed, in this case you will have to switch Python dependency in your Xcode project to the version of Python library that you have in your Homebrew Python installation. Just make sure you are referencing not macOS default Python but Homebrew version.
+
 The last 2 lines install boost (and boost-python) of a specific version, 1.62.0. At the moment of writing this instruction there is no simpler or proper Homebrew way of installing a specific version of any given package. What I am doing is using commit history on GitHub in order to install the package at the moment in history when it referenced Boost v1.62.0.
 
 ###### Building MongoDB client
