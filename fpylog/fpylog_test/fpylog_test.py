@@ -1,15 +1,26 @@
 import sys
+import os
+import imp
 
-sys.path.append("~/Source/fplog/fpylog/fpylog_test/")
-
-import fpylog
+cur_path = os.path.dirname(__file__)
+sys.path.append(cur_path)
 
 
 def main():
     print('inside main')
-    world = fpylog.World()
-    world.set("some greeting")
-    print(world.greet())
+
+    fpylog = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.dylib'))
+
+    print(dir(fpylog))
+
+    try:
+        world = fpylog.World()
+        world.set("some greeting")
+        print(world.greet())
+    except Exception as e:
+        print(e)
+        return 1
+
     return 0
 
 if __name__ == "__main__":
