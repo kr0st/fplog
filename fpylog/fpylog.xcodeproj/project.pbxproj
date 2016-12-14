@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
-		78CBD0C21DF9D5AB005CB0A1 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78CBD0C11DF9D5AB005CB0A1 /* Python */; };
+		78C20F251E018D8100E90119 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F241E018D8100E90119 /* Python */; };
 		78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */; };
 /* End PBXBuildFile section */
 
@@ -17,6 +17,8 @@
 		781338BA1DF72F2B00578629 /* libfpylog.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
+		78C20F221E018AA100E90119 /* python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = python; path = ../../../../../usr/bin/python; sourceTree = "<group>"; };
+		78C20F241E018D8100E90119 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
 		78CBD0C11DF9D5AB005CB0A1 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../System/Library/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
 		78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.62.0/lib/libboost_python-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -26,7 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78CBD0C21DF9D5AB005CB0A1 /* Python in Frameworks */,
+				78C20F251E018D8100E90119 /* Python in Frameworks */,
 				78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +65,8 @@
 		78CF73841DF8844C00D53A7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78C20F241E018D8100E90119 /* Python */,
+				78C20F221E018AA100E90119 /* python */,
 				78CBD0C11DF9D5AB005CB0A1 /* Python */,
 				78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */,
 			);
@@ -276,7 +280,7 @@
 					"$(inherited)",
 					/usr/local/Cellar/boost/1.62.0/lib,
 					"/usr/local/Cellar/boost-python/1.62.0/lib",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Python.framework/Versions/2.7",
+					/usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -315,7 +319,7 @@
 					"$(inherited)",
 					/usr/local/Cellar/boost/1.62.0/lib,
 					"/usr/local/Cellar/boost-python/1.62.0/lib",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Python.framework/Versions/2.7",
+					/usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
