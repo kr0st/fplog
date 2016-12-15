@@ -10,6 +10,7 @@
 #define fpylog_h
 
 #include <string>
+#include <fplog.h>
 
 #ifdef FPYLOG_EXPORT
 
@@ -38,6 +39,14 @@ namespace fpylog
         std::string greet() { return msg; }
         std::string msg;
     };
+    
+    class Message
+    {
+        private:
+        
+            fplog::Message m;
+    };
+
 };
 
 #endif /* fpylog_h */

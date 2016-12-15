@@ -10,6 +10,11 @@
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
 		78C20F251E018D8100E90119 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F241E018D8100E90119 /* Python */; };
+		78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
+		78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2B1E030C9100E90119 /* libsprot.dylib */; };
+		78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2D1E030C9700E90119 /* libspipc.dylib */; };
+		78C20F301E030C9C00E90119 /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2F1E030C9C00E90119 /* libjson.dylib */; };
+		78C20F321E030CC900E90119 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F311E030CC900E90119 /* libboost_system-mt.dylib */; };
 		78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */; };
 /* End PBXBuildFile section */
 
@@ -18,6 +23,11 @@
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
 		78C20F241E018D8100E90119 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
+		78C20F291E030C8A00E90119 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = ../fplog/build/Debug/libfplog.dylib; sourceTree = "<group>"; };
+		78C20F2B1E030C9100E90119 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Debug/libsprot.dylib; sourceTree = "<group>"; };
+		78C20F2D1E030C9700E90119 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = ../spipc/build/Debug/libspipc.dylib; sourceTree = "<group>"; };
+		78C20F2F1E030C9C00E90119 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = ../libjson/build/Debug/libjson.dylib; sourceTree = "<group>"; };
+		78C20F311E030CC900E90119 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.62.0/lib/libboost_python-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -26,6 +36,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78C20F321E030CC900E90119 /* libboost_system-mt.dylib in Frameworks */,
+				78C20F301E030C9C00E90119 /* libjson.dylib in Frameworks */,
+				78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */,
+				78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */,
+				78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */,
 				78C20F251E018D8100E90119 /* Python in Frameworks */,
 				78CF73861DF8844C00D53A7D /* libboost_python-mt.dylib in Frameworks */,
 			);
@@ -63,6 +78,11 @@
 		78CF73841DF8844C00D53A7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78C20F311E030CC900E90119 /* libboost_system-mt.dylib */,
+				78C20F2F1E030C9C00E90119 /* libjson.dylib */,
+				78C20F2D1E030C9700E90119 /* libspipc.dylib */,
+				78C20F2B1E030C9100E90119 /* libsprot.dylib */,
+				78C20F291E030C8A00E90119 /* libfplog.dylib */,
 				78C20F241E018D8100E90119 /* Python */,
 				78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */,
 			);
