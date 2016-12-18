@@ -17,6 +17,11 @@ def main():
         world = fpylog.World()
         world.set("some greeting")
         print(world.greet())
+
+        message = fpylog.Message("warning", "fpylog", "success!")
+        json_string = message.as_json_string()
+        print(str(json_string))
+
     except Exception as e:
         print(e)
         return 1
