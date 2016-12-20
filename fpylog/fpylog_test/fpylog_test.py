@@ -1,6 +1,7 @@
 import sys
 import os
 import imp
+import inspect
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
@@ -28,8 +29,6 @@ def main():
         message2.add_float('float', 2.42)
         message2.add_string('str', 'just a string')
 
-        print(str(message2.as_json_string()))
-
         print(str(fpylog.Message.Mandatory_Fields().facility))
         print(str(fpylog.Message.Mandatory_Fields().priority))
         print(str(fpylog.Message.Mandatory_Fields().timestamp))
@@ -49,6 +48,13 @@ def main():
         print(str(fpylog.Message.Optional_Fields().warning))
         print(str(fpylog.Message.Optional_Fields().sequence))
         print(str(fpylog.Message.Optional_Fields().batch))
+
+        message2.set_class('superclass')
+        message2.set_module(__file__)
+        message2.set_line(inspect.currentframe().f_back.f_lineno)
+        message2.set_text('new text')
+
+        print(str(message2.as_json_string()))
 
     except Exception as e:
         print(e)

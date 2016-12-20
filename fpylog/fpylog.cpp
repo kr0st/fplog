@@ -20,6 +20,11 @@ fplog::Message& (fplog::Message::*add_long)(const char*, long long int) = &fplog
 fplog::Message& (fplog::Message::*add_float)(const char*, double) = &fplog::Message::add;
 fplog::Message& (fplog::Message::*add_string)(const char*, const char*) = &fplog::Message::add;
 
+fplog::Message& (fplog::Message::*set_text)(const char*) = &fplog::Message::set_text;
+fplog::Message& (fplog::Message::*set_class)(const char*) = &fplog::Message::set_class;
+fplog::Message& (fplog::Message::*set_module)(const char*) = &fplog::Message::set_module;
+fplog::Message& (fplog::Message::*set_method)(const char*) = &fplog::Message::set_method;
+
 BOOST_PYTHON_MODULE(fpylog)
 {
     class_<fpylog::World>("World")
@@ -33,9 +38,13 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("add_short", add_short, return_value_policy<reference_existing_object>())
     .def("add_long", add_long, return_value_policy<reference_existing_object>())
     .def("add_float", add_float, return_value_policy<reference_existing_object>())
-    .def("add_string", add_string, return_value_policy<reference_existing_object>()));
+    .def("add_string", add_string, return_value_policy<reference_existing_object>())
+    .def("set_text", set_text, return_value_policy<reference_existing_object>())
+    .def("set_module", set_module, return_value_policy<reference_existing_object>())
+    .def("set_class", set_class, return_value_policy<reference_existing_object>())
+    .def("set_method", set_method, return_value_policy<reference_existing_object>())
+    .def("set_line", &fplog::Message::set_line, return_value_policy<reference_existing_object>()));
 
-    
     class_<fplog::Message::Mandatory_Fields>("Mandatory_Fields")
     .def_readonly("facility", &fplog::Message::Mandatory_Fields::facility)
     .def_readonly("priority", &fplog::Message::Mandatory_Fields::priority)
