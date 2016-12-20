@@ -31,6 +31,10 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("greet", &fpylog::World::greet)
     .def("set", &fpylog::World::set);
     
+    class_<fplog::Filter_Base>("Filter_Base", init<const char*>(args("filter_id")));
+    class_<fplog::File>("File", init<const char*, const char*, const char*, size_t>(args("prio", "name", "content", "size")))
+    .def("as_message", &fplog::File::as_message);
+
     scope Message(
     class_<fplog::Message>("Message", init<const char*, const char*, const char*>(args("prio", "facility", "text")))
     .def("as_json_string", &fplog::Message::as_string)
