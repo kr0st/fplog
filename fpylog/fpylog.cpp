@@ -31,8 +31,8 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("greet", &fpylog::World::greet)
     .def("set", &fpylog::World::set);
     
-    class_<fplog::Filter_Base>("Filter_Base", init<const char*>(args("filter_id")));
-    class_<fplog::File>("File", init<const char*, const char*, const char*, size_t>(args("prio", "name", "content", "size")))
+    //class_<fplog::Filter_Base>("Filter_Base", init<const char*>(args("filter_id")));
+    class_<fplog::File, boost::noncopyable>("File", init<const char*, const char*, const void*, size_t>(args("prio", "name", "content", "size")))
     .def("as_message", &fplog::File::as_message);
 
     scope Message(
