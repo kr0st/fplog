@@ -32,6 +32,12 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("set", &fpylog::World::set);
     
     //class_<fplog::Filter_Base>("Filter_Base", init<const char*>(args("filter_id")));
+    class_<fplog::Priority_Filter, boost::noncopyable>("Priority_Filter", init<const char*>(args("filter_id")))
+    .def("add", &fplog::Priority_Filter::add)
+    .def("remove", &fplog::Priority_Filter::remove)
+    .def("add_all_above", &fplog::Priority_Filter::add_all_above)
+    .def("add_all_below", &fplog::Priority_Filter::add_all_below);
+    
     class_<fplog::File, boost::noncopyable>("File", init<const char*, const char*, const void*, size_t>(args("prio", "name", "content", "size")))
     .def("as_message", &fplog::File::as_message);
 
