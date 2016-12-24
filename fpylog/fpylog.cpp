@@ -10,7 +10,6 @@
 #include <fplog.h>
 
 #include <iostream>
-#include <boost/python.hpp>
 #include <string>
 
 using namespace boost::python;
@@ -25,6 +24,18 @@ fplog::Message& (fplog::Message::*set_class)(const char*) = &fplog::Message::set
 fplog::Message& (fplog::Message::*set_module)(const char*) = &fplog::Message::set_module;
 fplog::Message& (fplog::Message::*set_method)(const char*) = &fplog::Message::set_method;
 
+namespace fpylog
+{
+    File::File(const char* prio, const char* name, boost::python::list& content)
+    {
+        std::vector<unsigned char> file;
+        for (int i = 0; i < len(content); ++i)
+            file.push_back(boost::python::extract<unsigned char>(content[i]));
+
+        file_ = new fplog::File(prio, name, &(file[0]), file.size());
+    }
+};
+
 BOOST_PYTHON_MODULE(fpylog)
 {
     class_<fpylog::World>("World")
@@ -38,9 +49,12 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("add_all_above", &fplog::Priority_Filter::add_all_above)
     .def("add_all_below", &fplog::Priority_Filter::add_all_below);
     
-    class_<fplog::File, boost::noncopyable>("File", init<const char*, const char*, const void*, size_t>(args("prio", "name", "content", "size")))
-    .def("as_message", &fplog::File::as_message);
-
+    //class_<fplog::File, boost::noncopyable>("File", init<const char*, const char*, const void*, size_t>(args("prio", "name", "content", "size")))
+    //.def("as_message", &fplog::File::as_message);
+    
+    class_<fpylog::File, boost::noncopyable>("File", init<const char*, const char*, boost::python::list&>(args("prio", "name", "content")))
+    .def("as_message", &fpylog::File::as_message);
+    
     scope Message(
     class_<fplog::Message>("Message", init<const char*, const char*, const char*>(args("prio", "facility", "text")))
     .def("as_json_string", &fplog::Message::as_string)

@@ -2,6 +2,7 @@ import sys
 import os
 import imp
 import inspect
+import array
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
@@ -55,6 +56,15 @@ def main():
         message2.set_text('new text')
 
         print(str(message2.as_json_string()))
+
+        arr = bytearray(os.urandom(5))
+        arr2 = array.array('i', [2]) * 5
+
+        print(list(arr2))
+
+        file = fpylog.File('warning', 'some_file', list(arr2))
+
+        print(str(file.as_message().as_json_string()))
 
     except Exception as e:
         print(e)

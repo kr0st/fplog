@@ -11,6 +11,7 @@
 
 #include <string>
 #include <fplog.h>
+#include <boost/python.hpp>
 
 #ifdef FPYLOG_EXPORT
 
@@ -40,11 +41,21 @@ namespace fpylog
         std::string msg;
     };
     
-    class Message
+    class File
     {
+        public:
+        
+            File(const char* prio, const char* name, boost::python::list& content);
+            ~File() { delete file_; }
+            fplog::Message as_message() { return file_->as_message(); }
+
+
         private:
         
-            fplog::Message m;
+            File();
+            File(File& rhs);
+        
+            fplog::File* file_;
     };
 
 };
