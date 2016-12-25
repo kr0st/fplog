@@ -60,11 +60,14 @@ def main():
         arr = bytearray(os.urandom(5))
         arr2 = array.array('i', [2]) * 5
 
+        print(list(arr))
         print(list(arr2))
 
-        file = fpylog.File('warning', 'some_file', list(arr2))
+        file = fpylog.File('warning', 'some_file', list(arr))
+        file2 = fpylog.File('warning', 'another_file', list(arr2))
 
         print(str(file.as_message().as_json_string()))
+        print(str(file2.as_message().as_json_string()))
 
     except Exception as e:
         print(e)
