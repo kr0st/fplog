@@ -241,9 +241,16 @@ bool Priority_Filter::should_pass(const Message& msg)
 {
     Message& m = const_cast<Message&>(msg);
     JSONNode::iterator it(m.as_json().find(fplog::Message::Mandatory_Fields::priority));
+    
+    //std::cout << "filter prios #" << prio_.size() << std::endl;
+    //std::cout << "filter prios numeric #" << prio_numeric_.size() << std::endl;
+    
     if (it != m.as_json().end())
+    {
+        //std::cout << "inside prio filter: it->as_string() = " << it->as_string() << std::endl;
         return (prio_.find(it->as_string()) != prio_.end());
-
+    }
+    
     return false;
 }
 
@@ -261,15 +268,22 @@ void Priority_Filter::construct_numeric()
 
 void Priority_Filter::add_all_above(const char* prio, bool inclusive)
 {
-    std::vector<std::string>::reverse_iterator it(prio_numeric_.begin());
+    //std::cout << "--> add_all_above(" << prio << ")" << std::endl;
+    std::vector<std::string>::reverse_iterator it(prio_numeric_.rbegin());
     
     for (; it != prio_numeric_.rend(); ++it)
+    {
+        //cout << "it = " << *it << std::endl;
         if (it->find(std::string(prio)) != std::string::npos)
             break;
-    
-    if (it == prio_numeric_.rend())
-        return;
+    }
 
+    if (it == prio_numeric_.rend())
+    {
+        //std::cout << "prio not found!!!" << std::endl;
+        return;
+    }
+    
     prio_.clear();
 
     if (inclusive)
@@ -518,8 +532,11 @@ class FPLOG_API Fplog_Impl
                 return;
 
             msg.set(Message::Mandatory_Fields::appname, appname_);
+            //std::cout << "logging message: " << msg.as_string() << std::endl;
+            
             if (passed_filters(msg))
             {
+                //std::cout << "message passed filters OK" << std::endl;
                 msg.set_sequence((long long int)sequence_.read());
 
                 if (test_mode_)
@@ -528,6 +545,7 @@ class FPLOG_API Fplog_Impl
                 {
                     if (async_logging_)
                     {
+                        //std::cout << "message got inside the queue" << std::endl;
                         mq_.push(new std::string(msg.as_string()));
                     }
                     else
@@ -537,12 +555,14 @@ class FPLOG_API Fplog_Impl
                         {
                             try
                             {
+                                //std::cout << "preparing to write message directly" << std::endl;
                                 std::string str(msg.as_string());
                                 protocol_->write(str.c_str(), str.size(), 400);
                                 break;
                             }
-                            catch(fplog::exceptions::Generic_Exception&)
+                            catch(fplog::exceptions::Generic_Exception& e)
                             {
+                                //std::cout << "message not sent, err = " << e.what() << std::endl;
                                 send_retries--;
                                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
                             }
@@ -698,8 +718,13 @@ class FPLOG_API Fplog_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             Logger_Settings settings(thread_log_settings_table_[std::hash<std::thread::id>()(std::this_thread::get_id())]);
             
+            //std::cout << "--> passed_filters" << std::endl;
+            
             if (settings.filter_id_ptr_map.size() == 0)
+            {
+                //std::cout << "FALSE <-- passed_filters (no filters in map)" << std::endl;
                 return false;
+            }
 
             bool should_pass = true;
 
@@ -710,6 +735,7 @@ class FPLOG_API Fplog_Impl
                     break;
             }
 
+            //std::cout << should_pass << " <-- passed_filters" << std::endl;
             return should_pass;
         }
 };

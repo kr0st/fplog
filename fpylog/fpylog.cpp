@@ -34,6 +34,12 @@ namespace fpylog
 
         file_ = new fplog::File(prio, name, &(file[0]), file.size());
     }
+    
+    void initlog(const char* appname, const char* uid, bool use_async, fplog::Filter_Base& filter)
+    {
+        fplog::initlog(appname, uid, 0, use_async);
+        fplog::openlog(fplog::Facility::user, &filter);
+    }
 };
 
 BOOST_PYTHON_MODULE(fpylog)
@@ -41,20 +47,37 @@ BOOST_PYTHON_MODULE(fpylog)
     class_<fpylog::World>("World")
     .def("greet", &fpylog::World::greet)
     .def("set", &fpylog::World::set);
-    
-    //class_<fplog::Filter_Base>("Filter_Base", init<const char*>(args("filter_id")));
-    class_<fplog::Priority_Filter, boost::noncopyable>("Priority_Filter", init<const char*>(args("filter_id")))
+
+    def("initlog", &fpylog::initlog);
+    def("shutdownlog", &fplog::shutdownlog);
+    def("write", &fplog::write);
+
+    class_<fplog::Facility>("Facility")
+    .def_readonly("system", &fplog::Facility::system)
+    .def_readonly("user", &fplog::Facility::user)
+    .def_readonly("security", &fplog::Facility::security)
+    .def_readonly("fglog", &fplog::Facility::fplog);
+
+    class_<fplog::Prio>("Prio")
+    .def_readonly("emergency", &fplog::Prio::emergency)
+    .def_readonly("alert", &fplog::Prio::alert)
+    .def_readonly("critical", &fplog::Prio::critical)
+    .def_readonly("error", &fplog::Prio::error)
+    .def_readonly("warning", &fplog::Prio::warning)
+    .def_readonly("notice", &fplog::Prio::notice)
+    .def_readonly("info", &fplog::Prio::info)
+    .def_readonly("debug", &fplog::Prio::debug);
+
+    class_<fplog::Filter_Base, boost::noncopyable>("Filter_Base", no_init);
+    class_<fplog::Priority_Filter, bases<fplog::Filter_Base>, boost::noncopyable>("Priority_Filter", init<const char*>(args("filter_id")))
     .def("add", &fplog::Priority_Filter::add)
     .def("remove", &fplog::Priority_Filter::remove)
     .def("add_all_above", &fplog::Priority_Filter::add_all_above)
     .def("add_all_below", &fplog::Priority_Filter::add_all_below);
-    
-    //class_<fplog::File, boost::noncopyable>("File", init<const char*, const char*, const void*, size_t>(args("prio", "name", "content", "size")))
-    //.def("as_message", &fplog::File::as_message);
-    
+
     class_<fpylog::File, boost::noncopyable>("File", init<const char*, const char*, boost::python::list&>(args("prio", "name", "content")))
     .def("as_message", &fpylog::File::as_message);
-    
+
     scope Message(
     class_<fplog::Message>("Message", init<const char*, const char*, const char*>(args("prio", "facility", "text")))
     .def("as_json_string", &fplog::Message::as_string)
@@ -75,7 +98,7 @@ BOOST_PYTHON_MODULE(fpylog)
     .def_readonly("timestamp", &fplog::Message::Mandatory_Fields::timestamp)
     .def_readonly("hostname", &fplog::Message::Mandatory_Fields::hostname)
     .def_readonly("appname", &fplog::Message::Mandatory_Fields::appname);
-    
+
     class_<fplog::Message::Optional_Fields>("Optional_Fields")
     .def_readonly("text", &fplog::Message::Optional_Fields::text)
     .def_readonly("component", &fplog::Message::Optional_Fields::component)

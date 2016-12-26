@@ -20,7 +20,7 @@ def main():
         world.set("some greeting")
         print(world.greet())
 
-        message = fpylog.Message("warning", "fpylog", "success!")
+        message = fpylog.Message("warning", "user", "success!")
         json_string = message.as_json_string()
 
         message2 = fpylog.Message(str(json_string))
@@ -68,6 +68,18 @@ def main():
 
         print(str(file.as_message().as_json_string()))
         print(str(file2.as_message().as_json_string()))
+
+        print('Should print out word "debug": ' + fpylog.Prio.debug)
+
+        filter = fpylog.Priority_Filter("prio_filter")
+        filter.add_all_above(fpylog.Prio.debug, False)
+        fpylog.initlog("fpylog_test", "18749_18750", False, filter)
+
+        fpylog.write(message2)
+        fpylog.write(file.as_message())
+        fpylog.write(file2.as_message())
+
+        #fpylog.shutdownlog()
 
     except Exception as e:
         print(e)
