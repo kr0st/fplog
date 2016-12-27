@@ -71,7 +71,7 @@ def main():
 
         print('Should print out word "debug": ' + fpylog.Prio.debug)
 
-        filter = fpylog.Priority_Filter("prio_filter")
+        filter = fpylog.make_prio_filter("prio_filter")
         filter.add_all_above(fpylog.Prio.debug, False)
         fpylog.initlog("fpylog_test", "18749_18750", False, filter)
 
@@ -79,7 +79,7 @@ def main():
         fpylog.write(file.as_message())
         fpylog.write(file2.as_message())
 
-        #fpylog.shutdownlog()
+        fpylog.shutdownlog()
 
     except Exception as e:
         print(e)

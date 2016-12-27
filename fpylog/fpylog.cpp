@@ -35,10 +35,15 @@ namespace fpylog
         file_ = new fplog::File(prio, name, &(file[0]), file.size());
     }
     
-    void initlog(const char* appname, const char* uid, bool use_async, fplog::Filter_Base& filter)
+    fplog::Priority_Filter* make_prio_filter(const char* filter_id)
+    {
+        return new fplog::Priority_Filter(filter_id);
+    }
+
+    void initlog(const char* appname, const char* uid, bool use_async, fplog::Filter_Base* filter)
     {
         fplog::initlog(appname, uid, 0, use_async);
-        fplog::openlog(fplog::Facility::user, &filter);
+        fplog::openlog(fplog::Facility::user, filter);
     }
 };
 
@@ -74,6 +79,8 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("remove", &fplog::Priority_Filter::remove)
     .def("add_all_above", &fplog::Priority_Filter::add_all_above)
     .def("add_all_below", &fplog::Priority_Filter::add_all_below);
+    
+    def("make_prio_filter", &fpylog::make_prio_filter, return_value_policy<reference_existing_object>());
 
     class_<fpylog::File, boost::noncopyable>("File", init<const char*, const char*, boost::python::list&>(args("prio", "name", "content")))
     .def("as_message", &fpylog::File::as_message);
