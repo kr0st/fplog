@@ -58,7 +58,7 @@ namespace fpylog
             fplog::File* file_;
     };
     
-    void initlog(const char* appname, const char* uid, bool use_async, fplog::Filter_Base* filter);
+    void initlog(const char* appname, const char* facility, const char* uid, bool use_async, fplog::Filter_Base* filter);
 
 };
 

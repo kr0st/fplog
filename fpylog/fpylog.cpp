@@ -40,10 +40,10 @@ namespace fpylog
         return new fplog::Priority_Filter(filter_id);
     }
 
-    void initlog(const char* appname, const char* uid, bool use_async, fplog::Filter_Base* filter)
+    void initlog(const char* appname, const char* facility, const char* uid, bool use_async, fplog::Filter_Base* filter)
     {
         fplog::initlog(appname, uid, 0, use_async);
-        fplog::openlog(fplog::Facility::user, filter);
+        fplog::openlog(facility, filter);
     }
 };
 
@@ -54,6 +54,7 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("set", &fpylog::World::set);
 
     def("initlog", &fpylog::initlog);
+    def("get_facility", &fplog::get_facility);
     def("shutdownlog", &fplog::shutdownlog);
     def("write", &fplog::write);
 

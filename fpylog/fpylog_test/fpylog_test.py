@@ -3,52 +3,61 @@ import os
 import imp
 import inspect
 import array
+import fpylog
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
 
 
-def main():
-    print('inside main')
+def manual_test():
 
-    fpylog = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.dylib'))
+    in_str = ''
+    print('Please write log messages to send, type "exit" to quit.')
+    while in_str != 'exit':
+        in_str = str(raw_input())
+        fpylog.warn(in_str)
 
-    print(dir(fpylog))
+
+def pure_lib_test():
+
+    fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.dylib'))
+
+    print(dir(fpylog_lib))
 
     try:
-        world = fpylog.World()
+        world = fpylog_lib.World()
         world.set("some greeting")
         print(world.greet())
 
-        message = fpylog.Message("warning", "user", "success!")
+        message = fpylog_lib.Message("warning", "user", "success!")
         json_string = message.as_json_string()
 
-        message2 = fpylog.Message(str(json_string))
+        message2 = fpylog_lib.Message(str(json_string))
 
         message2.add_short('short', 22)
         message2.add_long('long', 42545)
         message2.add_float('float', 2.42)
         message2.add_string('str', 'just a string')
 
-        print(str(fpylog.Message.Mandatory_Fields().facility))
-        print(str(fpylog.Message.Mandatory_Fields().priority))
-        print(str(fpylog.Message.Mandatory_Fields().timestamp))
-        print(str(fpylog.Message.Mandatory_Fields().hostname))
-        print(str(fpylog.Message.Mandatory_Fields().appname))
+        print(str(fpylog_lib.Message.Mandatory_Fields.facility))
+        print(str(fpylog_lib.Message.Mandatory_Fields.priority))
+        print(str(fpylog_lib.Message.Mandatory_Fields.timestamp))
+        print(str(fpylog_lib.Message.Mandatory_Fields.hostname))
+        print(str(fpylog_lib.Message.Mandatory_Fields.appname))
 
-        print(str(fpylog.Message.Optional_Fields().text))
-        print(str(fpylog.Message.Optional_Fields().component))
-        print(str(fpylog.Message.Optional_Fields().class_name))
-        print(str(fpylog.Message.Optional_Fields().method))
-        print(str(fpylog.Message.Optional_Fields().module))
-        print(str(fpylog.Message.Optional_Fields().line))
-        print(str(fpylog.Message.Optional_Fields().options))
-        print(str(fpylog.Message.Optional_Fields().encrypted))
-        print(str(fpylog.Message.Optional_Fields().file))
-        print(str(fpylog.Message.Optional_Fields().blob))
-        print(str(fpylog.Message.Optional_Fields().warning))
-        print(str(fpylog.Message.Optional_Fields().sequence))
-        print(str(fpylog.Message.Optional_Fields().batch))
+        print(str(fpylog_lib.Message.Optional_Fields.text))
+        print(str(fpylog_lib.Message.Optional_Fields.component))
+        print(str(fpylog_lib.Message.Optional_Fields.class_name))
+        print(str(fpylog_lib.Message.Optional_Fields.method))
+        print(str(fpylog_lib.Message.Optional_Fields.module))
+        print(str(fpylog_lib.Message.Optional_Fields.line))
+        print(str(fpylog_lib.Message.Optional_Fields.options))
+        print(str(fpylog_lib.Message.Optional_Fields.encrypted))
+        print(str(fpylog_lib.Message.Optional_Fields.file))
+        print(str(fpylog_lib.Message.Optional_Fields.blob))
+        print(str(fpylog_lib.Message.Optional_Fields.warning))
+        print(str(fpylog_lib.Message.Optional_Fields.sequence))
+        print(str(fpylog_lib.Message.Optional_Fields.batch))
 
         message2.set_class('superclass')
         message2.set_module(__file__)
@@ -63,27 +72,43 @@ def main():
         print(list(arr))
         print(list(arr2))
 
-        file = fpylog.File('warning', 'some_file', list(arr))
-        file2 = fpylog.File('warning', 'another_file', list(arr2))
+        file = fpylog_lib.File('warning', 'some_file', list(arr))
+        file2 = fpylog_lib.File('warning', 'another_file', list(arr2))
 
         print(str(file.as_message().as_json_string()))
         print(str(file2.as_message().as_json_string()))
 
-        print('Should print out word "debug": ' + fpylog.Prio.debug)
+        print('Should print out word "debug": ' + fpylog_lib.Prio.debug)
 
-        filter = fpylog.make_prio_filter("prio_filter")
-        filter.add_all_above(fpylog.Prio.debug, False)
-        fpylog.initlog("fpylog_test", "18749_18750", False, filter)
+        filter = fpylog_lib.make_prio_filter("prio_filter")
+        filter.add_all_above(fpylog_lib.Prio.debug, False)
+        fpylog_lib.initlog("fpylog_pure_lib_test", "fpylog_lib", "18749_18750", False, filter)
 
-        fpylog.write(message2)
-        fpylog.write(file.as_message())
-        fpylog.write(file2.as_message())
+        fpylog_lib.write(message2)
+        fpylog_lib.write(file.as_message())
+        fpylog_lib.write(file2.as_message())
 
-        fpylog.shutdownlog()
+        fpylog_lib.shutdownlog()
 
     except Exception as e:
         print(e)
         return 1
+
+
+def main():
+
+    print('inside main')
+
+    pure_lib_test()
+
+    prio_filter = fpylog.lib.make_prio_filter("prio_filter")
+    prio_filter.add_all_above(fpylog.lib.Prio.debug, False)
+
+    fpylog.lib.initlog("fpylog_test", "fpylog", "18749_18750", False, prio_filter)
+
+    manual_test()
+
+    fpylog.lib.shutdownlog()
 
     return 0
 
