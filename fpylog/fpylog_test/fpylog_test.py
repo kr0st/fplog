@@ -9,13 +9,18 @@ cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
 
 
+class Fpylog_Test:
+    def __init__(self):
+        fpylog.crit('message from class')
+
+
 def manual_test():
 
     in_str = ''
     print('Please write log messages to send, type "exit" to quit.')
     while in_str != 'exit':
         in_str = str(raw_input())
-        fpylog.warn(in_str)
+        fpylog.info(in_str)
 
 
 def pure_lib_test():
@@ -105,6 +110,8 @@ def main():
     prio_filter.add_all_above(fpylog.lib.Prio.debug, False)
 
     fpylog.lib.initlog("fpylog_test", "fpylog", "18749_18750", False, prio_filter)
+
+    class_log_test = Fpylog_Test()
 
     manual_test()
 
