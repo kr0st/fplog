@@ -4,6 +4,8 @@ import imp
 import inspect
 import array
 import fpylog
+import random
+import string
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
@@ -12,6 +14,36 @@ sys.path.append(cur_path)
 class Fpylog_Test:
     def __init__(self):
         fpylog.crit('message from class')
+
+
+def spam_test():
+    print('Spamming with random messages as fast as we can!!!')
+
+    counter = 0
+
+    while True:
+
+        arr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(135))
+
+        counter += 1
+
+        if counter % 13 == 0:
+            fpylog.crit(arr)
+
+        if counter % 11 == 0:
+            fpylog.err(arr)
+
+        if counter % 9 == 0:
+            fpylog.warn(arr)
+
+        if counter % 7 == 0:
+            fpylog.info(arr)
+
+        if counter % 5 == 0:
+            fpylog.debug(arr)
+
+        if counter > 1000000:
+            counter = 0
 
 
 def manual_test():
@@ -109,11 +141,12 @@ def main():
     prio_filter = fpylog.lib.make_prio_filter("prio_filter")
     prio_filter.add_all_above(fpylog.lib.Prio.debug, False)
 
-    fpylog.lib.initlog("fpylog_test", "fpylog", "18749_18750", False, prio_filter)
+    fpylog.lib.initlog("fpylog_test", "fpylog", "18749_18750", True, prio_filter)
 
     class_log_test = Fpylog_Test()
 
-    manual_test()
+    #manual_test()
+    spam_test()
 
     fpylog.lib.shutdownlog()
 
