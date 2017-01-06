@@ -145,8 +145,15 @@ def main():
 
     class_log_test = Fpylog_Test()
 
-    #manual_test()
-    spam_test()
+    raw_msg = fpylog.make_log_message('raw msg test', fpylog.lib.Prio.critical)
+    raw_msg.add_float('pointless_number', -44.3)
+
+    fpylog.write_raw(raw_msg)
+
+    fpylog.write_log('writing generic log message', fpylog.lib.Prio.info)
+
+    manual_test()
+    #spam_test()
 
     fpylog.lib.shutdownlog()
 
