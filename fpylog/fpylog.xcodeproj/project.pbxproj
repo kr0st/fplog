@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7836304A1E2172960010B08D /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
+		7836304C1E2172960010B08D /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F311E030CC900E90119 /* libboost_system-mt.dylib */; };
+		7836304D1E2172960010B08D /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2F1E030C9C00E90119 /* libjson.dylib */; };
+		7836304E1E2172960010B08D /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2D1E030C9700E90119 /* libspipc.dylib */; };
+		7836304F1E2172960010B08D /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2B1E030C9100E90119 /* libsprot.dylib */; };
+		783630501E2172960010B08D /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
+		783630541E2172960010B08D /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
+		7836305B1E21814D0010B08D /* libboost_python3-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7836305A1E21814D0010B08D /* libboost_python3-mt.dylib */; };
+		7836305D1E2181800010B08D /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 7836305C1E2181800010B08D /* Python */; };
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
 		78C20F251E018D8100E90119 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F241E018D8100E90119 /* Python */; };
@@ -20,6 +29,9 @@
 
 /* Begin PBXFileReference section */
 		781338BA1DF72F2B00578629 /* libfpylog.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		783630591E2172960010B08D /* libfpylog3.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog3.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		7836305A1E21814D0010B08D /* libboost_python3-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python3-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.63.0/lib/libboost_python3-mt.dylib"; sourceTree = "<group>"; };
+		7836305C1E2181800010B08D /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Python; sourceTree = "<group>"; };
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
 		78C20F241E018D8100E90119 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
@@ -46,6 +58,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7836304B1E2172960010B08D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7836305D1E2181800010B08D /* Python in Frameworks */,
+				7836305B1E21814D0010B08D /* libboost_python3-mt.dylib in Frameworks */,
+				7836304C1E2172960010B08D /* libboost_system-mt.dylib in Frameworks */,
+				7836304D1E2172960010B08D /* libjson.dylib in Frameworks */,
+				7836304E1E2172960010B08D /* libspipc.dylib in Frameworks */,
+				7836304F1E2172960010B08D /* libsprot.dylib in Frameworks */,
+				783630501E2172960010B08D /* libfplog.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -62,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				781338BA1DF72F2B00578629 /* libfpylog.dylib */,
+				783630591E2172960010B08D /* libfpylog3.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,6 +105,8 @@
 		78CF73841DF8844C00D53A7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7836305C1E2181800010B08D /* Python */,
+				7836305A1E21814D0010B08D /* libboost_python3-mt.dylib */,
 				78C20F311E030CC900E90119 /* libboost_system-mt.dylib */,
 				78C20F2F1E030C9C00E90119 /* libjson.dylib */,
 				78C20F2D1E030C9700E90119 /* libspipc.dylib */,
@@ -100,6 +129,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		783630531E2172960010B08D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				783630541E2172960010B08D /* fpylog.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -119,6 +156,24 @@
 			name = fpylog;
 			productName = fpylog;
 			productReference = 781338BA1DF72F2B00578629 /* libfpylog.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		783630481E2172960010B08D /* fpylog3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 783630561E2172960010B08D /* Build configuration list for PBXNativeTarget "fpylog3" */;
+			buildPhases = (
+				783630491E2172960010B08D /* Sources */,
+				7836304B1E2172960010B08D /* Frameworks */,
+				783630531E2172960010B08D /* Headers */,
+				783630551E2172960010B08D /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = fpylog3;
+			productName = fpylog;
+			productReference = 783630591E2172960010B08D /* libfpylog3.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -149,11 +204,25 @@
 			projectRoot = "";
 			targets = (
 				781338B91DF72F2B00578629 /* fpylog */,
+				783630481E2172960010B08D /* fpylog3 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		783630551E2172960010B08D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+		};
 		7895124B1DF73A8100A51CBE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -175,6 +244,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		783630491E2172960010B08D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7836304A1E2172960010B08D /* fpylog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,6 +425,86 @@
 			};
 			name = Release;
 		};
+		783630571E2172960010B08D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.63.0/include,
+					../,
+					./,
+					../udt4/src/,
+					../udt4/app/,
+					../common/,
+					../lua/src/,
+					../chaiscript/include/,
+					../fplog/,
+					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Headers,
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/boost/1.63.0/lib,
+					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6,
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-D_LINUX",
+					"-D_OSX",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		783630581E2172960010B08D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.63.0/include,
+					../,
+					./,
+					../udt4/src/,
+					../udt4/app/,
+					../common/,
+					../lua/src/,
+					../chaiscript/include/,
+					../fplog/,
+					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Headers,
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/boost/1.63.0/lib,
+					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6,
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-D_LINUX",
+					"-D_OSX",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -365,6 +522,15 @@
 			buildConfigurations = (
 				781338C61DF72F2B00578629 /* Debug */,
 				781338C71DF72F2B00578629 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		783630561E2172960010B08D /* Build configuration list for PBXNativeTarget "fpylog3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				783630571E2172960010B08D /* Debug */,
+				783630581E2172960010B08D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
