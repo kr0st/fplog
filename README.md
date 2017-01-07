@@ -24,8 +24,8 @@ You will need to execute a number of commands in the terminal before attempting 
     brew install coreutils
     brew install python
     brew install python3
-    brew install boost --with-python
-    brew install boost-python --with-python3 --with-python
+    brew install boost
+    brew install boost-python --with-python3
 
 The second line installs Homebrew version of Python 2.7. The actual version at the moment of writing is 2.7.13 found in /usr/local/Cellar/python/2.7.13/. Unfortunately due to the Homebrew inability of working with versioned packages you will have to switch Python dependency in your Xcode project to the version of Python library that you have in your Homebrew Python installation. Just make sure you are referencing not macOS default Python but Homebrew version.
 
