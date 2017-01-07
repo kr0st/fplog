@@ -3,7 +3,7 @@ import os
 import imp
 import inspect
 import array
-import fpylog
+import fplog_wrapper as fpylog
 import random
 import string
 
@@ -51,13 +51,13 @@ def manual_test():
     in_str = ''
     print('Please write log messages to send, type "exit" to quit.')
     while in_str != 'exit':
-        in_str = str(raw_input())
+        in_str = str(input())
         fpylog.info(in_str)
 
 
 def pure_lib_test():
 
-    fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.dylib'))
+    fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog3.dylib'))
 
     print(dir(fpylog_lib))
 
