@@ -42,7 +42,7 @@
 		781A17EA1DD8DB070049BB40 /* fplog_transport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_transport.h; path = ../common/fplog_transport.h; sourceTree = "<group>"; };
 		781A17EE1DD8E1640049BB40 /* libudt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libudt.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libudt.dylib"; sourceTree = "<group>"; };
 		781A17F01DD8E1940049BB40 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
-		781A17F21DD8E3BA0049BB40 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
+		781A17F21DD8E3BA0049BB40 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		781A18071DD8E6CB0049BB40 /* spipc_test.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = spipc_test.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -322,7 +322,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.63.0/include/,
 					../,
 					./,
 					../udt4/src/,
@@ -331,7 +331,7 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.62.0/lib,
+					/usr/local/Cellar/boost/1.63.0/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D_LINUX",
@@ -353,7 +353,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.63.0/include/,
 					../,
 					./,
 					../udt4/src/,
@@ -362,7 +362,7 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.62.0/lib,
+					/usr/local/Cellar/boost/1.63.0/lib,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (

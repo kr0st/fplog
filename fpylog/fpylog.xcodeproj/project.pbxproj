@@ -22,13 +22,13 @@
 		781338BA1DF72F2B00578629 /* libfpylog.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
-		78C20F241E018D8100E90119 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
+		78C20F241E018D8100E90119 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../../../../../usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/Python; sourceTree = "<group>"; };
 		78C20F291E030C8A00E90119 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = ../fplog/build/Debug/libfplog.dylib; sourceTree = "<group>"; };
 		78C20F2B1E030C9100E90119 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Debug/libsprot.dylib; sourceTree = "<group>"; };
 		78C20F2D1E030C9700E90119 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = ../spipc/build/Debug/libspipc.dylib; sourceTree = "<group>"; };
 		78C20F2F1E030C9C00E90119 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = ../libjson/build/Debug/libjson.dylib; sourceTree = "<group>"; };
-		78C20F311E030CC900E90119 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
-		78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.62.0/lib/libboost_python-mt.dylib"; sourceTree = "<group>"; };
+		78C20F311E030CC900E90119 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
+		78CF73851DF8844C00D53A7D /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../../../../../usr/local/Cellar/boost-python/1.63.0/lib/libboost_python-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,7 +280,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include,
+					/usr/local/Cellar/boost/1.63.0/include,
 					../,
 					./,
 					../udt4/src/,
@@ -295,9 +295,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.62.0/lib,
-					"/usr/local/Cellar/boost-python/1.62.0/lib",
-					/usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7,
+					/usr/local/Cellar/boost/1.63.0/lib,
+					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -320,7 +320,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include,
+					/usr/local/Cellar/boost/1.63.0/include,
 					../,
 					./,
 					../udt4/src/,
@@ -335,9 +335,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.62.0/lib,
-					"/usr/local/Cellar/boost-python/1.62.0/lib",
-					/usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7,
+					/usr/local/Cellar/boost/1.63.0/lib,
+					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
