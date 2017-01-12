@@ -2,7 +2,7 @@
 <CodeLite_Project Name="spipc" InternalType="Library">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+      <![CDATA[00060001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-32bit0000000000000001N0013Release-64bit000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -15,7 +15,43 @@
   "arguments": [],
   "parentProject": ""
  }, {
+  "name": "Debug-32bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Debug-64bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
   "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release-32bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release-64bit",
   "enabled": false,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
@@ -51,7 +87,7 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="Debug" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11;-fpermissive;-m32" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
@@ -68,7 +104,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-d-1_61"/>
+        <Library Value="boost_system-gcc48-mt-d-1_63"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -84,7 +120,7 @@
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
         <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
-        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ arch=IA32</Command>
         <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
       </PreBuild>
       <PostBuild>
@@ -111,7 +147,67 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-fPIC;-g;-std=c++11;-fpermissive;" C_Options="-g;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../udt4/src/"/>
+        <IncludePath Value="../udt4/app/"/>
+        <Preprocessor Value="_LINUX"/>
+      </Compiler>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="sprot"/>
+        <Library Value="udt"/>
+        <Library Value="dl"/>
+        <Library Value="pthread"/>
+        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ arch=AMD64</Command>
+        <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11;-fpermissive;-m32" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
@@ -128,7 +224,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-1_61"/>
+        <Library Value="boost_system-gcc48-mt-1_63"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -144,7 +240,67 @@
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
         <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
-        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ arch=IA32</Command>
+        <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-std=c++11;-fpermissive;" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../udt4/src/"/>
+        <IncludePath Value="../udt4/app/"/>
+        <Preprocessor Value="_LINUX"/>
+      </Compiler>
+      <Linker Options="-O2;" Required="yes">
+        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="sprot"/>
+        <Library Value="udt"/>
+        <Library Value="dl"/>
+        <Library Value="pthread"/>
+        <Library Value="boost_system-gcc48-mt-1_63"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libudt*</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ clean</Command>
+        <Command Enabled="yes">make -f ../udt4/Makefile --directory=../udt4/ arch=IA64</Command>
         <Command Enabled="yes">cp ../udt4/src/libudt.so ../Stage</Command>
       </PreBuild>
       <PostBuild>
@@ -172,4 +328,16 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug-64bit">
+    <Project Name="sprot"/>
+  </Dependencies>
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+  </Dependencies>
+  <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+  </Dependencies>
 </CodeLite_Project>

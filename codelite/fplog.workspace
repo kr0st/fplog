@@ -3,30 +3,50 @@
   <Project Name="sprot" Path="sprot.project" Active="No"/>
   <Project Name="spipc" Path="spipc.project" Active="No"/>
   <Project Name="fplog" Path="fplog.project" Active="No"/>
-  <Project Name="fplog_test" Path="fplog_test.project" Active="No"/>
+  <Project Name="fplog_test" Path="fplog_test.project" Active="Yes"/>
   <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <Project Name="fpcollect" Path="fpcollect.project" Active="No"/>
-  <Project Name="spipc_test" Path="spipc_test.project" Active="Yes"/>
+  <Project Name="spipc_test" Path="spipc_test.project" Active="No"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
-      <Project Name="sprot" ConfigName="Debug"/>
-      <Project Name="spipc_test" ConfigName="Debug"/>
-      <Project Name="spipc" ConfigName="Debug"/>
-      <Project Name="fplogd" ConfigName="Debug"/>
-      <Project Name="fplog_test" ConfigName="Debug"/>
-      <Project Name="fplog" ConfigName="Debug"/>
-      <Project Name="fpcollect" ConfigName="Debug"/>
+      <Project Name="sprot" ConfigName="Debug-32bit"/>
+      <Project Name="spipc_test" ConfigName="Debug-32bit"/>
+      <Project Name="spipc" ConfigName="Debug-32bit"/>
+      <Project Name="fplogd" ConfigName="Debug-32bit"/>
+      <Project Name="fplog_test" ConfigName="Debug-32bit"/>
+      <Project Name="fplog" ConfigName="Debug-32bit"/>
+      <Project Name="fpcollect" ConfigName="Debug-32bit"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>
-      <Project Name="sprot" ConfigName="Release"/>
-      <Project Name="spipc_test" ConfigName="Release"/>
-      <Project Name="spipc" ConfigName="Release"/>
-      <Project Name="fplogd" ConfigName="Release"/>
-      <Project Name="fplog_test" ConfigName="Release"/>
-      <Project Name="fplog" ConfigName="Release"/>
-      <Project Name="fpcollect" ConfigName="Release"/>
+      <Project Name="sprot" ConfigName="Release-32bit"/>
+      <Project Name="spipc_test" ConfigName="Release-32bit"/>
+      <Project Name="spipc" ConfigName="Release-32bit"/>
+      <Project Name="fplogd" ConfigName="Release-32bit"/>
+      <Project Name="fplog_test" ConfigName="Release-32bit"/>
+      <Project Name="fplog" ConfigName="Release-32bit"/>
+      <Project Name="fpcollect" ConfigName="Release-32bit"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Debug-64bit" Selected="yes">
+      <Environment/>
+      <Project Name="sprot" ConfigName="Debug-64bit"/>
+      <Project Name="spipc_test" ConfigName="Debug-64bit"/>
+      <Project Name="spipc" ConfigName="Debug-64bit"/>
+      <Project Name="fplogd" ConfigName="Debug-64bit"/>
+      <Project Name="fplog_test" ConfigName="Debug-64bit"/>
+      <Project Name="fplog" ConfigName="Debug-64bit"/>
+      <Project Name="fpcollect" ConfigName="Debug-64bit"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release-64bit" Selected="no">
+      <Environment/>
+      <Project Name="sprot" ConfigName="Release-64bit"/>
+      <Project Name="spipc_test" ConfigName="Release-64bit"/>
+      <Project Name="spipc" ConfigName="Release-64bit"/>
+      <Project Name="fplogd" ConfigName="Release-64bit"/>
+      <Project Name="fplog_test" ConfigName="Release-64bit"/>
+      <Project Name="fplog" ConfigName="Release-64bit"/>
+      <Project Name="fpcollect" ConfigName="Release-64bit"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

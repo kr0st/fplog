@@ -12,6 +12,7 @@ CCFLAGS = -fPIC -Wall -Wextra -D$(os) -finline-functions -O3 -fno-strict-aliasin
 
 ifeq ($(arch), IA32)
    CCFLAGS += -DIA32 -m32
+   C++ += -m32
 endif
 
 ifeq ($(arch), POWERPC)
@@ -40,7 +41,7 @@ all: libudt.so libudt.a udt
 
 libudt.so: $(OBJS)
 ifneq ($(os), OSX)
-	$(C++) -m32 -shared -o $@ $^
+	$(C++) -shared -o $@ $^
 else
 	$(C++) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm $^
 endif

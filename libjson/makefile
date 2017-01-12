@@ -134,7 +134,7 @@ OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	cxxflags_default = -fast -ffast-math -fexpensive-optimizations -DNDEBUG
 else
-	cxxflags_default = -O3 -ffast-math -fexpensive-optimizations -m32 -DNDEBUG
+	cxxflags_default = -O3 -ffast-math -fexpensive-optimizations -DNDEBUG
 endif
 cxxflags_small   = -Os -ffast-math -DJSON_LESS_MEMORY -DNDEBUG
 cxxflags_debug   = -g -DJSON_SAFE -DJSON_DEBUG
@@ -161,6 +161,9 @@ PIC             ?= PIC
 BUILD_TYPE      ?= "default"
 SHARED          ?= "1"
 
+ifeq ($(arch), IA32)
+CXX += -m32
+endif
 
 # Internal Variables
 inst_path        = $(exec_prefix)/$(libdir)
@@ -221,9 +224,9 @@ $(lib_target): banner installdirs $(addprefix $(objdir)/, $(objects))
 	@echo "Link "
 	cd $(objdir) ; \
 	if test "$(OS)" = "Darwin" ; then \
-		$(CXX) -m32 -shared -Wl,-dylib_install_name -Wl,$(libname_shared_major_version) -o $@ $(objects) ; \
+		$(CXX) -shared -Wl,-dylib_install_name -Wl,$(libname_shared_major_version) -o $@ $(objects) ; \
 	else \
-		$(CXX) -m32 -shared -Wl,-soname,$(libname_shared) -o $@ $(objects) ; \
+		$(CXX) -shared -Wl,-soname,$(libname_shared) -o $@ $(objects) ; \
 	fi ; \
 	mv -f $@ ../
 	@echo "Link: Done"

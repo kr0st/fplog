@@ -2,7 +2,7 @@
 <CodeLite_Project Name="fplog" InternalType="Library">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+      <![CDATA[00060001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-32bit0000000000000001N0013Release-64bit000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -15,7 +15,43 @@
   "arguments": [],
   "parentProject": ""
  }, {
+  "name": "Debug-32bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Debug-64bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
   "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release-32bit",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release-64bit",
   "enabled": false,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
@@ -54,7 +90,7 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="Debug" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11;-fpermissive;-m32" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
@@ -89,11 +125,11 @@
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">rm -f ../Stage/*liblua*</Command>
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
-        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/</Command>
+        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ arch=IA32</Command>
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
-        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA32</Command>
         <Command Enabled="yes">cp ../libjson/libjson.so ../Stage/libjson.so</Command>
       </PreBuild>
       <PostBuild>
@@ -120,7 +156,73 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-fPIC;-g;-std=c++11;-fpermissive;" C_Options="-g;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="./"/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
+        <Preprocessor Value="_LINUX"/>
+        <Preprocessor Value="FPLOG_EXPORT"/>
+      </Compiler>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="dl"/>
+        <Library Value="spipc"/>
+        <Library Value="lua"/>
+        <Library Value="rt"/>
+        <Library Value="json"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*liblua*</Command>
+        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
+        <Command Enabled="yes">arch=AMD64 make -f ../lua/Makefile --directory=../lua/</Command>
+        <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+        <Command Enabled="yes">SHARED=1 arch=AMD64 make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">cp ../libjson/libjson.so ../Stage/libjson.so</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11;-fpermissive;-m32" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
@@ -155,11 +257,77 @@
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">rm -f ../Stage/*liblua*</Command>
         <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
-        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/</Command>
+        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ arch=IA32</Command>
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
-        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/</Command>
+        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA32</Command>
+        <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-std=c++11;-fpermissive;" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="./"/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../fplog/"/>
+        <Preprocessor Value="_LINUX"/>
+        <Preprocessor Value="FPLOG_EXPORT"/>
+      </Compiler>
+      <Linker Options="-O2;" Required="yes">
+        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="dl"/>
+        <Library Value="spipc"/>
+        <Library Value="lua"/>
+        <Library Value="rt"/>
+        <Library Value="json"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">rm -f ../Stage/*liblua*</Command>
+        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ clean</Command>
+        <Command Enabled="yes">make -f ../lua/Makefile --directory=../lua/ arch=IA64</Command>
+        <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
+        <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA64</Command>
         <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
@@ -187,4 +355,20 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
 </CodeLite_Project>

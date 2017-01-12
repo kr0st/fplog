@@ -54,7 +54,7 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="Debug" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11;-fpermissive;-m32" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
@@ -73,7 +73,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-d-1_61"/>
+        <Library Value="boost_system-gcc48-mt-d-1_63"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -92,11 +92,11 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -119,7 +119,72 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g;-std=c++11;-fpermissive;" C_Options="-g;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
+        <Preprocessor Value="_LINUX"/>
+      </Compiler>
+      <Linker Options="Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
+        <LibraryPath Value="../boost/stage/lib"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="dl"/>
+        <Library Value="lua"/>
+        <Library Value="udt"/>
+        <Library Value="sprot"/>
+        <Library Value="spipc"/>
+        <Library Value="fplog"/>
+        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+        <Library Value="json"/>
+        <Library Value="stdc++"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="spipc_test" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)/../../Stage" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11;-fpermissive;-m32" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../boost/"/>
@@ -138,7 +203,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-1_61"/>
+        <Library Value="boost_system-gcc48-mt-1_63"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -157,11 +222,76 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_61.so.1.61.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="yes" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-std=c++11;-fpermissive;" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <IncludePath Value="../boost/"/>
+        <IncludePath Value="../common/"/>
+        <IncludePath Value="../lua/src"/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../chaiscript/include"/>
+        <Preprocessor Value="_LINUX"/>
+      </Compiler>
+      <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
+        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../Stage"/>
+        <Library Value="dl"/>
+        <Library Value="lua"/>
+        <Library Value="udt"/>
+        <Library Value="sprot"/>
+        <Library Value="spipc"/>
+        <Library Value="fplog"/>
+        <Library Value="boost_system-gcc48-mt-1_63"/>
+        <Library Value="json"/>
+        <Library Value="stdc++"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -185,4 +315,20 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug-64bit">
+    <Project Name="spipc"/>
+    <Project Name="sprot"/>
+  </Dependencies>
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
 </CodeLite_Project>

@@ -11,6 +11,7 @@ endif
 CCFLAGS = -Wall -D$(os) -I../src -finline-functions -O3
 
 ifeq ($(arch), IA32)
+   C++ += -m32
    CCFLAGS += -DIA32 -m32 #-mcpu=pentiumpro -march=pentiumpro -mmmx -msse
 endif
 
@@ -26,7 +27,7 @@ ifeq ($(arch), SPARC)
    CCFLAGS += -DSPARC
 endif
 
-LDFLAGS = -L../src -ludt -m32 -lstdc++ -lpthread -lm
+LDFLAGS = -L../src -ludt -lstdc++ -lpthread -lm
 
 ifeq ($(os), UNIX)
    LDFLAGS += -lsocket
