@@ -218,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -341,7 +341,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INSTALL_PATH = "@rpath";
 				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -356,8 +356,9 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INSTALL_PATH = "@rpath";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-Wl,-no_weak_imports";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

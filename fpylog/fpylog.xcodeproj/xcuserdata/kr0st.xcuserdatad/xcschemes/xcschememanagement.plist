@@ -4,15 +4,30 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>udt.xcscheme</key>
+		<key>fpylog.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>11</integer>
+			<integer>4</integer>
+		</dict>
+		<key>fpylog3.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>78E6A29A1DD8BE8C00368E40</key>
+		<key>781338B91DF72F2B00578629</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7836303C1E2170650010B08D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>783630481E2172960010B08D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
