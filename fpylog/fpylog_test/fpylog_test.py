@@ -57,7 +57,12 @@ def manual_test():
 
 def pure_lib_test():
 
-    fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog3.dylib'))
+    fpylog_lib = None
+
+    try:
+        fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog3.dylib'))
+    except Exception:
+        fpylog_lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.so'))
 
     print(dir(fpylog_lib))
 

@@ -3,7 +3,8 @@
   <Project Name="sprot" Path="sprot.project" Active="No"/>
   <Project Name="spipc" Path="spipc.project" Active="No"/>
   <Project Name="fplog" Path="fplog.project" Active="No"/>
-  <Project Name="fplog_test" Path="fplog_test.project" Active="Yes"/>
+  <Project Name="fpylog" Path="fpylog.project" Active="Yes"/>
+  <Project Name="fplog_test" Path="fplog_test.project" Active="No"/>
   <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <Project Name="fpcollect" Path="fpcollect.project" Active="No"/>
   <Project Name="spipc_test" Path="spipc_test.project" Active="No"/>
@@ -16,6 +17,7 @@
       <Project Name="fplogd" ConfigName="Debug-32bit"/>
       <Project Name="fplog_test" ConfigName="Debug-32bit"/>
       <Project Name="fplog" ConfigName="Debug-32bit"/>
+      <Project Name="fpylog" ConfigName="Debug-32bit"/>
       <Project Name="fpcollect" ConfigName="Debug-32bit"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="no">
@@ -26,6 +28,7 @@
       <Project Name="fplogd" ConfigName="Release-32bit"/>
       <Project Name="fplog_test" ConfigName="Release-32bit"/>
       <Project Name="fplog" ConfigName="Release-32bit"/>
+      <Project Name="fpylog" ConfigName="Release-32bit"/>
       <Project Name="fpcollect" ConfigName="Release-32bit"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Debug-64bit" Selected="yes">
@@ -36,6 +39,7 @@
       <Project Name="fplogd" ConfigName="Debug-64bit"/>
       <Project Name="fplog_test" ConfigName="Debug-64bit"/>
       <Project Name="fplog" ConfigName="Debug-64bit"/>
+      <Project Name="fpylog" ConfigName="Debug-64bit"/>
       <Project Name="fpcollect" ConfigName="Debug-64bit"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release-64bit" Selected="no">
@@ -46,6 +50,7 @@
       <Project Name="fplogd" ConfigName="Release-64bit"/>
       <Project Name="fplog_test" ConfigName="Release-64bit"/>
       <Project Name="fplog" ConfigName="Release-64bit"/>
+      <Project Name="fpylog" ConfigName="Release-64bit"/>
       <Project Name="fpcollect" ConfigName="Release-64bit"/>
     </WorkspaceConfiguration>
   </BuildMatrix>

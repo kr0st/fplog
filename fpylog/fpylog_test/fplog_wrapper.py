@@ -7,7 +7,12 @@ import array
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
 
-lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog3.dylib'))
+lib = None
+
+try:
+    lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog3.dylib'))
+except Exception:
+    lib = imp.load_dynamic('fpylog', os.path.join(cur_path, 'libfpylog.so'))
 
 
 def make_log_message(log_msg, prio, stack_frame=1):
