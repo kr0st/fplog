@@ -166,12 +166,14 @@
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
         <LibraryPath Value="../Stage"/>
+        <LibraryPath Value="/usr/lib"/>
         <Library Value="dl"/>
         <Library Value="fplog"/>
         <Library Value="lua"/>
         <Library Value="rt"/>
         <Library Value="json"/>
-        <Library Value="boost_python-gcc48-mt-d-1_63"/>
+        <Library Value="boost_python3-gcc48-mt-1_63"/>
+        <Library Value="libpython3.4m"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -188,6 +190,9 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_python3-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/libboost_python-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes"/>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -281,11 +286,14 @@
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/"/>
         <LibraryPath Value="../Stage"/>
+        <LibraryPath Value="/usr/lib"/>
         <Library Value="dl"/>
         <Library Value="fplog"/>
         <Library Value="lua"/>
         <Library Value="rt"/>
         <Library Value="json"/>
+        <Library Value="boost_python3-gcc48-mt-1_63"/>
+        <Library Value="libpython3.4m"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
