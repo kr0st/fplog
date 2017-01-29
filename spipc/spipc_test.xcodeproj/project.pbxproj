@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		781A180E1DD8E7310049BB40 /* spipc_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 781A180D1DD8E7310049BB40 /* spipc_test.cpp */; };
 		781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A18111DD8E9BD0049BB40 /* libspipc.dylib */; };
-		781A18141DD8E9FB0049BB40 /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A18131DD8E9FB0049BB40 /* libboost_system.dylib */; };
+		78F3F3E61E3D12E000D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3E51E3D12E000D8039A /* libboost_system-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +28,7 @@
 		781A17FD1DD8E6350049BB40 /* spipc_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spipc_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		781A180D1DD8E7310049BB40 /* spipc_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spipc_test.cpp; sourceTree = SOURCE_ROOT; };
 		781A18111DD8E9BD0049BB40 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
-		781A18131DD8E9FB0049BB40 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system.dylib; sourceTree = "<group>"; };
+		78F3F3E51E3D12E000D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,7 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				781A18141DD8E9FB0049BB40 /* libboost_system.dylib in Frameworks */,
+				78F3F3E61E3D12E000D8039A /* libboost_system-mt.dylib in Frameworks */,
 				781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -72,7 +72,7 @@
 		781A18101DD8E9BD0049BB40 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				781A18131DD8E9FB0049BB40 /* libboost_system.dylib */,
+				78F3F3E51E3D12E000D8039A /* libboost_system-mt.dylib */,
 				781A18111DD8E9BD0049BB40 /* libspipc.dylib */,
 			);
 			name = Frameworks;
@@ -143,7 +143,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -251,7 +251,7 @@
 			buildSettings = {
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.63.0/include/,
 					../,
 					./,
 					../udt4/src/,
@@ -259,10 +259,7 @@
 					../common/,
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/lib/,
-					/usr/local/Cellar/boost/1.62.0/lib,
-				);
+				LIBRARY_SEARCH_PATHS = ../Stage/;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
@@ -277,7 +274,7 @@
 			buildSettings = {
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/include/,
+					/usr/local/Cellar/boost/1.63.0/include/,
 					../,
 					./,
 					../udt4/src/,
@@ -285,10 +282,7 @@
 					../common/,
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.62.0/lib/,
-					/usr/local/Cellar/boost/1.62.0/lib,
-				);
+				LIBRARY_SEARCH_PATHS = ../Stage/;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

@@ -17,7 +17,7 @@
 		781A17EC1DD8DB070049BB40 /* fplog_transport.h in Headers */ = {isa = PBXBuildFile; fileRef = 781A17EA1DD8DB070049BB40 /* fplog_transport.h */; };
 		781A17EF1DD8E1640049BB40 /* libudt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A17EE1DD8E1640049BB40 /* libudt.dylib */; };
 		781A17F11DD8E1940049BB40 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A17F01DD8E1940049BB40 /* libsprot.dylib */; };
-		781A17F31DD8E3BA0049BB40 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A17F21DD8E3BA0049BB40 /* libboost_system-mt.dylib */; };
+		78F3F3E91E3D12F900D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3E81E3D12F900D8039A /* libboost_system-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +42,8 @@
 		781A17EA1DD8DB070049BB40 /* fplog_transport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fplog_transport.h; path = ../common/fplog_transport.h; sourceTree = "<group>"; };
 		781A17EE1DD8E1640049BB40 /* libudt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libudt.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libudt.dylib"; sourceTree = "<group>"; };
 		781A17F01DD8E1940049BB40 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
-		781A17F21DD8E3BA0049BB40 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		781A18071DD8E6CB0049BB40 /* spipc_test.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = spipc_test.xcodeproj; sourceTree = "<group>"; };
+		78F3F3E81E3D12F900D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				781A17F31DD8E3BA0049BB40 /* libboost_system-mt.dylib in Frameworks */,
+				78F3F3E91E3D12F900D8039A /* libboost_system-mt.dylib in Frameworks */,
 				781A17F11DD8E1940049BB40 /* libsprot.dylib in Frameworks */,
 				781A17EF1DD8E1640049BB40 /* libudt.dylib in Frameworks */,
 			);
@@ -96,7 +96,7 @@
 		781A17ED1DD8E1640049BB40 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				781A17F21DD8E3BA0049BB40 /* libboost_system-mt.dylib */,
+				78F3F3E81E3D12F900D8039A /* libboost_system-mt.dylib */,
 				781A17F01DD8E1940049BB40 /* libsprot.dylib */,
 				781A17EE1DD8E1640049BB40 /* libudt.dylib */,
 			);
@@ -134,6 +134,7 @@
 			buildConfigurationList = 781A17D91DD8D9660049BB40 /* Build configuration list for PBXNativeTarget "spipc" */;
 			buildPhases = (
 				781A17CC1DD8D9660049BB40 /* Headers */,
+				78F3F3F11E3D155E00D8039A /* ShellScript */,
 				781A17CA1DD8D9660049BB40 /* Sources */,
 				781A17CB1DD8D9660049BB40 /* Frameworks */,
 				781A17E81DD8DA5A0049BB40 /* ShellScript */,
@@ -207,7 +208,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
+		};
+		78F3F3F11E3D155E00D8039A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*libboost*\nrm -f ${SOURCE_ROOT}/../Stage/*Python*\n\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_regex-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_thread-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost-python/1.63.0/lib/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Python ${SOURCE_ROOT}/../Stage/\n\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_system-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_regex-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_thread-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_python3-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/Python\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -331,7 +345,7 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D_LINUX",
@@ -362,7 +376,7 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (

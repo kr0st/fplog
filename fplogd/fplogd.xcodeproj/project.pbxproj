@@ -13,8 +13,8 @@
 		789AC9591DE0CAAF000D62BD /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC9581DE0CAAF000D62BD /* libspipc.dylib */; };
 		789AC95B1DE0CAD1000D62BD /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC95A1DE0CAD1000D62BD /* libfplog.dylib */; };
 		789AC95D1DE0CAEE000D62BD /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC95C1DE0CAEE000D62BD /* libjson.dylib */; };
-		789AC95F1DE0CB15000D62BD /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC95E1DE0CB15000D62BD /* libboost_system-mt.dylib */; };
 		789AC9611DE0CB2F000D62BD /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC9601DE0CB2F000D62BD /* libsprot.dylib */; };
+		78F3F3E01E3D126400D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,8 +39,8 @@
 		789AC9581DE0CAAF000D62BD /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
 		789AC95A1DE0CAD1000D62BD /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libfplog.dylib"; sourceTree = "<group>"; };
 		789AC95C1DE0CAEE000D62BD /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
-		789AC95E1DE0CB15000D62BD /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		789AC9601DE0CB2F000D62BD /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
+		78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,7 +49,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				789AC9611DE0CB2F000D62BD /* libsprot.dylib in Frameworks */,
-				789AC95F1DE0CB15000D62BD /* libboost_system-mt.dylib in Frameworks */,
+				78F3F3E01E3D126400D8039A /* libboost_system-mt.dylib in Frameworks */,
 				789AC95D1DE0CAEE000D62BD /* libjson.dylib in Frameworks */,
 				789AC95B1DE0CAD1000D62BD /* libfplog.dylib in Frameworks */,
 				789AC9591DE0CAAF000D62BD /* libspipc.dylib in Frameworks */,
@@ -91,8 +91,8 @@
 		789AC9571DE0CAAF000D62BD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */,
 				789AC9601DE0CB2F000D62BD /* libsprot.dylib */,
-				789AC95E1DE0CB15000D62BD /* libboost_system-mt.dylib */,
 				789AC95C1DE0CAEE000D62BD /* libjson.dylib */,
 				789AC95A1DE0CAD1000D62BD /* libfplog.dylib */,
 				789AC9581DE0CAAF000D62BD /* libspipc.dylib */,
@@ -165,7 +165,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -288,7 +288,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -317,7 +317,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (

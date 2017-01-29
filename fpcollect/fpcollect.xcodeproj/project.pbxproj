@@ -17,9 +17,9 @@
 		7879BA851DEB57520078C6F6 /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA841DEB57520078C6F6 /* libjson.dylib */; };
 		7879BA871DEB57590078C6F6 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA861DEB57590078C6F6 /* libfplog.dylib */; };
 		7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA881DEB57850078C6F6 /* libspipc.dylib */; };
-		7879BA8B1DEB57C00078C6F6 /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA8A1DEB57C00078C6F6 /* libboost_regex-mt.dylib */; };
-		7879BA8D1DEB57EB0078C6F6 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA8C1DEB57EB0078C6F6 /* libboost_system-mt.dylib */; };
-		7879BA8F1DEB581C0078C6F6 /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA8E1DEB581C0078C6F6 /* libboost_thread-mt.dylib */; };
+		78F3F3DC1E3D121B00D8039A /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */; };
+		78F3F3DD1E3D121B00D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */; };
+		78F3F3DE1E3D121B00D8039A /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,10 +49,10 @@
 		7879BA841DEB57520078C6F6 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
 		7879BA861DEB57590078C6F6 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libfplog.dylib"; sourceTree = "<group>"; };
 		7879BA881DEB57850078C6F6 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
-		7879BA8A1DEB57C00078C6F6 /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
-		7879BA8C1DEB57EB0078C6F6 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
-		7879BA8E1DEB581C0078C6F6 /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../../../../../usr/local/Cellar/boost/1.63.0/lib/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
 		78A5678B1DEB534800967937 /* fpcollect */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fpcollect; sourceTree = BUILT_PRODUCTS_DIR; };
+		78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "../Stage/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
+		78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
+		78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../Stage/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,14 +60,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7879BA8F1DEB581C0078C6F6 /* libboost_thread-mt.dylib in Frameworks */,
-				7879BA8D1DEB57EB0078C6F6 /* libboost_system-mt.dylib in Frameworks */,
-				7879BA8B1DEB57C00078C6F6 /* libboost_regex-mt.dylib in Frameworks */,
 				7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */,
 				7879BA871DEB57590078C6F6 /* libfplog.dylib in Frameworks */,
 				7879BA851DEB57520078C6F6 /* libjson.dylib in Frameworks */,
 				7879BA831DEB57080078C6F6 /* libsprot.dylib in Frameworks */,
 				7879BA7F1DEB55540078C6F6 /* libmongoclient.a in Frameworks */,
+				78F3F3DE1E3D121B00D8039A /* libboost_thread-mt.dylib in Frameworks */,
+				78F3F3DC1E3D121B00D8039A /* libboost_regex-mt.dylib in Frameworks */,
+				78F3F3DD1E3D121B00D8039A /* libboost_system-mt.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,9 +77,9 @@
 		7879BA7D1DEB55530078C6F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7879BA8E1DEB581C0078C6F6 /* libboost_thread-mt.dylib */,
-				7879BA8C1DEB57EB0078C6F6 /* libboost_system-mt.dylib */,
-				7879BA8A1DEB57C00078C6F6 /* libboost_regex-mt.dylib */,
+				78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */,
+				78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */,
+				78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */,
 				7879BA881DEB57850078C6F6 /* libspipc.dylib */,
 				7879BA861DEB57590078C6F6 /* libfplog.dylib */,
 				7879BA841DEB57520078C6F6 /* libjson.dylib */,
@@ -187,7 +187,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_thread-mt.dylib @rpath/libboost_thread-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_regex-mt.dylib @rpath/libboost_regex-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -313,8 +313,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 					../mongo/lib,
+					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -345,8 +346,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
+					../Stage/,
 					../mongo/lib,
+					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;

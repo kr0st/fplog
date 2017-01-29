@@ -34,7 +34,7 @@ namespace fpylog
 
         file_ = new fplog::File(prio, name, &(file[0]), file.size());
     }
-    
+
     fplog::Priority_Filter* make_prio_filter(const char* filter_id)
     {
         return new fplog::Priority_Filter(filter_id);
