@@ -135,6 +135,7 @@
 			buildConfigurationList = 781338C51DF72F2B00578629 /* Build configuration list for PBXNativeTarget "fpylog" */;
 			buildPhases = (
 				781338B61DF72F2B00578629 /* Sources */,
+				783A3F651E3F9899002DAD2E /* ShellScript */,
 				781338B71DF72F2B00578629 /* Frameworks */,
 				781338B81DF72F2B00578629 /* Headers */,
 				7895124B1DF73A8100A51CBE /* ShellScript */,
@@ -212,6 +213,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib";
+		};
+		783A3F651E3F9899002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
 		};
 		7895124B1DF73A8100A51CBE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

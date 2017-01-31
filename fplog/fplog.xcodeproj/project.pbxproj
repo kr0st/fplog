@@ -136,6 +136,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7825F64E1DDA410700154B34 /* Build configuration list for PBXNativeTarget "fplog" */;
 			buildPhases = (
+				783A3F661E3F98C0002DAD2E /* ShellScript */,
 				7825F63F1DDA410700154B34 /* Sources */,
 				7825F6401DDA410700154B34 /* Frameworks */,
 				7825F6411DDA410700154B34 /* Headers */,
@@ -211,7 +212,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*lib${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib";
+		};
+		783A3F661E3F98C0002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}*\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

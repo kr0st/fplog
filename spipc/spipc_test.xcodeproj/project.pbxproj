@@ -85,6 +85,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 781A18041DD8E6350049BB40 /* Build configuration list for PBXNativeTarget "spipc_test" */;
 			buildPhases = (
+				783A3F6A1E3F98FA002DAD2E /* ShellScript */,
 				781A17F91DD8E6350049BB40 /* Sources */,
 				781A17FA1DD8E6350049BB40 /* Frameworks */,
 				781A17FB1DD8E6350049BB40 /* CopyFiles */,
@@ -144,6 +145,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}";
+		};
+		783A3F6A1E3F98FA002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

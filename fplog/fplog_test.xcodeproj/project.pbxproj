@@ -97,6 +97,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 78C74DAE1DDA475D001B3D38 /* Build configuration list for PBXNativeTarget "fplog_test" */;
 			buildPhases = (
+				783A3F681E3F98CE002DAD2E /* ShellScript */,
 				78C74DA31DDA475D001B3D38 /* Sources */,
 				78C74DA41DDA475D001B3D38 /* Frameworks */,
 				78C74DA51DDA475D001B3D38 /* CopyFiles */,
@@ -144,6 +145,19 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		783A3F681E3F98CE002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+		};
 		78C74DBB1DDA4AEE001B3D38 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +291,7 @@
 					"$(inherited)",
 					../Stage/,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
@@ -305,6 +320,7 @@
 					"$(inherited)",
 					../Stage/,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

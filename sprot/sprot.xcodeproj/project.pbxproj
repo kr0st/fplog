@@ -108,6 +108,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 786137A31DC8F866004E0204 /* Build configuration list for PBXNativeTarget "sprot" */;
 			buildPhases = (
+				783A3F6B1E3F990D002DAD2E /* ShellScript */,
 				786137961DC8F866004E0204 /* Headers */,
 				786137941DC8F866004E0204 /* Sources */,
 				786137951DC8F866004E0204 /* Frameworks */,
@@ -185,6 +186,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+		};
+		783A3F6B1E3F990D002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

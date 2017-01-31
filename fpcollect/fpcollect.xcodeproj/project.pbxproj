@@ -22,18 +22,6 @@
 		78F3F3DE1E3D121B00D8039A /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		78A567891DEB534800967937 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		7879BA701DEB54640078C6F6 /* fpcollect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpcollect.cpp; sourceTree = SOURCE_ROOT; };
 		7879BA711DEB54640078C6F6 /* fpcollect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpcollect.h; sourceTree = SOURCE_ROOT; };
@@ -129,9 +117,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 78A567921DEB534800967937 /* Build configuration list for PBXNativeTarget "fpcollect" */;
 			buildPhases = (
+				783A3F641E3F9858002DAD2E /* ShellScript */,
 				78A567871DEB534800967937 /* Sources */,
 				78A567881DEB534800967937 /* Frameworks */,
-				78A567891DEB534800967937 /* CopyFiles */,
 				7879BA7C1DEB548A0078C6F6 /* ShellScript */,
 			);
 			buildRules = (
@@ -176,6 +164,19 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		783A3F641E3F9858002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+		};
 		7879BA7C1DEB548A0078C6F6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

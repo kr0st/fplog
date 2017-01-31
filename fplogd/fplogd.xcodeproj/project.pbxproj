@@ -107,6 +107,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 789AC9441DE0C203000D62BD /* Build configuration list for PBXNativeTarget "fplogd" */;
 			buildPhases = (
+				783A3F631E3F9829002DAD2E /* ShellScript */,
 				789AC9391DE0C203000D62BD /* Sources */,
 				789AC93A1DE0C203000D62BD /* Frameworks */,
 				789AC93B1DE0C203000D62BD /* CopyFiles */,
@@ -154,6 +155,19 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		783A3F631E3F9829002DAD2E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+		};
 		789AC9561DE0C79E000D62BD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
