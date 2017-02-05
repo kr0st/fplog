@@ -1219,9 +1219,9 @@ int main()
     
     //fplog::testing::run_all_tests();
 
-    fplog::testing::manual_test();
+    //fplog::testing::manual_test();
     
-    //fplog::testing::performance_test();
+    fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

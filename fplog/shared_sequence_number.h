@@ -1,9 +1,5 @@
 #pragma once
 
-#include <boost/interprocess/sync/named_mutex.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
-#include <boost/interprocess/shared_memory_object.hpp>
-
 #include <fplog_exceptions.h>
 #include <mutex>
 
@@ -19,12 +15,9 @@ class Shared_Sequence_Number
         unsigned long long int read();
 
     private:
-        
-        boost::interprocess::shared_memory_object* shared_mem_;
-        boost::interprocess::mapped_region* mapped_mem_region_;
-        unsigned char* buf_;
-
-        boost::interprocess::named_mutex condition_mutex_;
-};
+    
+        class Impl;
+        Impl *impl_;
+    };
 
 };

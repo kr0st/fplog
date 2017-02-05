@@ -1,14 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <boost/interprocess/sync/named_mutex.hpp>
-#include <boost/interprocess/sync/named_condition.hpp>
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/allocators/allocator.hpp>
-#include <boost/interprocess/containers/vector.hpp>
-#include <boost/thread/thread.hpp>
-
 #include <sprot/sprot.h>
 
 #ifdef SPIPC_EXPORT

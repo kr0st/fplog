@@ -11,10 +11,13 @@
 		7825F6581DDA41C100154B34 /* fplog.h in Headers */ = {isa = PBXBuildFile; fileRef = 7825F6521DDA41C100154B34 /* fplog.h */; };
 		7825F6591DDA41C100154B34 /* Queue_Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7825F6531DDA41C100154B34 /* Queue_Controller.cpp */; };
 		7825F65A1DDA41C100154B34 /* Queue_Controller.h in Headers */ = {isa = PBXBuildFile; fileRef = 7825F6541DDA41C100154B34 /* Queue_Controller.h */; };
-		7825F6651DDA44ED00154B34 /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7825F6631DDA44ED00154B34 /* libjson.dylib */; };
-		7825F6661DDA44ED00154B34 /* liblua.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7825F6641DDA44ED00154B34 /* liblua.dylib */; };
-		7825F66C1DDA455100154B34 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7825F66B1DDA455100154B34 /* libsprot.dylib */; };
-		78CEB72D1DDB86F4007D79B1 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78CEB72C1DDB86F4007D79B1 /* utils.cpp */; };
+		783A3FAC1E477682002DAD2E /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FA61E477682002DAD2E /* libjson.dylib */; };
+		783A3FAD1E477682002DAD2E /* liblua.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FA71E477682002DAD2E /* liblua.dylib */; };
+		783A3FAE1E477682002DAD2E /* libsequence.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FA81E477682002DAD2E /* libsequence.dylib */; };
+		783A3FAF1E477682002DAD2E /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FA91E477682002DAD2E /* libspipc.dylib */; };
+		783A3FB01E477682002DAD2E /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FAA1E477682002DAD2E /* libsprot.dylib */; };
+		783A3FB11E477682002DAD2E /* libudt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3FAB1E477682002DAD2E /* libudt.dylib */; };
+		783A3FB31E4776AE002DAD2E /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 783A3FB21E4776AE002DAD2E /* utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,11 +36,14 @@
 		7825F6521DDA41C100154B34 /* fplog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fplog.h; sourceTree = SOURCE_ROOT; };
 		7825F6531DDA41C100154B34 /* Queue_Controller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Queue_Controller.cpp; sourceTree = SOURCE_ROOT; };
 		7825F6541DDA41C100154B34 /* Queue_Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue_Controller.h; sourceTree = SOURCE_ROOT; };
-		7825F6631DDA44ED00154B34 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
-		7825F6641DDA44ED00154B34 /* liblua.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/liblua.dylib"; sourceTree = "<group>"; };
-		7825F66B1DDA455100154B34 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
+		783A3FA61E477682002DAD2E /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
+		783A3FA71E477682002DAD2E /* liblua.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/liblua.dylib"; sourceTree = "<group>"; };
+		783A3FA81E477682002DAD2E /* libsequence.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsequence.dylib; path = ../sequence/build/Debug/libsequence.dylib; sourceTree = "<group>"; };
+		783A3FA91E477682002DAD2E /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = ../spipc/build/Debug/libspipc.dylib; sourceTree = "<group>"; };
+		783A3FAA1E477682002DAD2E /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Debug/libsprot.dylib; sourceTree = "<group>"; };
+		783A3FAB1E477682002DAD2E /* libudt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libudt.dylib; path = ../udt4/build/Debug/libudt.dylib; sourceTree = "<group>"; };
+		783A3FB21E4776AE002DAD2E /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../../common/utils.cpp; sourceTree = "<group>"; };
 		78C74DB31DDA47BA001B3D38 /* fplog_test.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = fplog_test.xcodeproj; sourceTree = "<group>"; };
-		78CEB72C1DDB86F4007D79B1 /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../../common/utils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,9 +51,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7825F66C1DDA455100154B34 /* libsprot.dylib in Frameworks */,
-				7825F6651DDA44ED00154B34 /* libjson.dylib in Frameworks */,
-				7825F6661DDA44ED00154B34 /* liblua.dylib in Frameworks */,
+				783A3FAC1E477682002DAD2E /* libjson.dylib in Frameworks */,
+				783A3FAD1E477682002DAD2E /* liblua.dylib in Frameworks */,
+				783A3FAE1E477682002DAD2E /* libsequence.dylib in Frameworks */,
+				783A3FAF1E477682002DAD2E /* libspipc.dylib in Frameworks */,
+				783A3FB01E477682002DAD2E /* libsprot.dylib in Frameworks */,
+				783A3FB11E477682002DAD2E /* libudt.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +84,7 @@
 		7825F6451DDA410700154B34 /* fplog */ = {
 			isa = PBXGroup;
 			children = (
-				78CEB72C1DDB86F4007D79B1 /* utils.cpp */,
+				783A3FB21E4776AE002DAD2E /* utils.cpp */,
 				7825F6511DDA41C100154B34 /* fplog.cpp */,
 				7825F6521DDA41C100154B34 /* fplog.h */,
 				7825F6531DDA41C100154B34 /* Queue_Controller.cpp */,
@@ -87,9 +96,12 @@
 		7825F6621DDA44ED00154B34 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7825F66B1DDA455100154B34 /* libsprot.dylib */,
-				7825F6631DDA44ED00154B34 /* libjson.dylib */,
-				7825F6641DDA44ED00154B34 /* liblua.dylib */,
+				783A3FA61E477682002DAD2E /* libjson.dylib */,
+				783A3FA71E477682002DAD2E /* liblua.dylib */,
+				783A3FA81E477682002DAD2E /* libsequence.dylib */,
+				783A3FA91E477682002DAD2E /* libspipc.dylib */,
+				783A3FAA1E477682002DAD2E /* libsprot.dylib */,
+				783A3FAB1E477682002DAD2E /* libudt.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -219,9 +231,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				783A3FB31E4776AE002DAD2E /* utils.cpp in Sources */,
 				7825F6571DDA41C100154B34 /* fplog.cpp in Sources */,
 				7825F6591DDA41C100154B34 /* Queue_Controller.cpp in Sources */,
-				78CEB72D1DDB86F4007D79B1 /* utils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

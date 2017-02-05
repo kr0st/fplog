@@ -10,7 +10,6 @@
 		783A3F8F1E4389F1002DAD2E /* shared_sequence_number.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 783A3F8D1E4389F1002DAD2E /* shared_sequence_number.cpp */; };
 		783A3F901E4389F1002DAD2E /* shared_sequence_number.h in Headers */ = {isa = PBXBuildFile; fileRef = 783A3F8E1E4389F1002DAD2E /* shared_sequence_number.h */; };
 		783A3F981E438AC1002DAD2E /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3F971E438AC1002DAD2E /* libboost_system-mt.dylib */; };
-		783A3F9D1E439259002DAD2E /* libboost_filesystem-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3F9C1E439259002DAD2E /* libboost_filesystem-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,7 +17,6 @@
 		783A3F8D1E4389F1002DAD2E /* shared_sequence_number.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shared_sequence_number.cpp; path = ../../fplog/shared_sequence_number.cpp; sourceTree = "<group>"; };
 		783A3F8E1E4389F1002DAD2E /* shared_sequence_number.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_sequence_number.h; path = ../../fplog/shared_sequence_number.h; sourceTree = "<group>"; };
 		783A3F971E438AC1002DAD2E /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
-		783A3F9C1E439259002DAD2E /* libboost_filesystem-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_filesystem-mt.dylib"; path = "../Stage/libboost_filesystem-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,7 +24,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				783A3F9D1E439259002DAD2E /* libboost_filesystem-mt.dylib in Frameworks */,
 				783A3F981E438AC1002DAD2E /* libboost_system-mt.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,7 +60,6 @@
 		783A3F961E438AC1002DAD2E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				783A3F9C1E439259002DAD2E /* libboost_filesystem-mt.dylib */,
 				783A3F971E438AC1002DAD2E /* libboost_system-mt.dylib */,
 			);
 			name = Frameworks;
@@ -147,7 +143,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}*";
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}*\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/";
 		};
 		783A3F9A1E438C01002DAD2E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -160,7 +156,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*lib${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_filesystem-mt.dylib @rpath/libboost_filesystem-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*lib${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*lib${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib";
 		};
 /* End PBXShellScriptBuildPhase section */
 
