@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:sequence/sequence.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:fpylog/fpylog.xcodeproj">
    </FileRef>
    <FileRef
