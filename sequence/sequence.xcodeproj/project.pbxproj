@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		783A3F8F1E4389F1002DAD2E /* shared_sequence_number.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 783A3F8D1E4389F1002DAD2E /* shared_sequence_number.cpp */; };
-		783A3F901E4389F1002DAD2E /* shared_sequence_number.h in Headers */ = {isa = PBXBuildFile; fileRef = 783A3F8E1E4389F1002DAD2E /* shared_sequence_number.h */; };
+		783796491E4790E400CE8873 /* shared_sequence_number.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 783796471E4790E400CE8873 /* shared_sequence_number.cpp */; };
+		7837964A1E4790E400CE8873 /* shared_sequence_number.h in Headers */ = {isa = PBXBuildFile; fileRef = 783796481E4790E400CE8873 /* shared_sequence_number.h */; };
 		783A3F981E438AC1002DAD2E /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3F971E438AC1002DAD2E /* libboost_system-mt.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		783796471E4790E400CE8873 /* shared_sequence_number.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shared_sequence_number.cpp; path = ../../fplog/shared_sequence_number.cpp; sourceTree = "<group>"; };
+		783796481E4790E400CE8873 /* shared_sequence_number.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_sequence_number.h; path = ../../fplog/shared_sequence_number.h; sourceTree = "<group>"; };
 		783A3F761E438976002DAD2E /* libsequence.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libsequence.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		783A3F8D1E4389F1002DAD2E /* shared_sequence_number.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shared_sequence_number.cpp; path = ../../fplog/shared_sequence_number.cpp; sourceTree = "<group>"; };
-		783A3F8E1E4389F1002DAD2E /* shared_sequence_number.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_sequence_number.h; path = ../../fplog/shared_sequence_number.h; sourceTree = "<group>"; };
 		783A3F971E438AC1002DAD2E /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -51,8 +51,8 @@
 		783A3F781E438976002DAD2E /* sequence */ = {
 			isa = PBXGroup;
 			children = (
-				783A3F8D1E4389F1002DAD2E /* shared_sequence_number.cpp */,
-				783A3F8E1E4389F1002DAD2E /* shared_sequence_number.h */,
+				783796471E4790E400CE8873 /* shared_sequence_number.cpp */,
+				783796481E4790E400CE8873 /* shared_sequence_number.h */,
 			);
 			path = sequence;
 			sourceTree = "<group>";
@@ -72,7 +72,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				783A3F901E4389F1002DAD2E /* shared_sequence_number.h in Headers */,
+				7837964A1E4790E400CE8873 /* shared_sequence_number.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,7 +165,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				783A3F8F1E4389F1002DAD2E /* shared_sequence_number.cpp in Sources */,
+				783796491E4790E400CE8873 /* shared_sequence_number.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +285,7 @@
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
 					"-D_OSX",
+					"-DSEQUENCE_EXPORT",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -316,6 +317,7 @@
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
 					"-D_OSX",
+					"-DSEQUENCE_EXPORT",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
