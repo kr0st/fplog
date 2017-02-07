@@ -1,3 +1,6 @@
+#include "../date/date.h"
+#include "../date/tz.h"
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -1213,15 +1216,22 @@ bool socket_test()
 }};
 
 
+//void date_test()
+//{
+    //auto tp2(std::chrono::system_clock::now());
+    //std::string s = date::format("%F %T %Z", tp2);
+    //cout << s << std::endl;
+//}
+
 int main()
 {
     //fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
-    //fplog::testing::manual_test();
+    fplog::testing::manual_test();
     
-    fplog::testing::performance_test();
+    //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
