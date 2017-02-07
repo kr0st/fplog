@@ -43,6 +43,8 @@ static unsigned long long get_msec_time_impl()
 
 #else
 
+#include "../date/date.h"
+
 static int get_system_timezone_impl()
 {
     FILE* tz = 0;
@@ -87,7 +89,11 @@ static int get_system_timezone_impl()
                     memcpy(minutes, line + separator + 1, len - separator - 1);
                     
                     int h = std::stoi(hours), m = std::stoi(minutes);
-                    return 60 * h + m;
+                    
+                    if (h >= 0)
+                        return 60 * h + m;
+                    else
+                        return 60 * h - m;
                 }
             }
         }
@@ -198,6 +204,9 @@ std::string timezone_from_minutes_to_iso8601(int tz_minute_bias)
     return str;
 }
 
+    
+#ifdef _WIN32
+
 std::string get_iso8601_timestamp()
 {
     time_t elapsed_time(time(0));
@@ -221,6 +230,17 @@ std::string get_iso8601_timestamp()
 
     return timestamp;
 }
+    
+#else
+
+std::string get_iso8601_timestamp()
+{
+    auto tp(std::chrono::system_clock::now());
+    return date::format("%FT%T%z", tp);
+}
+
+#endif
+
 /**
  * characters used for Base64 encoding
  */  
