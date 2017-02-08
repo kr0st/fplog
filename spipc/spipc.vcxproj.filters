@@ -27,9 +27,6 @@
     <ClInclude Include="socket_transport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shared_memory_transport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UDT_Transport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -39,9 +36,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="socket_transport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shared_memory_transport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UDT_Transport.cpp">

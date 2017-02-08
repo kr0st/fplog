@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <boost/algorithm/string.hpp>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -204,7 +205,7 @@ std::string timezone_from_minutes_to_iso8601(int tz_minute_bias)
     return str;
 }
 
-    
+
 #ifdef _WIN32
 
 std::string get_iso8601_timestamp()

@@ -13,11 +13,11 @@
 
 #else
 
-#ifdef _LINUX
+//#ifdef _LINUX
 #define SEQUENCE_API
-#else
-#define SEQUENCE_API __declspec(dllimport)
-#endif
+//#else
+//#define SEQUENCE_API __declspec(dllimport)
+//#endif
 
 #endif
 
