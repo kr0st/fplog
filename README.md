@@ -50,6 +50,8 @@ As many BSD-based systems, macOS has much smaller socket buffer initially, compa
     sudo nvram boot-args="ncl=131072"
     sudo shutdown -r now
 
+If you are on macOS Sierra or later the above will not work from normal mode, you will need to reboot into recovery mode (cmd +r) and run the above in the terminal there.
+
 After the reboot open the terminal again and run these commands:
 
     sudo sysctl -w kern.ipc.maxsockbuf=16777216
