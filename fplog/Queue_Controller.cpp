@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include <fplog.h>
-
+#include <utils.h>
 
 static const size_t buf_sz = -1;
 

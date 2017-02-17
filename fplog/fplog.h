@@ -10,8 +10,6 @@
 #include <algorithm>
 #include <mutex>
 
-#include "utils.h"
-
 #ifdef FPLOG_EXPORT
 
 #ifdef _LINUX
@@ -201,7 +199,24 @@ class FPLOG_API Message
             validate_params_ = true;
             return msg;
         }
-
+    
+        // trim from start
+        static inline std::string &ltrim(std::string &s) {
+            s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+            return s;
+        }
+        
+        // trim from end
+        static inline std::string &rtrim(std::string &s) {
+            s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+            return s;
+        }
+        
+        // trim from both ends
+        static inline std::string &trim(std::string &s) {
+            return ltrim(rtrim(s));
+        }
+    
         template <typename T> bool is_valid(const char* param_name, T param)
         {
             if (!validate_params_)
@@ -211,7 +226,7 @@ class FPLOG_API Message
                 return false;
 
             std::string lowercased(param_name);
-            generic_util::trim(lowercased);
+            trim(lowercased);
 
             std::transform(lowercased.begin(), lowercased.end(), lowercased.begin(), ::tolower);
 
@@ -227,7 +242,7 @@ class FPLOG_API Message
         template <typename T> Message& add(const char* param_name, T param)
         {
             std::string trimmed(param_name);
-            generic_util::trim(trimmed);
+            trim(trimmed);
 
             if (param_name && is_valid(trimmed.c_str(), param))
             {
