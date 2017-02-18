@@ -3,9 +3,6 @@
 #include <map>
 #include <string>
 
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <fplog_exceptions.h>
 
 namespace fplog {
@@ -59,41 +56,7 @@ struct UID
         return (std::to_string(uid.high) + "_" + std::to_string(uid.low));
     }
 
-    #undef max
-    UID from_string(std::string& str)
-    {
-        unsigned long long limit = std::numeric_limits<unsigned long long>::max();
-        high = limit;
-        low = limit;
-
-        try
-        {
-            boost::char_separator<char> sep("_");
-            boost::tokenizer<boost::char_separator<char>> tok(str, sep);
-            for(boost::tokenizer<boost::char_separator<char>>::iterator it = tok.begin(); it != tok.end(); ++it)
-            {
-                if (high == limit)
-                {
-                    high = boost::lexical_cast<unsigned long long>(*it);
-                    continue;
-                }
-
-                if (low == limit)
-                {
-                    low = boost::lexical_cast<unsigned long long>(*it);
-                    continue;
-                }
-
-                THROW(fplog::exceptions::Invalid_Uid);
-            }
-        }
-        catch(boost::exception&)
-        {
-            THROW(fplog::exceptions::Invalid_Uid);
-        }
-
-        return *this;
-    }
+    UID from_string(std::string& str);
 
     unsigned long long high;
     unsigned long long low;
