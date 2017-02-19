@@ -28,6 +28,14 @@
 #define THROWM(exception_type, message) { throw exception_type(__FUNCTION__, __SHORT_FORM_OF_FILE__, __LINE__, message); }
 
 #ifdef _LINUX
+#define NO_ITOA
+#endif
+
+#ifdef __APPLE__
+#define NO_ITOA
+#endif
+
+#ifdef NO_ITOA
 inline char *itoa(long i, char* s, int dummy_radix) {
     sprintf(s, "%ld", i);
     return s;

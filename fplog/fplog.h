@@ -3,10 +3,10 @@
 #include <string>
 #include <set>
 #include <vector>
-#include <libjson/libjson.h>
+#include "libjson/libjson.h"
 #include <typeinfo>
-#include <fplog_transport.h>
-#include <fplog_exceptions.h>
+#include "fplog_transport.h"
+#include "fplog_exceptions.h"
 #include <algorithm>
 #include <mutex>
 
@@ -22,7 +22,13 @@
 
 #ifdef _LINUX
 #define FPLOG_API 
-#else
+#endif
+
+#ifdef __APPLE__
+#define FPLOG_API
+#endif
+
+#ifdef _WIN32_WINNT
 #define FPLOG_API __declspec(dllimport)
 #endif
 

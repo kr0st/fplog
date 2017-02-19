@@ -1,8 +1,6 @@
 #ifndef INTERNAL_JSONNODE_H
 #define INTERNAL_JSONNODE_H
 
-#include "../../../common/utils.h"
-
 #include "JSONDebug.h"
 #include "JSONChildren.h"
 #include "JSONMemory.h"
@@ -338,13 +336,32 @@ inline json_string internalJSONNode::name(void) const json_nothrow {
     return _name;
 }
 
+#include <functional>
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+    return ltrim(rtrim(s));
+}
+
 inline void internalJSONNode::setname(const json_string & newname) json_nothrow {
     #ifdef JSON_LESS_MEMORY
 	   JSON_ASSERT(newname.capacity() == newname.length(), JSON_TEXT("name object too large"));
     #endif
     
     std::string trimmed(newname);
-    generic_util::trim(trimmed);
+    trim(trimmed);
 
     _name = trimmed;
     _name_encoded = true;
