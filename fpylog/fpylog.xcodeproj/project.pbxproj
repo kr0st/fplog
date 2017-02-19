@@ -13,6 +13,9 @@
 		7836304F1E2172960010B08D /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2B1E030C9100E90119 /* libsprot.dylib */; };
 		783630501E2172960010B08D /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
 		783630541E2172960010B08D /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
+		7876D7051E59EDB500931E45 /* libboost_python3-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */; };
+		7876D7061E59EDB500931E45 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EC1E3D142900D8039A /* Python */; };
+		7876D7091E59EDDA00931E45 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */; };
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
 		78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
@@ -57,6 +60,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7876D7091E59EDDA00931E45 /* libboost_system-mt.dylib in Frameworks */,
+				7876D7051E59EDB500931E45 /* libboost_python3-mt.dylib in Frameworks */,
+				7876D7061E59EDB500931E45 /* Python in Frameworks */,
 				7836304D1E2172960010B08D /* libjson.dylib in Frameworks */,
 				7836304E1E2172960010B08D /* libspipc.dylib in Frameworks */,
 				7836304F1E2172960010B08D /* libsprot.dylib in Frameworks */,
@@ -212,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib";
 		};
 		783A3F651E3F9899002DAD2E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
