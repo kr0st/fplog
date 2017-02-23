@@ -12,8 +12,8 @@
 		789AC9551DE0C778000D62BD /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789AC9541DE0C778000D62BD /* utils.cpp */; };
 		789AC9591DE0CAAF000D62BD /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC9581DE0CAAF000D62BD /* libspipc.dylib */; };
 		789AC95B1DE0CAD1000D62BD /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC95A1DE0CAD1000D62BD /* libfplog.dylib */; };
-		789AC95D1DE0CAEE000D62BD /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC95C1DE0CAEE000D62BD /* libjson.dylib */; };
 		789AC9611DE0CB2F000D62BD /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789AC9601DE0CB2F000D62BD /* libsprot.dylib */; };
+		789B13761E5F2ED800613A94 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B13751E5F2ED800613A94 /* libjson.a */; };
 		78F3F3E01E3D126400D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +40,7 @@
 		789AC95A1DE0CAD1000D62BD /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libfplog.dylib"; sourceTree = "<group>"; };
 		789AC95C1DE0CAEE000D62BD /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
 		789AC9601DE0CB2F000D62BD /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
+		789B13751E5F2ED800613A94 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = ../libjson/build/Release/libjson.a; sourceTree = "<group>"; };
 		78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,9 +49,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				789B13761E5F2ED800613A94 /* libjson.a in Frameworks */,
 				789AC9611DE0CB2F000D62BD /* libsprot.dylib in Frameworks */,
 				78F3F3E01E3D126400D8039A /* libboost_system-mt.dylib in Frameworks */,
-				789AC95D1DE0CAEE000D62BD /* libjson.dylib in Frameworks */,
 				789AC95B1DE0CAD1000D62BD /* libfplog.dylib in Frameworks */,
 				789AC9591DE0CAAF000D62BD /* libspipc.dylib in Frameworks */,
 			);
@@ -91,6 +92,7 @@
 		789AC9571DE0CAAF000D62BD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				789B13751E5F2ED800613A94 /* libjson.a */,
 				78F3F3DF1E3D126400D8039A /* libboost_system-mt.dylib */,
 				789AC9601DE0CB2F000D62BD /* libsprot.dylib */,
 				789AC95C1DE0CAEE000D62BD /* libjson.dylib */,

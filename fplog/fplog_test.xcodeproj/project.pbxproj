@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		783A3F951E438A1D002DAD2E /* libsequence.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783A3F941E438A1D002DAD2E /* libsequence.dylib */; };
+		789B136F1E5F2E7500613A94 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B136E1E5F2E7500613A94 /* libsprot.dylib */; };
+		789B13711E5F2E8200613A94 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B13701E5F2E8200613A94 /* libjson.a */; };
 		78C74DBA1DDA47C8001B3D38 /* fplog_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78C74DB91DDA47C8001B3D38 /* fplog_test.cpp */; };
 		78C74DBE1DDA4BD7001B3D38 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C74DBD1DDA4BD7001B3D38 /* libfplog.dylib */; };
-		78C74DC21DDA4C3E001B3D38 /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C74DBF1DDA4C3E001B3D38 /* libjson.dylib */; };
 		78C74DC31DDA4C3E001B3D38 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C74DC01DDA4C3E001B3D38 /* libspipc.dylib */; };
-		78C74DC41DDA4C3E001B3D38 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C74DC11DDA4C3E001B3D38 /* libsprot.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +29,8 @@
 
 /* Begin PBXFileReference section */
 		783A3F941E438A1D002DAD2E /* libsequence.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsequence.dylib; path = ../sequence/build/Debug/libsequence.dylib; sourceTree = "<group>"; };
+		789B136E1E5F2E7500613A94 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Release/libsprot.dylib; sourceTree = "<group>"; };
+		789B13701E5F2E8200613A94 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = ../libjson/build/Release/libjson.a; sourceTree = "<group>"; };
 		78C74DA71DDA475D001B3D38 /* fplog_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fplog_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		78C74DB91DDA47C8001B3D38 /* fplog_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fplog_test.cpp; sourceTree = SOURCE_ROOT; };
 		78C74DBD1DDA4BD7001B3D38 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libfplog.dylib"; sourceTree = "<group>"; };
@@ -42,8 +44,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78C74DC21DDA4C3E001B3D38 /* libjson.dylib in Frameworks */,
-				78C74DC41DDA4C3E001B3D38 /* libsprot.dylib in Frameworks */,
+				789B13711E5F2E8200613A94 /* libjson.a in Frameworks */,
+				789B136F1E5F2E7500613A94 /* libsprot.dylib in Frameworks */,
 				78C74DC31DDA4C3E001B3D38 /* libspipc.dylib in Frameworks */,
 				783A3F951E438A1D002DAD2E /* libsequence.dylib in Frameworks */,
 				78C74DBE1DDA4BD7001B3D38 /* libfplog.dylib in Frameworks */,
@@ -81,6 +83,8 @@
 		78C74DBC1DDA4BD7001B3D38 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				789B13701E5F2E8200613A94 /* libjson.a */,
+				789B136E1E5F2E7500613A94 /* libsprot.dylib */,
 				783A3F941E438A1D002DAD2E /* libsequence.dylib */,
 				78C74DBF1DDA4C3E001B3D38 /* libjson.dylib */,
 				78C74DC01DDA4C3E001B3D38 /* libspipc.dylib */,

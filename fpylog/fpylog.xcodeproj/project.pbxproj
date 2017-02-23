@@ -18,10 +18,10 @@
 		7876D7091E59EDDA00931E45 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */; };
 		789512461DF733FB00A51CBE /* fpylog.h in Headers */ = {isa = PBXBuildFile; fileRef = 789512451DF733FB00A51CBE /* fpylog.h */; };
 		7895124A1DF734A100A51CBE /* fpylog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789512491DF734A100A51CBE /* fpylog.cpp */; };
+		789B137A1E5F2EED00613A94 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B13791E5F2EED00613A94 /* libjson.a */; };
 		78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
 		78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2B1E030C9100E90119 /* libsprot.dylib */; };
 		78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2D1E030C9700E90119 /* libspipc.dylib */; };
-		78C20F301E030C9C00E90119 /* libjson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2F1E030C9C00E90119 /* libjson.dylib */; };
 		78F3F3ED1E3D142900D8039A /* libboost_python3-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */; };
 		78F3F3EE1E3D142900D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */; };
 		78F3F3EF1E3D142900D8039A /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EC1E3D142900D8039A /* Python */; };
@@ -32,6 +32,7 @@
 		783630591E2172960010B08D /* libfpylog3.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfpylog3.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		789512451DF733FB00A51CBE /* fpylog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpylog.h; sourceTree = SOURCE_ROOT; };
 		789512491DF734A100A51CBE /* fpylog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpylog.cpp; sourceTree = SOURCE_ROOT; };
+		789B13791E5F2EED00613A94 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = ../libjson/build/Release/libjson.a; sourceTree = "<group>"; };
 		78C20F291E030C8A00E90119 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = ../fplog/build/Debug/libfplog.dylib; sourceTree = "<group>"; };
 		78C20F2B1E030C9100E90119 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Debug/libsprot.dylib; sourceTree = "<group>"; };
 		78C20F2D1E030C9700E90119 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = ../spipc/build/Debug/libspipc.dylib; sourceTree = "<group>"; };
@@ -46,8 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				789B137A1E5F2EED00613A94 /* libjson.a in Frameworks */,
 				78F3F3EE1E3D142900D8039A /* libboost_system-mt.dylib in Frameworks */,
-				78C20F301E030C9C00E90119 /* libjson.dylib in Frameworks */,
 				78F3F3ED1E3D142900D8039A /* libboost_python3-mt.dylib in Frameworks */,
 				78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */,
 				78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */,
@@ -103,6 +104,7 @@
 		78CF73841DF8844C00D53A7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				789B13791E5F2EED00613A94 /* libjson.a */,
 				78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */,
 				78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */,
 				78F3F3EC1E3D142900D8039A /* Python */,

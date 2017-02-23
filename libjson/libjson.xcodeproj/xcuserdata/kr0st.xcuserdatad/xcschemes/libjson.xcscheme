@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7805C8821DD8B6A500623BB3"
-               BuildableName = "libjson.dylib"
+               BuildableName = "libjson.a"
                BlueprintName = "libjson"
                ReferencedContainer = "container:libjson.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7805C8821DD8B6A500623BB3"
-            BuildableName = "libjson.dylib"
+            BuildableName = "libjson.a"
             BlueprintName = "libjson"
             ReferencedContainer = "container:libjson.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7805C8821DD8B6A500623BB3"
-            BuildableName = "libjson.dylib"
+            BuildableName = "libjson.a"
             BlueprintName = "libjson"
             ReferencedContainer = "container:libjson.xcodeproj">
          </BuildableReference>
