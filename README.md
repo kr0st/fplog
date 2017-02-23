@@ -65,3 +65,11 @@ However this will not fix the issue permanently, in order to that, you will have
     net.inet.tcp.recvspace=1048576
 
 Most likely you do not have sysctl.conf inside your /etc/ folder, just create it and paste the settings there. You will need root access in order to save or edit the file inside /etc/, sudo should help you in this regard.
+
+###### Distribution and usage
+
+Install Packages tool: http://s.sudre.free.fr/Software/Packages/about.html
+
+Launch “make_macos_package.sh” located under distribution/macOS folder. Stage directory will contain resulting fplog.pkg that should be installed on your OS. Package contains fplog.framework that will be installed into /Library/Frameworks.
+
+In order to use fplog framework it is necessary not only to tell Xcode to include the framework into your project but also to add the following directory to “Runpath Search Paths” inside the build settings: “/Library/Frameworks/fplog.framework/Versions/Current”.
