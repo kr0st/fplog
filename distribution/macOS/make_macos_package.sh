@@ -24,5 +24,8 @@ ln -s Versions/Current/Headers ../../Stage/fplog.framework/Headers
 
 rm -rf ./build
 packagesbuild -v ./fplog.pkgproj
-cp ./build/fplog.pkg ../../Stage/
+productsign --sign "Developer ID Installer: Rostislav Kuratch" ./build/fplog.pkg ../../Stage/fplog.pkg
+
+#cp ./build/fplog.pkg ../../Stage/
+
 
