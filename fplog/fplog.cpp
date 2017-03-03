@@ -908,9 +908,9 @@ class Lua_Filter::Lua_Filter_Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             lua_state_ = luaL_newstate();
             luaL_openlibs(lua_state_);
-
+            luaL_dostring(lua_state_, "package.path = package.path .. ';/Library/Frameworks/fplog.framework/Versions/Current/?.lua'");
             luaL_dostring(lua_state_, "json = require(\"json\")\n");
-            
+
             std::string lua_error(get_lua_error());
             if (!lua_error.empty())
             {
