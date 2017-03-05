@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>fplogd</string>
+	<string>fplogd.sh</string>
 	<key>CFBundleIdentifier</key>
 	<string>kr0st.fplogd</string>
 	<key>CFBundleInfoDictionaryVersion</key>

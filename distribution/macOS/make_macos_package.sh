@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 rm -rf ../../Stage/fplog.framework
 mkdir ../../Stage/fplog.framework
