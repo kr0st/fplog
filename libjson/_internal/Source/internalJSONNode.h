@@ -337,6 +337,8 @@ inline json_string internalJSONNode::name(void) const json_nothrow {
 }
 
 #include <functional>
+#include <algorithm>
+#include <cctype>
 
 // trim from start
 static inline std::string &ltrim(std::string &s) {

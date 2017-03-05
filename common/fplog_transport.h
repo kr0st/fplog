@@ -5,6 +5,16 @@
 
 #include "fplog_exceptions.h"
 
+#ifdef SPROT_EXPORT
+#define SPROT_API __declspec(dllexport)
+#else
+#define SPROT_API __declspec(dllimport)
+#endif
+
+#ifdef _LINUX
+#define SPROT_API 
+#endif
+
 namespace fplog {
 
 class Transport_Interface
@@ -33,7 +43,7 @@ class Transport_Factory
         virtual Transport_Interface* create(const Transport_Interface::Params& params) = 0;
 };
 
-struct UID
+struct SPROT_API UID
 {
     UID(): high(0), low(0) {}
     bool operator== (const UID& rhs) const { return ((high == rhs.high) && (low == rhs.low)); }
