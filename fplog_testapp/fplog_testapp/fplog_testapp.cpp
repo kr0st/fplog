@@ -7,9 +7,12 @@
 
 int main()
 {
-    fplog::initlog("fplog_testapp", "18849_18850");
-    fplog::openlog(fplog::Facility::user);
+    fplog::initlog("fplog_testapp", "18849_18850", 0, false);
+    fplog::openlog(fplog::Facility::user, new fplog::Priority_Filter("prio_filter"));
 
+    fplog::Priority_Filter* filter = dynamic_cast<fplog::Priority_Filter*>(fplog::find_filter("prio_filter"));
+    filter->add_all_above(fplog::Prio::debug, true);
+    
     FPL_WARN("Testing! Tesing!");
 
     fplog::closelog();
