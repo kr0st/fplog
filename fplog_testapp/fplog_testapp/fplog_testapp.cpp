@@ -12,8 +12,8 @@ int main()
 
     fplog::Priority_Filter* filter = dynamic_cast<fplog::Priority_Filter*>(fplog::find_filter("prio_filter"));
     filter->add_all_above(fplog::Prio::debug, true);
-    
-    FPL_WARN("Testing! Tesing!");
+
+    fplog::write(FPL_WARN("Testing! Tesing!"));
 
     fplog::closelog();
     return 0;
