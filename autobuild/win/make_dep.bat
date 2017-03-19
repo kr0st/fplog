@@ -27,12 +27,12 @@ md ..\build
 curl --cacert ./cacert.crt -o ../build/mongo_driver.zip https://codeload.github.com/mongodb/mongo-cxx-driver/zip/legacy-1.1.2
 7za x -y -o"..\build\" ..\build\mongo_driver.zip
 
-curl -o ../build/boost.7z http://netcologne.dl.sourceforge.net/project/boost/boost/1.61.0/boost_1_61_0.7z
+curl -o ../build/boost.7z http://netcologne.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.7z
 7za x -y -o"..\build\" ..\build\boost.7z
 
 cd ..
 cd build
-cd boost_1_61_0
+cd boost_1_63_0
 
 call bootstrap.bat
 
@@ -53,12 +53,29 @@ exit )
 md ..\..\..\boost
 md ..\..\..\boost\boost
 md ..\..\..\boost\stage
+md ..\..\..\boost\stage\lib
+md ..\..\..\boost\stage\lib\x86
+md ..\..\..\boost\stage\lib\x64
 
 xcopy /E /I /Y boost ..\..\..\boost\boost\
-xcopy /E /I /Y stage ..\..\..\boost\stage\
+xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x86
+
+del stage /F /Q
+del bin.v2 /F /Q
+
+call bootstrap.bat
+call b2 -j8 --build-type=complete --toolset=msvc address-model=64
+
+xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x64
 
 cd ..
 cd mongo-cxx-driver-legacy-1.1.2
+
+md ..\..\..\mongo
+md ..\..\..\mongo\include
+md ..\..\..\mongo\lib
+md ..\..\..\mongo\lib\x86
+md ..\..\..\mongo\lib\x64
 
 set REL_PATH=.\
 set ABS_PATH=
@@ -72,11 +89,23 @@ set ABS_PATH=%CD%
 rem // Restore original directory
 popd
 
-call scons install --32 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib
-call scons install --32 --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib
-call scons install --32 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib
-call scons install --32 --dynamic-windows --sharedclient --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib
+call scons install --32 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install --32 --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install --32 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install --32 --dynamic-windows --sharedclient --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
 
 cd build
 
-xcopy /E /I /Y install ..\..\..\..\mongo
+xcopy /E /I /Y install\include ..\..\..\..\mongo\include
+xcopy /E /I /Y install\lib ..\..\..\..\mongo\lib\x86
+
+cd ..
+
+call scons install --64 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install --64 --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install --64 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install --64 --dynamic-windows --sharedclient --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+
+cd build
+
+xcopy /E /I /Y install\lib ..\..\..\..\mongo\lib\x64
