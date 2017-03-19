@@ -74,8 +74,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;$(OutDir)..\udt4\src;$(OutDir)..\udt4\app;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\Stage</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost;$(OutDir)..\..\;$(OutDir)..\..\common;$(OutDir)..\..\lua\src;$(OutDir)..\..\chaiscript\include;$(OutDir)..\..\udt4\src;$(OutDir)..\..\udt4\app;.\</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\Stage</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,8 +87,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;$(OutDir)..\udt4\src;$(OutDir)..\udt4\app;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\Stage</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost;$(OutDir)..\..\;$(OutDir)..\..\common;$(OutDir)..\..\lua\src;$(OutDir)..\..\chaiscript\include;$(OutDir)..\..\udt4\src;$(OutDir)..\..\udt4\app;.\</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\Stage</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>

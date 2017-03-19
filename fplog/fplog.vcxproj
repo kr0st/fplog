@@ -74,8 +74,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost;$(OutDir)..\..\;$(OutDir)..\..\common;$(OutDir)..\..\lua\src;$(OutDir)..\..\chaiscript\include;.\</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(OutDir)..\..\boost\stage\lib\x64;..\Stage</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,8 +87,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\..\boost;$(OutDir)..\..\;$(OutDir)..\..\common;$(OutDir)..\..\lua\src;$(OutDir)..\..\chaiscript\include;.\</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(OutDir)..\..\boost\stage\lib\x64;..\Stage</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -128,6 +128,7 @@
       <DisableSpecificWarnings>4800;4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -181,6 +182,7 @@
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>false</EnablePREfast>
       <DisableSpecificWarnings>4800;4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
