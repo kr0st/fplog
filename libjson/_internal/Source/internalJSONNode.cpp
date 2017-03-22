@@ -726,7 +726,7 @@ internalJSONNode * internalJSONNode::newInternal(const internalJSONNode & orig) 
 	   JSONNode internalJSONNode::Dump(size_t & totalbytes) const json_nothrow {
 		  JSONNode dumpage(JSON_NODE);
 		  dumpage.set_name(JSON_TEXT("internalJSONNode"));
-		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (long)this)));
+		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (unsigned long long)this)));
 
 		  START_MEM_SCOPE
 			 size_t memory = sizeof(internalJSONNode);

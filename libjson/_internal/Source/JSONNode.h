@@ -964,7 +964,7 @@ inline void JSONNode::decRef(void) json_nothrow { //decrements internal's counte
 	   inline JSONNode JSONNode::dump(void) const json_nothrow {
 		  JSON_CHECK_INTERNAL();
 		  JSONNode dumpage(JSON_NODE);
-		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (long)this)));
+		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (unsigned long long)this)));
 		  size_t total = 0;
 		  JSONNode node(internal -> Dump(total));
 		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("total bytes used"), total)));
@@ -976,7 +976,7 @@ inline void JSONNode::decRef(void) json_nothrow { //decrements internal's counte
 	   inline JSONNode JSONNode::dump(size_t & totalmemory) json_nothrow {
 		  JSON_CHECK_INTERNAL();
 		  JSONNode dumpage(JSON_NODE);
-		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (long)this)));
+		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("this"), (unsigned long long)this)));
 		  dumpage.push_back(JSON_NEW(JSONNode(JSON_TEXT("bytes used"), sizeof(JSONNode))));
 		  dumpage.push_back(JSON_NEW(internal -> Dump(totalmemory)));
 		  return dumpage;
