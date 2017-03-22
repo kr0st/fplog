@@ -69,7 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib\x86;..\Stage</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\lua\src;$(OutDir)..\chaiscript\include;.\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib\x86;..\Stage</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -114,7 +114,7 @@
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,7 +167,7 @@
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

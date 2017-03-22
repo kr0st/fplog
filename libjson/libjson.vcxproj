@@ -126,7 +126,7 @@
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,7 +167,7 @@
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -201,7 +201,7 @@
       <DisableSpecificWarnings>4005;4275;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>

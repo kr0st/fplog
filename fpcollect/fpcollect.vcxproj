@@ -69,7 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage;$(OutDir)..\mongo\lib;</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib\x86;..\Stage;$(OutDir)..\mongo\lib\x86;</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OutDir)..\boost;$(OutDir)..\;$(OutDir)..\common;$(OutDir)..\mongo\include;$(OutDir)..\fplog\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib;..\Stage;$(OutDir)..\mongo\lib;</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(OutDir)..\boost\stage\lib\x86;..\Stage;$(OutDir)..\mongo\lib\x86;</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -111,15 +111,15 @@
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(OutDir)\..\mongo\lib\*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_date*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_thread*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_system*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_chrono*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_regex*.dll ..\Stage\</Command>
+      <Command>copy $(OutDir)..\mongo\lib\x86\*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_date*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_thread*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_system*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_chrono*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_regex*.dll ..\Stage\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -176,15 +176,15 @@ copy $(OutDir)..\..\boost\stage\lib\x64\boost_regex*.dll ..\Stage\</Command>
       <Command>del ..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\</Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(OutDir)\..\mongo\lib\*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_date*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_thread*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_system*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_chrono*.dll ..\Stage\
-copy $(OutDir)\..\boost\stage\lib\boost_regex*.dll ..\Stage\</Command>
+      <Command>copy $(OutDir)..\mongo\lib\x86\*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_date*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_thread*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_system*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_chrono*.dll ..\Stage\
+copy $(OutDir)..\boost\stage\lib\x86\boost_regex*.dll ..\Stage\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

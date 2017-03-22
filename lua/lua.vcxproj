@@ -98,7 +98,7 @@ del $(OutDir)\*.lua
 </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\
 copy $(OutDir)..\lua\json.lua ..\Stage\
 copy $(OutDir)..\lua\json.lua $(OutDir)
 </Command>
@@ -154,7 +154,7 @@ del $(OutDir)\*.lua
 </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\Stage\
+      <Command>copy $(OutDir)$(ProjectName).* ..\Stage\
 copy $(OutDir)..\lua\json.lua ..\Stage\
 copy $(OutDir)..\lua\json.lua $(OutDir)
 </Command>

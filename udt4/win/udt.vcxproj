@@ -104,7 +104,7 @@
       <Command>del ..\..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\..\Stage\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -172,7 +172,7 @@
       <Command>del ..\..\Stage\$(ProjectName).* /F /Q</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(OutDir)\$(ProjectName).* ..\..\Stage\</Command>
+      <Command>copy $(OutDir)$(ProjectName).* ..\..\Stage\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
