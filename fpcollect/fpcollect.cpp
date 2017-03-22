@@ -24,6 +24,7 @@
 #include <boost/thread/thread_time.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/exception/all.hpp>
 
 #include <mongo/client/dbclient.h>
 
@@ -541,11 +542,22 @@ void stop()
 
 int main()
 {
-    fpcollect::start();
+    try
+    {
+        fpcollect::start();
     
-    _getch();
-    generic_util::process_suicide(13000);
+        _getch();
+        generic_util::process_suicide(13000);
 
-    fpcollect::stop();
-    generic_util::suicide_prevention();
+        fpcollect::stop();
+        generic_util::suicide_prevention();
+    }
+    catch (std::exception& e)
+    {
+        printf("Terminated! Error: %s\n", e.what());
+    }
+    catch (boost::exception& e)
+    {
+        printf("Terminated! Error: %s\n", boost::diagnostic_information(e).c_str());
+    }
 }
