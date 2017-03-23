@@ -376,7 +376,7 @@ void performance_test()
 
     }
 
-    _getch();
+    //_getch();
 }
 
 void prio_filter_perf_test_thread(int msg_count)
@@ -471,7 +471,6 @@ void filter_perft_test_summary()
 
 void manual_test()
 {
-    initlog("fplog_test", "18749_18750", 0, false);
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
     if (filter)
@@ -498,7 +497,6 @@ void manual_test()
 
 void spam_test()
 {
-    initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
     if (filter)
@@ -1060,7 +1058,6 @@ bool queue_controller_test()
 
 void run_all_tests()
 {
-    initlog("fplog_test", "18749_18750");
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
 
@@ -1103,7 +1100,6 @@ void start_thread(const char *facility)
 
 void multithreading_test()
 {
-    initlog("fplog_test", "18749_18750");
     std::vector<std::thread> threads;
    
     threads.push_back(std::thread(start_thread, Facility::user));
@@ -1225,13 +1221,15 @@ bool socket_test()
 
 int main()
 {
+    fplog::initlog("fplog_test", "18749_18750", 0, true);
+
     //fplog::testing::queue_controller_test();
     
     //fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
-    
-    fplog::testing::performance_test();
+    while (true)
+        fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();

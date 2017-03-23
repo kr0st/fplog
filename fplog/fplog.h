@@ -295,6 +295,7 @@ class FPLOG_API Filter_Base
         Filter_Base(const char* filter_id) { if (filter_id) filter_id_ = filter_id; else filter_id_ = ""; }
         virtual bool should_pass(const Message& msg) = 0;
         std::string get_id(){ std::lock_guard<std::recursive_mutex> lock(mutex_); std::string id(filter_id_); return id; };
+        virtual ~Filter_Base() {}
 
 
     protected:
@@ -320,7 +321,7 @@ class FPLOG_API Lua_Filter: public Filter_Base
 
             Lua_Filter(const char* filter_id, const char* lua_script);
             virtual bool should_pass(const Message& msg);
-            ~Lua_Filter();
+            virtual ~Lua_Filter();
 
     private:
 
@@ -342,7 +343,7 @@ class FPLOG_API Chai_Filter: public Filter_Base
 
             Chai_Filter(const char* filter_id, const char* chai_script);
             virtual bool should_pass(const Message& msg);
-            ~Chai_Filter();
+            virtual ~Chai_Filter();
 
     private:
 
@@ -358,6 +359,7 @@ class FPLOG_API Priority_Filter: public Filter_Base
     public:
 
         Priority_Filter(const char* filter_id): Filter_Base(filter_id){ construct_numeric(); }
+        virtual ~Priority_Filter() {}
 
         virtual bool should_pass(const Message& msg);
 
