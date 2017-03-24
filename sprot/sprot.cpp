@@ -348,7 +348,7 @@ namespace sprot
         }
 
         unsigned char* ptr = (unsigned char*)buf;
-        int bytes_left = buf_size;
+        int bytes_left = static_cast<int>(buf_size);
 
         try
         {
@@ -367,8 +367,8 @@ namespace sprot
                         write_data(ptr, to_copy, Frame::DATA_SINGLE);
 
                 ptr += to_copy;
-                int copied = ptr - (unsigned char*)buf;
-                bytes_left = buf_size - copied;
+                int copied = static_cast<int>(ptr - (unsigned char*)buf);
+                bytes_left = static_cast<int>(buf_size - copied);
             }
         }
         catch(fplog::exceptions::Generic_Exception&)
@@ -700,7 +700,7 @@ namespace vsprot
                 if (new_size == 0)
                 {
                     read_buffer_.clear();
-                    return frame_size;
+                    return static_cast<int>(frame_size);
                 }
 
 				std::vector<char> new_buffer;
@@ -715,7 +715,7 @@ namespace vsprot
 						read_buffer_.clear();
 				}
 
-				return frame_size;
+				return static_cast<int>(frame_size);
 			}
 		}
 		

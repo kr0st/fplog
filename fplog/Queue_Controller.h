@@ -48,7 +48,7 @@ class FPLOG_API Queue_Controller
                     };
                 };
                 
-                Algo(queue<string*>& mq, size_t max_size, size_t current_size = 0): mq_(mq), max_size_(max_size), current_size_(current_size){}
+                Algo(queue<string*>& mq, size_t max_size, size_t current_size = 0): mq_(mq), max_size_(max_size), current_size_(static_cast<int>(current_size)){}
                 virtual Result process_queue(size_t current_size) = 0;
 
 

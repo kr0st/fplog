@@ -15,7 +15,7 @@ std::map<fplog::UID, std::vector<std::string>> g_ipc_read;
 
 void writer_ipc_thread(const fplog::UID uid)
 {
-    srand(std::hash<std::thread::id>()(std::this_thread::get_id()));
+    srand(static_cast<unsigned int>(std::hash<std::thread::id>()(std::this_thread::get_id())));
     std::vector<std::string> ipc_written;
 
     spipc::IPC ipc;
@@ -54,7 +54,7 @@ void writer_ipc_thread(const fplog::UID uid)
         for (int j = 0; j < rnd_sz; ++j)
             to_write.push_back(65 + rand() % 3 + prefix);
         to_write.push_back('_');
-        int num_len = strlen(number);
+        int num_len = static_cast<int>(strlen(number));
         for (int k = 0; k < num_len; k++)
             to_write.push_back(number[k]);
         to_write.push_back('_');
@@ -86,12 +86,12 @@ void writer_ipc_thread(const fplog::UID uid)
     g_ipc_written[uid] = ipc_written;
     
     fclose(fwriter);
-    printf("thread with fplog::UID [%lld/%lld] written %lu values.\n", uid.high, uid.low, ipc_written.size());
+    printf("thread with fplog::UID [%lld/%lld] written %lu values.\n", uid.high, uid.low, static_cast<unsigned long>(ipc_written.size()));
 }
 
 void reader_ipc_thread(const fplog::UID uid)
 {
-    srand(std::hash<std::thread::id>()(std::this_thread::get_id()));
+    srand(static_cast<unsigned int>(std::hash<std::thread::id>()(std::this_thread::get_id())));
     std::vector<std::string> read_items;
 
     spipc::IPC ipc;
@@ -139,7 +139,7 @@ void reader_ipc_thread(const fplog::UID uid)
     g_ipc_read[uid] = read_items;
 
     fclose(freader);
-    printf("thread with fplog::UID [%lld/%lld] read %lu values.\n", uid.high, uid.low, read_items.size());
+    printf("thread with fplog::UID [%lld/%lld] read %lu values.\n", uid.high, uid.low, static_cast<unsigned long>(read_items.size()));
 }
 
 bool N_threads_IPC_test()

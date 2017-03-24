@@ -170,8 +170,8 @@ namespace spipc
                 UDT::UDSET read_set;
                 
                 timeval to;
-                to.tv_sec = timeout / 1000;
-                to.tv_usec = (timeout % 1000) * 1000;
+                to.tv_sec = static_cast<long>(timeout / 1000);
+                to.tv_usec = static_cast<long>((timeout % 1000) * 1000);
 
                 UD_SET(client_sock_, &read_set);
 
@@ -191,7 +191,7 @@ namespace spipc
                 if (read_set.size() == 0)
                     THROW(fplog::exceptions::Timeout);
 
-                int sz = UDT::recv(client_sock_, (char*)buf, buf_size, 0);
+                int sz = UDT::recv(client_sock_, (char*)buf, static_cast<int>(buf_size), 0);
                 if (sz == UDT::ERROR)
                 {
                     int status = UDT::getsockstate(client_sock_);
@@ -220,8 +220,8 @@ namespace spipc
                 UDT::UDSET write_set;
                 
                 timeval to;
-                to.tv_sec = timeout / 1000;
-                to.tv_usec = (timeout % 1000) * 1000;
+                to.tv_sec = static_cast<long>(timeout / 1000);
+                to.tv_usec = static_cast<int>((timeout % 1000) * 1000);
 
                 UD_SET(client_sock_, &write_set);
                 if (UDT::select(client_sock_ + 1, 0, &write_set, 0, &to) < 0)
@@ -240,7 +240,7 @@ namespace spipc
                 if (write_set.size() == 0)
                     THROW(fplog::exceptions::Timeout);
 
-                int sz = UDT::send(client_sock_, (char*)buf, buf_size, 0);
+                int sz = UDT::send(client_sock_, (char*)buf, static_cast<int>(buf_size), 0);
                 if (sz == UDT::ERROR)
                 {
                     int status = UDT::getsockstate(client_sock_);
@@ -328,7 +328,7 @@ namespace spipc
                         THROWM(fplog::exceptions::Connect_Failed, ("Port is in use, cannot connect. Error = " + std::to_string(err)).c_str());
 
                     serv_sock_ = UDT::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-                    if (UDT::ERROR == UDT::bind(serv_sock_, res->ai_addr, res->ai_addrlen))
+                    if (UDT::ERROR == UDT::bind(serv_sock_, res->ai_addr, static_cast<int>(res->ai_addrlen)))
                     {
                         UDT::close(serv_sock_);
                         init_socket(serv_sock_);
@@ -434,7 +434,7 @@ re_accept:
                         THROWM(fplog::exceptions::Connect_Failed, (std::string("Cannot connect to ") + ip_str_ + ":" + peer_port).c_str());
 
                     // connect to the server, implict bind
-                    if (UDT::ERROR == UDT::connect(client_sock_, peer->ai_addr, peer->ai_addrlen))
+                    if (UDT::ERROR == UDT::connect(client_sock_, peer->ai_addr, static_cast<int>(peer->ai_addrlen)))
                     {
                         freeaddrinfo(peer);
                         THROWM(fplog::exceptions::Connect_Failed, UDT::getlasterror().getErrorMessage());

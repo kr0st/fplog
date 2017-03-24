@@ -168,7 +168,7 @@ void GetPrimaryIp(char* buffer, size_t buflen)
 
     assert(buflen >= 16);
 
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    int sock = static_cast<int>(socket(AF_INET, SOCK_DGRAM, 0));
     assert(sock != -1);
 
     const char* kGoogleDnsIp = "8.8.8.8";
@@ -640,7 +640,7 @@ class Impl
                 return;
 
             //Hackish way of adding json representation of hostname to the log message.
-            int pos = str->rfind('}');
+            int pos = static_cast<int>(str->rfind('}'));
             if ((pos > 0) && (pos != std::string::npos))
             {
                 (*str)[pos] = ',';

@@ -863,7 +863,7 @@ class Lua_Filter::Lua_Filter_Impl
             generic_util::escape_quotes(log_msg_escaped);
 
             const char* format = "log_msg=\"%s\"\nfplog_message = json.decode(log_msg)\n";
-            int lua_len = log_msg_escaped.length() + 256;
+            int lua_len = static_cast<int>(log_msg_escaped.length() + 256);
             
             char* lua_script = new char[lua_len];
             memset(lua_script, 0, lua_len);
@@ -987,7 +987,7 @@ class Chai_Filter::Chai_Filter_Impl
         
         retry_parsing:
 
-            int chai_len = log_msg_escaped.length() + 256;
+            int chai_len = static_cast<int>(log_msg_escaped.length() + 256);
             
             char* chai_script = new char[chai_len];
             memset(chai_script, 0, chai_len);

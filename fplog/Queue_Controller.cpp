@@ -43,9 +43,9 @@ void Queue_Controller::pop()
         return;
 
     #ifdef _LINUX
-    int buf_length = strnlen(str->c_str(), buf_sz);
+    int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
     #else
-    int buf_length = strnlen_s(str->c_str(), buf_sz);
+    int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
     #endif
 
     mq_size_ -= buf_length;
@@ -57,9 +57,9 @@ void Queue_Controller::push(string *str)
         return;
 
     #ifdef _LINUX
-    int buf_length = strnlen(str->c_str(), buf_sz);
+    int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
     #else
-    int buf_length = strnlen_s(str->c_str(), buf_sz);
+    int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
     #endif
 
     if (state_of_emergency())
@@ -106,12 +106,12 @@ bool Queue_Controller::state_of_emergency()
 void Queue_Controller::handle_emergency()
 {
     Algo::Result res = algo_->process_queue(mq_size_);
-    mq_size_ = res.current_size;
+    mq_size_ = static_cast<int>(res.current_size);
 
     if (state_of_emergency())
         res = algo_fallback_->process_queue(mq_size_);
 
-    mq_size_ = res.current_size;
+    mq_size_ = static_cast<int>(res.current_size);
 }
 
 Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(size_t current_size)
@@ -120,7 +120,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
     res.current_size = 0;
     res.removed_count = 0;
     
-    int cs = current_size;
+    int cs = static_cast<int>(current_size);
     
     while (cs >= (int)max_size_)
     {
@@ -133,9 +133,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest::process_queue(si
         if (str)
         {
             #ifdef _LINUX
-            int buf_length = strnlen(str->c_str(), buf_sz);
+            int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
             #else
-            int buf_length = strnlen_s(str->c_str(), buf_sz);
+            int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
             #endif
         
             cs -= buf_length;
@@ -159,7 +159,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
     res.current_size = 0;
     res.removed_count = 0;
     
-    int cs = current_size;
+    int cs = static_cast<int>(current_size);
 
     vector<string*> v;
     while (!mq_.empty())
@@ -179,9 +179,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest::process_queue(si
         if (str)
         {
             #ifdef _LINUX
-            int buf_length = strnlen(str->c_str(), buf_sz);
+            int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
             #else
-            int buf_length = strnlen_s(str->c_str(), buf_sz);
+            int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
             #endif
         
             cs -= buf_length;
@@ -218,7 +218,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest_Below_Priority::p
     
     std::queue<std::string*> mq;
     
-    int cs = current_size;
+    int cs = static_cast<int>(current_size);
     
     while (!mq_.empty())
     {
@@ -229,9 +229,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Oldest_Below_Priority::p
             if (cs >= (int)max_size_)
             {
                 #ifdef _LINUX
-                int buf_length = strnlen(str->c_str(), buf_sz);
+                int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
                 #else
-                int buf_length = strnlen_s(str->c_str(), buf_sz);
+                int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
                 #endif
 
                 fplog::Message msg(*str);
@@ -290,7 +290,7 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
         v.swap(empty);
     }
 
-    int cs = current_size;
+    int cs = static_cast<int>(current_size);
     
     while (!mq_.empty())
     {
@@ -302,9 +302,9 @@ Queue_Controller::Algo::Result Queue_Controller::Remove_Newest_Below_Priority::p
             if (cs >= (int)max_size_)
             {
                 #ifdef _LINUX
-                int buf_length = strnlen(str->c_str(), buf_sz);
+                int buf_length = static_cast<int>(strnlen(str->c_str(), buf_sz));
                 #else
-                int buf_length = strnlen_s(str->c_str(), buf_sz);
+                int buf_length = static_cast<int>(strnlen_s(str->c_str(), buf_sz));
                 #endif
 
                 fplog::Message msg(*str);

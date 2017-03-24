@@ -267,10 +267,10 @@ retry:
 #endif
 
     timeval to;
-    to.tv_sec = timeout / 1000;
-    to.tv_usec = (timeout % 1000) * 1000;
+    to.tv_sec = static_cast<long>(timeout / 1000);
+    to.tv_usec = static_cast<long>((timeout % 1000) * 1000);
     
-    int res = select(socket_ + 1, &fdset, 0, 0, &to);
+    int res = select(static_cast<int>(socket_ + 1), &fdset, 0, 0, &to);
     if (res == 0)
         THROW(fplog::exceptions::Timeout);
     if (res != 1)
@@ -279,7 +279,7 @@ retry:
 #ifdef _OSX
     res = recvfrom((int)socket_, buf, buf_size, 0, (sockaddr*)&remote_addr, (socklen_t *)&addr_len);
 #else
-    res = recvfrom(socket_, (char*)buf, buf_size, 0, (sockaddr*)&remote_addr, &addr_len);
+    res = recvfrom(socket_, (char*)buf, static_cast<int>(buf_size), 0, (sockaddr*)&remote_addr, &addr_len);
 #endif
 
     if (res != SOCKET_ERROR)
@@ -349,16 +349,16 @@ size_t Socket_Transport::write(const void* buf, size_t buf_size, size_t timeout)
 
 
     timeval to;
-    to.tv_sec = timeout / 1000;
-    to.tv_usec = (timeout % 1000) * 1000;
+    to.tv_sec = static_cast<long>(timeout / 1000);
+    to.tv_usec = static_cast<long>((timeout % 1000) * 1000);
 
-    int res = select(socket_ + 1, 0, &fdset, 0, &to);
+    int res = select(static_cast<int>(socket_ + 1), 0, &fdset, 0, &to);
     if (res == 0)
         THROW(fplog::exceptions::Timeout);
     if (res != 1)
         THROW(fplog::exceptions::Write_Failed);
 
-    res = sendto(socket_, (char*)buf, buf_size, 0, (sockaddr*)&remote_addr, addr_len);
+    res = sendto(socket_, (char*)buf, static_cast<int>(buf_size), 0, (sockaddr*)&remote_addr, addr_len);
     if (res != SOCKET_ERROR)
         return res;
     else
