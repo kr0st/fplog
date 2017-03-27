@@ -72,6 +72,14 @@ rm ./project-config.jam
 cp ../../linux/project-config.jam ./
 
 ./b2 -j4 --build-type=complete --layout=versioned --toolset=gcc architecture=x86 address-model=32
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "unable to build boost libraries, please inspect the build log for clues."
+echo "*******************************************************************************************"
+exit
+fi
+
 ./b2 -j4 --with-python --build-type=complete --layout=versioned --toolset=gcc architecture=x86 address-model=32
 
 if [ $? -ne 0 ]; then
@@ -80,4 +88,74 @@ echo "unable to build boost libraries, please inspect the build log for clues."
 echo "*******************************************************************************************"
 exit
 fi
+
+rm -rf ../../../boost 
+
+mkdir ../../../boost
+mkdir ../../../boost/boost
+mkdir ../../../boost/stage
+mkdir ../../../boost/stage/lib
+
+cp -rf ./boost ../../../boost
+
+cp -rf ./stage/lib ../../../boost/stage/lib
+mv ../../../boost/stage/lib/lib ../../../boost/stage/lib/x86
+
+rm -rf ./stage
+rm -rf ./bin.v2
+
+./b2 -j4 --build-type=complete --layout=versioned --toolset=gcc address-model=64
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "unable to build boost libraries, please inspect the build log for clues."
+echo "*******************************************************************************************"
+exit
+fi
+
+./b2 -j4 --with-python --build-type=complete --layout=versioned --toolset=gcc address-model=64
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "unable to build boost libraries, please inspect the build log for clues."
+echo "*******************************************************************************************"
+exit
+fi
+
+cp -rf ./stage/lib ../../../boost/stage/lib
+mv ../../../boost/stage/lib/lib ../../../boost/stage/lib/x64
+
+cd ..
+cd ./mongo-cxx-driver-legacy-1.1.2
+
+rm -rf ../../../mongo
+mkdir ../../../mongo
+mkdir ../../../mongo/lib
+
+mydir="$(pwd)"
+
+scons install --32 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --32 --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --32 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --32 --sharedclient --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+
+cd ./build
+
+cp -rf ./install/include ../../../../mongo
+cp -rf ./install/lib ../../../../mongo/lib
+
+mv ../../../../mongo/lib/lib ../../../../mongo/lib/x86
+
+cd ..
+
+scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --64 --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+scons install --64 --sharedclient --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
+
+cd ./build
+
+cp -rf ./install/lib ../../../../mongo/lib
+
+mv ../../../../mongo/lib/lib ../../../../mongo/lib/x64
 
