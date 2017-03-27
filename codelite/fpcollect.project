@@ -70,7 +70,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -98,7 +98,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../mongo/lib/*mongo* ../Stage</Command>
+        <Command Enabled="yes">cp ../mongo/lib/x86/*mongo* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -137,7 +137,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -165,7 +165,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../mongo/lib/*mongo* ../Stage</Command>
+        <Command Enabled="yes">cp ../mongo/lib/x64/*mongo* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -204,7 +204,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -232,7 +232,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../mongo/lib/*mongo* ../Stage</Command>
+        <Command Enabled="yes">cp ../mongo/lib/x86/*mongo* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -271,7 +271,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -299,7 +299,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../mongo/lib/*mongo* ../Stage</Command>
+        <Command Enabled="yes">cp ../mongo/lib/x64/*mongo* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>

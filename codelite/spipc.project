@@ -68,6 +68,7 @@
     <File Name="../spipc/spipc.cpp"/>
     <File Name="../spipc/UDT_Transport.cpp"/>
     <File Name="../spipc/socket_transport.cpp"/>
+    <File Name="../sprot/fplog_transport.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../spipc/spipc.h"/>
@@ -110,7 +111,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="sprot"/>
         <Library Value="udt"/>
@@ -170,7 +171,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="sprot"/>
         <Library Value="udt"/>
@@ -230,7 +231,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="sprot"/>
         <Library Value="udt"/>
@@ -290,7 +291,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="sprot"/>
         <Library Value="udt"/>

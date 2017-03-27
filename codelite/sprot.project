@@ -71,7 +71,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -118,7 +118,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -165,7 +165,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -212,7 +212,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>

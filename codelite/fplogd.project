@@ -32,6 +32,7 @@
     <File Name="../fplogd/fplogd.cpp"/>
     <File Name="../fplogd/Transport_Factory.cpp"/>
     <File Name="../fplog/Queue_Controller.cpp"/>
+    <File Name="../sprot/fplog_transport.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../fplogd/fplogd.h"/>
@@ -67,7 +68,7 @@
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="./"/>
         <LibraryPath Value="../Stage/"/>
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <Library Value="json"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -90,11 +91,11 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -134,7 +135,7 @@
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="./"/>
         <LibraryPath Value="../Stage/"/>
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <Library Value="json"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -157,11 +158,11 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -199,7 +200,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
@@ -260,7 +261,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="lua"/>

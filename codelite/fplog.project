@@ -119,7 +119,7 @@
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
       <Linker Options="-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
@@ -145,6 +145,7 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+        <Command Enabled="yes">rm -rf ../libjson/Objects_shared/</Command>
         <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA32</Command>
         <Command Enabled="yes">cp ../libjson/libjson.so ../Stage/libjson.so</Command>
       </PreBuild>
@@ -185,7 +186,7 @@
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
       <Linker Options="" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
@@ -211,6 +212,7 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+	<Command Enabled="yes">rm -rf ../libjson/Objects_shared/</Command>
         <Command Enabled="yes">SHARED=1 arch=AMD64 make -f ../libjson/makefile --directory=../libjson/</Command>
         <Command Enabled="yes">cp ../libjson/libjson.so ../Stage/libjson.so</Command>
       </PreBuild>
@@ -251,7 +253,7 @@
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
       <Linker Options="-O2;-m32" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
@@ -277,7 +279,8 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
-        <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA32</Command>
+	<Command Enabled="yes">rm -rf ../libjson/Objects_shared/</Command>        
+	<Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA32</Command>
         <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>
       <PostBuild>
@@ -317,7 +320,7 @@
         <Preprocessor Value="FPLOG_EXPORT"/>
       </Compiler>
       <Linker Options="-O2;" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
@@ -343,6 +346,7 @@
         <Command Enabled="yes">cp ../lua/src/liblua.a ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*libjson*</Command>
         <Command Enabled="yes">make -f ../libjson/makefile --directory=../libjson/ clean</Command>
+	<Command Enabled="yes">rm -rf ../libjson/Objects_shared/</Command>
         <Command Enabled="yes">SHARED=1 make -f ../libjson/makefile --directory=../libjson/ arch=IA64</Command>
         <Command Enabled="yes">cp ../libjson/*libjson.so* ../Stage</Command>
       </PreBuild>

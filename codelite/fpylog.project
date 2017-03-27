@@ -107,7 +107,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="fplog"/>
@@ -164,7 +164,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <LibraryPath Value="/usr/lib"/>
         <Library Value="dl"/>
@@ -227,7 +227,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
         <Library Value="dl"/>
         <Library Value="fplog"/>
@@ -284,7 +284,7 @@
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
-        <LibraryPath Value="../boost/stage/lib/"/>
+        <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
         <LibraryPath Value="/usr/lib"/>
         <Library Value="dl"/>
