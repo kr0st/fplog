@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="fplog" Database="">
+<CodeLite_Workspace Name="fplog" Database="" Version="10.0.0">
   <Project Name="sprot" Path="sprot.project" Active="No"/>
   <Project Name="spipc" Path="spipc.project" Active="No"/>
   <Project Name="fplog" Path="fplog.project" Active="No"/>

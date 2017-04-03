@@ -130,6 +130,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -192,7 +193,7 @@
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/libboost_python3-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/libboost_python-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes"/>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -250,6 +251,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -310,6 +312,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

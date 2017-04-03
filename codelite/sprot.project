@@ -88,6 +88,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -135,6 +136,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -182,6 +184,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -229,6 +232,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

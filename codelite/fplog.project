@@ -157,6 +157,7 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../lua/json.lua ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -230,6 +231,7 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../lua/json.lua ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -303,6 +305,7 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../lua/json.lua ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -376,6 +379,7 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
         <Command Enabled="yes">cp ../lua/json.lua ../Stage</Command>
+        <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
