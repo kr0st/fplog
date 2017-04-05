@@ -81,7 +81,7 @@ mkdir ../../../boost/stage/lib
 rm -rf ./stage
 rm -rf ./bin.v2
 
-./b2 -j4 --build-type=complete --layout=versioned --toolset=darwin address-model=64 > build.log
+./b2 -j4 --variant=release --runtime-link=static --link=shared --layout=versioned --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -90,7 +90,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j4 --with-python --build-type=complete --layout=versioned --toolset=darwin address-model=64 > build.log
+./b2 -j4 --with-python --variant=release --runtime-link=static --link=shared --layout=versioned --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
