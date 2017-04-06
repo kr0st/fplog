@@ -369,7 +369,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -384,8 +384,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
-					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					../Stage/,
 					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
@@ -409,7 +408,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -424,8 +423,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.63.0/lib,
-					"/usr/local/Cellar/boost-python/1.63.0/lib",
+					../Stage/,
 					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (

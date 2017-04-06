@@ -208,7 +208,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
 		};
 		78F3F3F11E3D155E00D8039A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -221,7 +221,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\nrm -f ${SOURCE_ROOT}/../Stage/*libboost*\nrm -f ${SOURCE_ROOT}/../Stage/*Python*\n\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_filesystem-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_regex-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost/1.63.0/lib/libboost_thread-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/boost-python/1.63.0/lib/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Python ${SOURCE_ROOT}/../Stage/\n\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_system-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_regex-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_thread-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_python3-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/Python\n";
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\nrm -f ${SOURCE_ROOT}/../Stage/*libboost*\nrm -f ${SOURCE_ROOT}/../Stage/*Python*\n\ncp ${SOURCE_ROOT}/../boost/stage/lib/x64/libboost_filesystem-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp ${SOURCE_ROOT}/../boost/stage/lib/x64/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp ${SOURCE_ROOT}/../boost/stage/lib/x64/libboost_regex-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp ${SOURCE_ROOT}/../boost/stage/lib/x64/libboost_thread-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp ${SOURCE_ROOT}/../boost/stage/lib/x64/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/\ncp /usr/local/Cellar/python3/3.6.1/Frameworks/Python.framework/Versions/3.6/Python ${SOURCE_ROOT}/../Stage/\n\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_system-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_regex-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_thread-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/libboost_python3-mt.dylib\nchmod 666 ${SOURCE_ROOT}/../Stage/Python\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -336,7 +336,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include/,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -367,7 +367,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include/,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,

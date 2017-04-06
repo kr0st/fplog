@@ -18,6 +18,6 @@ echo "MYPWD=\$(cd \"\$(dirname \"\$0\")\"; pwd)" >> ../../Stage/fplogd.app/Conte
 echo "cmd=\"tell application \\\"Terminal\\\" to do script \\\"\$MYPWD/../Resources/fplogd\\\"\"" >> ../../Stage/fplogd.app/Contents/MacOS/fplogd.sh
 echo "osascript -e \"\$cmd\"" >> ../../Stage/fplogd.app/Contents/MacOS/fplogd.sh
 
-install_name_tool -add_rpath "/Library/Frameworks/fplog.framework/Versions/A/" ../../Stage/fplogd.app/Contents/Resources/fplogd
+install_name_tool -add_rpath "/Library/Frameworks/fplog.framework/Versions/A" ../../Stage/fplogd.app/Contents/Resources/fplogd
 
 codesign -s "Developer ID Application: Rostislav Kuratch" -f ../../Stage/fplogd.app

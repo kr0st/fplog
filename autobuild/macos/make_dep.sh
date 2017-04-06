@@ -81,7 +81,7 @@ mkdir ../../../boost/stage/lib
 rm -rf ./stage
 rm -rf ./bin.v2
 
-./b2 -j4 --variant=release --runtime-link=static --link=shared --layout=versioned --toolset=darwin address-model=64 > build.log
+./b2 -j4 --variant=release --runtime-link=static --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -90,7 +90,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j4 --with-python --variant=release --runtime-link=static --link=shared --layout=versioned --toolset=darwin address-model=64 > build.log
+./b2 -j4 --with-python --variant=release --runtime-link=static --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -112,8 +112,8 @@ mkdir ../../../mongo/lib
 
 mydir="$(pwd)"
 
-scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-xgcc42-1_63,-xgcc42-mt-1_63,-xgcc42-mt-d-1_63,-xgcc42-d-1_63,-xgcc42-s-1_63,-xgcc42-sd-1_63,-xgcc42-mt-s-1_63,-xgcc42-mt-sd-1_63
-scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-xgcc42-1_63,-xgcc42-mt-1_63,-xgcc42-mt-d-1_63,-xgcc42-d-1_63,-xgcc42-s-1_63,-xgcc42-sd-1_63,-xgcc42-mt-s-1_63,-xgcc42-mt-sd-1_63
+scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
 
 cd ./build
 
@@ -121,4 +121,11 @@ cp -rf ./install/include ../../../../mongo
 cp -rf ./install/lib ../../../../mongo/lib
 
 mv ../../../../mongo/lib/lib ../../../../mongo/lib/x64
+
+if [ $? -eq 0 ]; then
+echo "*******************************************************************************************"
+echo "************************************* Praise the sun! *************************************"
+echo "*******************************************************************************************"
+exit
+fi
 

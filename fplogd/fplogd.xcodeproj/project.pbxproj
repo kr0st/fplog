@@ -181,7 +181,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/${PROJECT_NAME}\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -291,7 +291,7 @@
 			buildSettings = {
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include/,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -320,7 +320,7 @@
 			buildSettings = {
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include/,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
