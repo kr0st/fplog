@@ -22,7 +22,7 @@
 		78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F291E030C8A00E90119 /* libfplog.dylib */; };
 		78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2B1E030C9100E90119 /* libsprot.dylib */; };
 		78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C20F2D1E030C9700E90119 /* libspipc.dylib */; };
-		78F3F3ED1E3D142900D8039A /* libboost_python3-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */; };
+		78E1FEA41E97EB4A00FB305B /* libboost_python-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E1FEA31E97EB4A00FB305B /* libboost_python-mt.dylib */; };
 		78F3F3EE1E3D142900D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */; };
 		78F3F3EF1E3D142900D8039A /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3EC1E3D142900D8039A /* Python */; };
 /* End PBXBuildFile section */
@@ -37,6 +37,7 @@
 		78C20F2B1E030C9100E90119 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = ../sprot/build/Debug/libsprot.dylib; sourceTree = "<group>"; };
 		78C20F2D1E030C9700E90119 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = ../spipc/build/Debug/libspipc.dylib; sourceTree = "<group>"; };
 		78C20F2F1E030C9C00E90119 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = ../libjson/build/Debug/libjson.dylib; sourceTree = "<group>"; };
+		78E1FEA31E97EB4A00FB305B /* libboost_python-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python-mt.dylib"; path = "../Stage/libboost_python-mt.dylib"; sourceTree = "<group>"; };
 		78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_python3-mt.dylib"; path = "../Stage/libboost_python3-mt.dylib"; sourceTree = "<group>"; };
 		78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		78F3F3EC1E3D142900D8039A /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../Stage/Python; sourceTree = "<group>"; };
@@ -47,12 +48,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				789B137A1E5F2EED00613A94 /* libjson.a in Frameworks */,
+				78E1FEA41E97EB4A00FB305B /* libboost_python-mt.dylib in Frameworks */,
 				78F3F3EE1E3D142900D8039A /* libboost_system-mt.dylib in Frameworks */,
-				78F3F3ED1E3D142900D8039A /* libboost_python3-mt.dylib in Frameworks */,
+				78F3F3EF1E3D142900D8039A /* Python in Frameworks */,
+				789B137A1E5F2EED00613A94 /* libjson.a in Frameworks */,
 				78C20F2E1E030C9700E90119 /* libspipc.dylib in Frameworks */,
 				78C20F2C1E030C9100E90119 /* libsprot.dylib in Frameworks */,
-				78F3F3EF1E3D142900D8039A /* Python in Frameworks */,
 				78C20F2A1E030C8A00E90119 /* libfplog.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,6 +105,7 @@
 		78CF73841DF8844C00D53A7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78E1FEA31E97EB4A00FB305B /* libboost_python-mt.dylib */,
 				789B13791E5F2EED00613A94 /* libjson.a */,
 				78F3F3EA1E3D142900D8039A /* libboost_python3-mt.dylib */,
 				78F3F3EB1E3D142900D8039A /* libboost_system-mt.dylib */,
@@ -142,8 +144,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 781338C51DF72F2B00578629 /* Build configuration list for PBXNativeTarget "fpylog" */;
 			buildPhases = (
+				783A3F651E3F9899002DAD2E /* Run Script */,
 				781338B61DF72F2B00578629 /* Sources */,
-				783A3F651E3F9899002DAD2E /* ShellScript */,
 				781338B71DF72F2B00578629 /* Frameworks */,
 				781338B81DF72F2B00578629 /* Headers */,
 				7895124B1DF73A8100A51CBE /* ShellScript */,
@@ -161,6 +163,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 783630561E2172960010B08D /* Build configuration list for PBXNativeTarget "fpylog3" */;
 			buildPhases = (
+				78E1FEA61E97EC8300FB305B /* ShellScript */,
 				783630491E2172960010B08D /* Sources */,
 				7836304B1E2172960010B08D /* Frameworks */,
 				783630531E2172960010B08D /* Headers */,
@@ -220,20 +223,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib\ninstall_name_tool -change /usr/local/opt/boost/lib/libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\n\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib\ninstall_name_tool -change libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib";
 		};
-		783A3F651E3F9899002DAD2E /* ShellScript */ = {
+		783A3F651E3F9899002DAD2E /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\nrm -f ${SOURCE_ROOT}/../Stage/*Python*\n                          \ncp /usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/Python ${SOURCE_ROOT}/../Stage/\nchmod 666 ${SOURCE_ROOT}/../Stage/Python\n";
 		};
 		7895124B1DF73A8100A51CBE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -246,7 +250,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change libboost_python-mt.dylib @rpath/libboost_python-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
+		};
+		78E1FEA61E97EC8300FB305B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*Python*\n\ncp /usr/local/Cellar/python3/3.6.1/Frameworks/Python.framework/Versions/3.6/Python ${SOURCE_ROOT}/../Stage/\nchmod 666 ${SOURCE_ROOT}/../Stage/Python";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -385,7 +402,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					../Stage/,
-					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -424,7 +440,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					../Stage/,
-					/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -447,7 +462,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -456,7 +471,7 @@
 					../lua/src/,
 					../chaiscript/include/,
 					../fplog/,
-					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Headers,
+					/usr/local/Cellar/python3/3.6.1/Frameworks/Python.framework/Versions/3.6/Headers,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
@@ -485,7 +500,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/Cellar/boost/1.63.0/include,
+					../boost/,
 					../,
 					./,
 					../udt4/src/,
@@ -494,7 +509,7 @@
 					../lua/src/,
 					../chaiscript/include/,
 					../fplog/,
-					/usr/local/Cellar/python3/3.6.0/Frameworks/Python.framework/Versions/3.6/Headers,
+					/usr/local/Cellar/python3/3.6.1/Frameworks/Python.framework/Versions/3.6/Headers,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
