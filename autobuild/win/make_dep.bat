@@ -106,6 +106,22 @@ call scons install --64 --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=
 call scons install --64 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
 call scons install --64 --dynamic-windows --sharedclient --dbg=on --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
 
+if errorlevel 0 (
+echo *********************
+echo Praise the sun!
+echo ********************* )
+
+if errorlevel 1 (
+echo ******* ERROR *******
+echo unable to build mongo libraries, please inspect the build log for clues.
+echo *********************
+exit )
+
 cd build
 
 xcopy /E /I /Y install\lib ..\..\..\..\mongo\lib\x64
+
+cd ..
+cd ..
+cd ..
+del build /F /Q

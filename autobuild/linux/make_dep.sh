@@ -153,9 +153,26 @@ scons install --64 --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../
 scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
 scons install --64 --sharedclient --dbg=on --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64 --boost-lib-search-suffixes=-gcc48-1_63,-gcc48-mt-1_63,-gcc48-mt-d-1_63,-gcc48-d-1_63,-gcc48-s-1_63,-gcc48-sd-1_63,-gcc48-mt-s-1_63,-gcc48-mt-sd-1_63
 
+if [ $? -eq 0 ]; then
+echo "*******************************************************************************************"
+echo "************************************* Praise the sun! *************************************"
+echo "*******************************************************************************************"
+fi
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "Error(s) were detected building mongo client libs, please inspect the build log"
+echo "*******************************************************************************************"
+exit
+fi
+
 cd ./build
 
 cp -rf ./install/lib ../../../../mongo/lib
 
 mv ../../../../mongo/lib/lib ../../../../mongo/lib/x64
 
+cd ..
+cd ..
+cd ..
+rm -rf ./build
