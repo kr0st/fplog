@@ -17,7 +17,7 @@ project : default-build <toolset>gcc ;
 # Python configuration
 import python ;
 
-using python : 3.4 : /usr/bin/python3 : /usr/include/python3.4 : /usr/lib ;
+using python : 3.5 : /usr/bin/python3 : /usr/include/python3.5 : /usr/lib ;
 
 # List of --with-<library> and --without-<library>
 # options. If left empty, all libraries will be built.
