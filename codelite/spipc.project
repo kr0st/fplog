@@ -117,7 +117,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+        <Library Value="boost_system-mt"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -178,7 +178,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+        <Library Value="boost_system-mt"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -239,7 +239,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-1_63"/>
+        <Library Value="boost_system-mt"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
@@ -300,7 +300,7 @@
         <Library Value="udt"/>
         <Library Value="dl"/>
         <Library Value="pthread"/>
-        <Library Value="boost_system-gcc48-mt-1_63"/>
+        <Library Value="boost_system-mt"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>

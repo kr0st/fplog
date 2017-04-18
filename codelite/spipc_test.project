@@ -73,7 +73,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+        <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -92,11 +92,6 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -138,7 +133,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-d-1_63"/>
+        <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -157,11 +152,6 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -203,7 +193,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-1_63"/>
+        <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -222,11 +212,6 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -268,7 +253,7 @@
         <Library Value="sprot"/>
         <Library Value="spipc"/>
         <Library Value="fplog"/>
-        <Library Value="boost_system-gcc48-mt-1_63"/>
+        <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
       </Linker>
@@ -287,11 +272,6 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-d-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_regex-gcc48-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_thread-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

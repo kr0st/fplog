@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="fpylog" InternalType="Library">
+<CodeLite_Project Name="fpylog" InternalType="Library" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00060001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-32bit0000000000000001N0013Release-64bit000000000000]]>
@@ -73,16 +73,24 @@
   <Dependencies Name="Debug">
     <Project Name="fplog"/>
   </Dependencies>
-  <Dependencies Name="Debug-64bit">
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
     <Project Name="fplog"/>
   </Dependencies>
-  <Dependencies Name="Release-64bit">
+  <Dependencies Name="Debug-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
     <Project Name="fplog"/>
   </Dependencies>
   <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
     <Project Name="fplog"/>
   </Dependencies>
-  <Dependencies Name="Release-32bit">
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
     <Project Name="fplog"/>
   </Dependencies>
   <Settings Type="Dynamic Library">
@@ -96,7 +104,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-std=c++11;-fpermissive;-m32" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-std=c++11;-fpermissive;-m32;-fPIC" C_Options="-g;-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
@@ -117,6 +125,7 @@
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -130,6 +139,10 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
@@ -154,7 +167,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Debug-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-fPIC;-g;-std=c++11;-fpermissive;" C_Options="-g;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-fPIC;-g;-std=c++11;-fpermissive;-fPIC" C_Options="-g;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
@@ -173,11 +186,12 @@
         <Library Value="lua"/>
         <Library Value="rt"/>
         <Library Value="json"/>
-        <Library Value="boost_python3-gcc48-mt-1_63"/>
+        <Library Value="boost_python3-mt"/>
         <Library Value="libpython3.4m"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -191,8 +205,10 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_python3-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
-        <Command Enabled="yes">cp ../boost/stage/lib/libboost_python-gcc48-mt-1_63.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
@@ -217,7 +233,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release-32bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-std=c++11;-fpermissive;-m32" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-std=c++11;-fpermissive;-m32;-fPIC" C_Options="-m32" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
@@ -238,6 +254,7 @@
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -251,6 +268,10 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
@@ -275,7 +296,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release-64bit" CompilerType="GCC ( 4.8 )" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-std=c++11;-fpermissive;" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-std=c++11;-fpermissive;-fPIC" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="./"/>
         <IncludePath Value="../boost/"/>
         <IncludePath Value="../common/"/>
@@ -294,11 +315,12 @@
         <Library Value="lua"/>
         <Library Value="rt"/>
         <Library Value="json"/>
-        <Library Value="boost_python3-gcc48-mt-1_63"/>
+        <Library Value="boost_python3-mt"/>
         <Library Value="libpython3.4m"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -312,6 +334,10 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
