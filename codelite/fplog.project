@@ -121,6 +121,7 @@
       <Linker Options="-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
         <Library Value="lua"/>
@@ -198,6 +199,7 @@
       <Linker Options="" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
         <Library Value="lua"/>
@@ -273,6 +275,7 @@
       <Linker Options="-O2;-m32" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
         <Library Value="lua"/>
@@ -348,6 +351,7 @@
       <Linker Options="-O2;" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="spipc"/>
         <Library Value="lua"/>

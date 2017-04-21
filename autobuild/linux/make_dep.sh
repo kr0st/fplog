@@ -71,7 +71,7 @@ fi
 rm ./project-config.jam
 cp ../../linux/project-config.jam ./
 
-./b2 -j4 --variant=release --layout=tagged --toolset=gcc architecture=x86 address-model=32
+./b2 -j4 --variant=release --layout=tagged --toolset=gcc architecture=x86 address-model=32 cxxflags="-D_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -80,7 +80,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j4 --with-python --variant=release --layout=tagged --toolset=gcc architecture=x86 address-model=32
+./b2 -j4 --with-python --variant=release --layout=tagged --toolset=gcc architecture=x86 address-model=32 cxxflags="D_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -104,7 +104,7 @@ mv ../../../boost/stage/lib/lib ../../../boost/stage/lib/x86
 rm -rf ./stage
 rm -rf ./bin.v2
 
-./b2 -j4 --variant=release --layout=tagged --toolset=gcc address-model=64
+./b2 -j4 --variant=release --layout=tagged --toolset=gcc address-model=64 cxxflags="-D_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -113,7 +113,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j4 --with-python --variant=release --layout=tagged --toolset=gcc address-model=64
+./b2 -j4 --with-python --variant=release --layout=tagged --toolset=gcc address-model=64 cxxflags="-D_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -128,6 +128,9 @@ mv ../../../boost/stage/lib/lib ../../../boost/stage/lib/x64
 cd ..
 cd ./mongo-cxx-driver-legacy-1.1.2
 
+rm ./SConstruct
+cp ../../linux/SConstruct ./
+
 rm -rf ../../../mongo
 mkdir ../../../mongo
 mkdir ../../../mongo/lib
@@ -136,6 +139,13 @@ mydir="$(pwd)"
 
 scons install --32 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
 scons install --32 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "Error(s) were detected building mongo client libs, please inspect the build log"
+echo "*******************************************************************************************"
+exit
+fi
 
 cd ./build
 
@@ -149,18 +159,16 @@ cd ..
 scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
 scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
 
-if [ $? -eq 0 ]; then
-echo "*******************************************************************************************"
-echo "************************************* Praise the sun! *************************************"
-echo "*******************************************************************************************"
-fi
-
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
 echo "Error(s) were detected building mongo client libs, please inspect the build log"
 echo "*******************************************************************************************"
 exit
 fi
+
+echo "*******************************************************************************************"
+echo "************************************* Praise the sun! *************************************"
+echo "*******************************************************************************************"
 
 cd ./build
 
@@ -172,3 +180,4 @@ cd ..
 cd ..
 cd ..
 rm -rf ./build
+

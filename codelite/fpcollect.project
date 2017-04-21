@@ -72,6 +72,7 @@
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -139,6 +140,7 @@
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -206,6 +208,7 @@
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -273,6 +276,7 @@
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
