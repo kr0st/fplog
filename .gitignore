@@ -17,7 +17,7 @@ bld/
 [Oo]bj/
 Stage/
 mongo/
-
+gtest/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
