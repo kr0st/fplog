@@ -40,6 +40,14 @@ echo "*************************************************"
 exit
 fi
 
+cmake --version 2> /dev/null
+if [ $? -ne 0 ]; then
+echo "************** ERROR **************"
+echo "Please install CMake"
+echo "***********************************"
+exit
+fi
+
 curl --cacert ./cacert.crt --output cacert.pem https://curl.haxx.se/ca/cacert.pem
 if [ $? -eq 0 ]; then
 rm cacert.crt
@@ -51,12 +59,42 @@ mkdir ../build
 
 curl --cacert ./cacert.crt -o ../build/mongo_driver.zip https://codeload.github.com/mongodb/mongo-cxx-driver/zip/legacy-1.1.2
 curl -o ../build/boost.7z http://netcologne.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.7z
+curl --cacert ./cacert.crt -o ../build/gtest.zip https://codeload.github.com/google/googletest/zip/release-1.8.0
 
+7za x -y -o"../build/" ../build/gtest.zip
 7za x -y -o"../build/" ../build/mongo_driver.zip
 7za x -y -o"../build/" ../build/boost.7z
 
 cd ..
 cd build
+
+cd googletest-release-1.8.0
+cd googletest
+
+rm -rf ../../../../gtest
+
+mkdir ../../../../gtest
+mkdir ../../../../gtest/include
+mkdir ../../../../gtest/lib
+mkdir ../../../../gtest/lib/x64
+
+cmake ./
+make
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "unable to build gtest libraries, please inspect console output for clues."
+echo "*******************************************************************************************"
+exit
+fi
+
+cp -rf ./libgtest.a ../../../../gtest/lib/x64
+cp -rf ./libgtest_main.a ../../../../gtest/lib/x64
+cp -rf ./include ../../../../gtest/
+
+cd ..
+cd ..
+
 cd boost_1_63_0
 
 ./bootstrap.sh
@@ -81,7 +119,7 @@ mkdir ../../../boost/stage/lib
 rm -rf ./stage
 rm -rf ./bin.v2
 
-./b2 -j4 --variant=release --runtime-link=static --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
+./b2 -j8 --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -90,7 +128,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j4 --with-python --variant=release --runtime-link=static --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
+./b2 -j8 --with-python --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -112,8 +150,8 @@ mkdir ../../../mongo/lib
 
 mydir="$(pwd)"
 
-scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
-scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons -j 8 install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons -j 8 install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
 
 if [ $? -eq 0 ]; then
 echo "*******************************************************************************************"
