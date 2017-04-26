@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <thread>
 #include <atomic>
+#include <gtest/gtest.h>
 
 #include "spipc.h"
 
@@ -348,8 +349,25 @@ bool run_all_tests()
 
 }};
 
-int main(int argc, char* argv[])
+TEST(Multithreaded_IPC_Test, ThreeThreadsWriteRead)
 {
-    while(spipc::testing::run_all_tests());
-	return 0;
+    EXPECT_TRUE(spipc::testing::N_threads_IPC_test());
+    std::this_thread::sleep_for(std::chrono::milliseconds(13000));
 }
+
+TEST(Buffer_Overflow_IPC_Test, BufferOverflow)
+{
+    EXPECT_TRUE(spipc::testing::Buffer_Overflow_Test());
+}
+
+int main(int argc, char **argv)
+{
+    spipc::testing::g_written_items.clear();
+    spipc::testing::g_read_items.clear();
+    spipc::testing::g_ipc_written.clear();
+    spipc::testing::g_ipc_read.clear();
+    
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+

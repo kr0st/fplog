@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		78172B3A1EB0FBC600398158 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78172B381EB0FBC600398158 /* libgtest.a */; };
 		781A180E1DD8E7310049BB40 /* spipc_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 781A180D1DD8E7310049BB40 /* spipc_test.cpp */; };
 		781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A18111DD8E9BD0049BB40 /* libspipc.dylib */; };
 		78F3F3E61E3D12E000D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3E51E3D12E000D8039A /* libboost_system-mt.dylib */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		78172B371EB0FBC600398158 /* libgtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest_main.a; path = ../gtest/lib/x64/libgtest_main.a; sourceTree = "<group>"; };
+		78172B381EB0FBC600398158 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = ../gtest/lib/x64/libgtest.a; sourceTree = "<group>"; };
 		781A17FD1DD8E6350049BB40 /* spipc_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spipc_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		781A180D1DD8E7310049BB40 /* spipc_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spipc_test.cpp; sourceTree = SOURCE_ROOT; };
 		781A18111DD8E9BD0049BB40 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-ecysbduaxhsrsrfphqhbzckdlmyo/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
@@ -36,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78172B3A1EB0FBC600398158 /* libgtest.a in Frameworks */,
 				78F3F3E61E3D12E000D8039A /* libboost_system-mt.dylib in Frameworks */,
 				781A18121DD8E9BD0049BB40 /* libspipc.dylib in Frameworks */,
 			);
@@ -72,6 +76,8 @@
 		781A18101DD8E9BD0049BB40 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78172B371EB0FBC600398158 /* libgtest_main.a */,
+				78172B381EB0FBC600398158 /* libgtest.a */,
 				78F3F3E51E3D12E000D8039A /* libboost_system-mt.dylib */,
 				781A18111DD8E9BD0049BB40 /* libspipc.dylib */,
 			);
@@ -157,7 +163,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\ncp -rf ${SOURCE_ROOT}/../gtest/lib/x64/* ${SOURCE_ROOT}/../Stage/\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -271,6 +277,7 @@
 					../udt4/src/,
 					../udt4/app/,
 					../common/,
+					../gtest/include/,
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
 				LIBRARY_SEARCH_PATHS = ../Stage/;
@@ -294,6 +301,7 @@
 					../udt4/src/,
 					../udt4/app/,
 					../common/,
+					../gtest/include/,
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
 				LIBRARY_SEARCH_PATHS = ../Stage/;
