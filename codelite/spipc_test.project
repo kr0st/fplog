@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="spipc_test" InternalType="Executable">
+<CodeLite_Project Name="spipc_test" InternalType="Executable" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+      <![CDATA[00050001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-64bit000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -44,6 +44,22 @@
     <Project Name="spipc"/>
     <Project Name="fplog"/>
   </Dependencies>
+  <Dependencies Name="Debug-64bit">
+    <Project Name="spipc"/>
+    <Project Name="sprot"/>
+  </Dependencies>
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -62,11 +78,13 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -76,9 +94,11 @@
         <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
+        <Library Value="gtest"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="spipc_test" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)/../../Stage" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -89,6 +109,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -122,11 +143,13 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -136,9 +159,11 @@
         <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
+        <Library Value="gtest"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="spipc_test" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)/../../Stage" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -149,6 +174,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -182,11 +208,13 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-m32;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x86/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -196,9 +224,11 @@
         <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
+        <Library Value="gtest"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -209,6 +239,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -242,11 +273,13 @@
         <IncludePath Value="../lua/src"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../chaiscript/include"/>
+        <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
         <LibraryPath Value="../Stage"/>
+        <Library Value="pthread"/>
         <Library Value="dl"/>
         <Library Value="lua"/>
         <Library Value="udt"/>
@@ -256,9 +289,11 @@
         <Library Value="boost_system-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
+        <Library Value="gtest"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -269,6 +304,7 @@
       </Debugger>
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
+        <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -295,20 +331,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug-64bit">
-    <Project Name="spipc"/>
-    <Project Name="sprot"/>
-  </Dependencies>
-  <Dependencies Name="Release-64bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
-  <Dependencies Name="Debug-32bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
-  <Dependencies Name="Release-32bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
 </CodeLite_Project>
