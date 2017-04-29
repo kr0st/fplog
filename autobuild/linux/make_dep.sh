@@ -79,7 +79,7 @@ mkdir ../../../../gtest/lib
 mkdir ../../../../gtest/lib/x64
 
 cmake ./
-make
+make CXX_FLAGS="_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
