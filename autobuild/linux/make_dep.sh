@@ -77,8 +77,10 @@ mkdir ../../../../gtest
 mkdir ../../../../gtest/include
 mkdir ../../../../gtest/lib
 mkdir ../../../../gtest/lib/x64
+mkdir ../../../../gtest/lib/x86
 
 cmake ./
+
 make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0"
 
 if [ $? -ne 0 ]; then
@@ -90,6 +92,20 @@ fi
 
 cp -rf ./libgtest.a ../../../../gtest/lib/x64
 cp -rf ./libgtest_main.a ../../../../gtest/lib/x64
+cp -rf ./include ../../../../gtest/
+
+make clean
+make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0 -m32"
+
+if [ $? -ne 0 ]; then
+echo "****************************************** ERROR ******************************************"
+echo "unable to build gtest libraries, please inspect console output for clues."
+echo "*******************************************************************************************"
+exit
+fi
+
+cp -rf ./libgtest.a ../../../../gtest/lib/x86
+cp -rf ./libgtest_main.a ../../../../gtest/lib/x86
 cp -rf ./include ../../../../gtest/
 
 cd ..
