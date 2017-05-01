@@ -75,9 +75,6 @@
     <File Name="../spipc/UDT_Transport.h"/>
     <File Name="../spipc/socket_transport.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-  </Dependencies>
   <Dependencies Name="Debug-64bit">
     <Project Name="sprot"/>
   </Dependencies>

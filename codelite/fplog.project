@@ -76,10 +76,6 @@
     <File Name="../common/utils.h"/>
     <File Name="../fplog/Queue_Controller.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
   <Dependencies Name="Debug-64bit">
     <Project Name="sprot"/>
     <Project Name="spipc"/>

@@ -39,11 +39,6 @@
     <File Name="../fplogd/Transport_Factory.h"/>
     <File Name="../fplog/Queue_Controller.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">

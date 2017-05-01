@@ -35,14 +35,10 @@
   <Dependencies Name="Debug">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
   </Dependencies>
   <Dependencies Name="Release">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
-    <Project Name="fplog"/>
   </Dependencies>
   <Dependencies Name="Debug-64bit">
     <Project Name="spipc"/>
@@ -86,13 +82,10 @@
         <LibraryPath Value="../Stage"/>
         <Library Value="pthread"/>
         <Library Value="dl"/>
-        <Library Value="lua"/>
         <Library Value="udt"/>
         <Library Value="sprot"/>
         <Library Value="spipc"/>
-        <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
-        <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
       </Linker>
@@ -110,6 +103,7 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
+	<Command Enabled="yes">cp ../boost/stage/lib/x86/*boost_system-mt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -151,13 +145,10 @@
         <LibraryPath Value="../Stage"/>
         <Library Value="pthread"/>
         <Library Value="dl"/>
-        <Library Value="lua"/>
         <Library Value="udt"/>
         <Library Value="sprot"/>
         <Library Value="spipc"/>
-        <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
-        <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
       </Linker>
@@ -175,6 +166,7 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
+	<Command Enabled="yes">cp ../boost/stage/lib/x64/*boost_system-mt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -216,13 +208,10 @@
         <LibraryPath Value="../Stage"/>
         <Library Value="pthread"/>
         <Library Value="dl"/>
-        <Library Value="lua"/>
         <Library Value="udt"/>
         <Library Value="sprot"/>
         <Library Value="spipc"/>
-        <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
-        <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
       </Linker>
@@ -240,6 +229,7 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
+	<Command Enabled="yes">cp ../boost/stage/lib/x86/*boost_system-mt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -281,13 +271,10 @@
         <LibraryPath Value="../Stage"/>
         <Library Value="pthread"/>
         <Library Value="dl"/>
-        <Library Value="lua"/>
         <Library Value="udt"/>
         <Library Value="sprot"/>
         <Library Value="spipc"/>
-        <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
-        <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
       </Linker>
@@ -305,6 +292,7 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
+	<Command Enabled="yes">cp ../boost/stage/lib/x64/*boost_system-mt* ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
