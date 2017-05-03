@@ -5,12 +5,12 @@
   <Project Name="fplog" Path="fplog.project" Active="No"/>
   <Project Name="fpylog" Path="fpylog.project" Active="No"/>
   <Project Name="fplog_test" Path="fplog_test.project" Active="No"/>
-  <Project Name="fplog_testapp" Path="fplog_testapp.project" Active="Yes"/>
+  <Project Name="fplog_testapp" Path="fplog_testapp.project" Active="No"/>
   <Project Name="fplogd" Path="fplogd.project" Active="No"/>
   <Project Name="fpcollect" Path="fpcollect.project" Active="No"/>
-  <Project Name="spipc_test" Path="spipc_test.project" Active="No"/>
+  <Project Name="spipc_test" Path="spipc_test.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="no">
+    <WorkspaceConfiguration Name="Debug-32bit" Selected="no">
       <Environment/>
       <Project Name="sprot" ConfigName="Debug-32bit"/>
       <Project Name="spipc_test" ConfigName="Debug-32bit"/>
@@ -22,7 +22,7 @@
       <Project Name="fpylog" ConfigName="Debug-32bit"/>
       <Project Name="fpcollect" ConfigName="Debug-32bit"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release-32bit" Selected="yes">
       <Environment/>
       <Project Name="sprot" ConfigName="Release-32bit"/>
       <Project Name="spipc_test" ConfigName="Release-32bit"/>
@@ -46,7 +46,7 @@
       <Project Name="fpylog" ConfigName="Debug-64bit"/>
       <Project Name="fpcollect" ConfigName="Debug-64bit"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release-64bit" Selected="yes">
+    <WorkspaceConfiguration Name="Release-64bit" Selected="no">
       <Environment/>
       <Project Name="sprot" ConfigName="Release-64bit"/>
       <Project Name="spipc_test" ConfigName="Release-64bit"/>

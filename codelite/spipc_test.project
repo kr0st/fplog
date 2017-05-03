@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="spipc_test" InternalType="Executable" Version="10.0.0">
   <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00050001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-64bit000000000000]]>
-    </Plugin>
-    <Plugin Name="CMakePlugin">
-      <![CDATA[[{
-  "name": "Debug",
-  "enabled": false,
-  "buildDirectory": "build",
-  "sourceDirectory": "$(ProjectPath)",
-  "generator": "",
-  "buildType": "",
-  "arguments": [],
-  "parentProject": ""
- }, {
-  "name": "Release",
-  "enabled": false,
-  "buildDirectory": "build",
-  "sourceDirectory": "$(ProjectPath)",
-  "generator": "",
-  "buildType": "",
-  "arguments": [],
-  "parentProject": ""
- }]]]>
-    </Plugin>
   </Plugins>
   <Description/>
   <Dependencies/>
@@ -32,14 +8,6 @@
     <File Name="../spipc/spipc_test.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include"/>
-  <Dependencies Name="Debug">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
-  <Dependencies Name="Release">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-  </Dependencies>
   <Dependencies Name="Debug-64bit">
     <Project Name="spipc"/>
     <Project Name="sprot"/>
