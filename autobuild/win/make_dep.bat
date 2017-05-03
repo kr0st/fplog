@@ -16,6 +16,13 @@ echo http://freefr.dl.sourceforge.net/project/scons/scons/2.5.0/scons-2.5.0-setu
 echo *********************
 exit )
 
+call cmake --version 2> nul
+if errorlevel 1 (
+echo ******* ERROR *******
+echo Please install CMake
+echo *********************
+exit )
+
 curl --cacert ./cacert.crt --output cacert.pem https://curl.haxx.se/ca/cacert.pem
 if errorlevel 0 (
 del cacert.crt
@@ -30,8 +37,54 @@ curl --cacert ./cacert.crt -o ../build/mongo_driver.zip https://codeload.github.
 curl -o ../build/boost.7z http://netcologne.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.7z
 7za x -y -o"..\build\" ..\build\boost.7z
 
+curl --cacert ./cacert.crt -o ../build/gtest.zip https://codeload.github.com/google/googletest/zip/release-1.8.0
+7za x -y -o"..\build\" ..\build\gtest.zip
+
 cd ..
 cd build
+
+cd googletest-release-1.8.0
+cd googletest
+
+del ..\..\..\..\gtest /F /Q
+
+md ..\..\..\..\gtest
+md ..\..\..\..\gtest\include
+md ..\..\..\..\gtest\lib
+md ..\..\..\..\gtest\lib\x64
+md ..\..\..\..\gtest\lib\x86
+
+cmake .
+
+make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0"
+
+if errorlevel 1 (
+echo ****************************************** ERROR ******************************************
+echo unable to build gtest libraries, please inspect console output for clues.
+echo *******************************************************************************************
+exit )
+fi
+
+xcopy /E /I /Y libgtest.lib ..\..\..\..\gtest\lib\x64
+xcopy /E /I /Y libgtest_main.lib ..\..\..\..\gtest\lib\x64
+xcopy /E /I /Y include ..\..\..\..\gtest
+
+make clean
+make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0 -m32"
+
+if errorlevel 1 (
+echo ****************************************** ERROR ******************************************
+echo unable to build gtest libraries, please inspect console output for clues.
+echo *******************************************************************************************
+exit )
+fi
+
+xcopy /E /I /Y libgtest.lib ..\..\..\..\gtest\lib\x86
+xcopy /E /I /Y libgtest_main.lib ..\..\..\..\gtest\lib\x86
+
+cd ..
+cd ..
+
 cd boost_1_63_0
 
 call bootstrap.bat
