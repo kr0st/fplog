@@ -55,22 +55,7 @@ md ..\..\..\..\gtest\lib\x64
 md ..\..\..\..\gtest\lib\x86
 
 cmake .
-
-make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0"
-
-if errorlevel 1 (
-echo ****************************************** ERROR ******************************************
-echo unable to build gtest libraries, please inspect console output for clues.
-echo *******************************************************************************************
-exit )
-fi
-
-xcopy /E /I /Y libgtest.lib ..\..\..\..\gtest\lib\x64
-xcopy /E /I /Y libgtest_main.lib ..\..\..\..\gtest\lib\x64
-xcopy /E /I /Y include ..\..\..\..\gtest
-
-make clean
-make all CXX_DEFINES="-D_GLIBCXX_USE_CXX11_ABI=0 -m32"
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=Win32 /t:Rebuild
 
 if errorlevel 1 (
 echo ****************************************** ERROR ******************************************
@@ -79,8 +64,25 @@ echo ***************************************************************************
 exit )
 fi
 
-xcopy /E /I /Y libgtest.lib ..\..\..\..\gtest\lib\x86
-xcopy /E /I /Y libgtest_main.lib ..\..\..\..\gtest\lib\x86
+xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x86
+xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x86
+xcopy /E /I /Y include ..\..\..\..\gtest\include
+
+del CMakeCache.txt
+del CMakeFiles /F /Q
+
+cmake . -G"Visual Studio 14 Win64"
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=x64 /t:Rebuild
+
+if errorlevel 1 (
+echo ****************************************** ERROR ******************************************
+echo unable to build gtest libraries, please inspect console output for clues.
+echo *******************************************************************************************
+exit )
+fi
+
+xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x64
+xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x64
 
 cd ..
 cd ..
