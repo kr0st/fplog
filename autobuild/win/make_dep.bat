@@ -28,7 +28,7 @@ if errorlevel 0 (
 del cacert.crt
 ren cacert.pem cacert.crt )
 
-del ..\build /F /Q
+rmdir ..\build /S /Q
 md ..\build
 
 curl --cacert ./cacert.crt -o ../build/mongo_driver.zip https://codeload.github.com/mongodb/mongo-cxx-driver/zip/legacy-1.1.2
@@ -46,7 +46,7 @@ cd build
 cd googletest-release-1.8.0
 cd googletest
 
-del ..\..\..\..\gtest /F /Q
+rmdir ..\..\..\..\gtest /S /Q
 
 md ..\..\..\..\gtest
 md ..\..\..\..\gtest\include
@@ -62,14 +62,13 @@ echo ****************************************** ERROR **************************
 echo unable to build gtest libraries, please inspect console output for clues.
 echo *******************************************************************************************
 exit )
-fi
 
 xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x86
 xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x86
 xcopy /E /I /Y include ..\..\..\..\gtest\include
 
 del CMakeCache.txt
-del CMakeFiles /F /Q
+rmdir CMakeFiles /S /Q
 
 cmake . -G"Visual Studio 14 Win64"
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=x64 /t:Rebuild
@@ -79,7 +78,6 @@ echo ****************************************** ERROR **************************
 echo unable to build gtest libraries, please inspect console output for clues.
 echo *******************************************************************************************
 exit )
-fi
 
 xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x64
 xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x64
@@ -115,8 +113,8 @@ md ..\..\..\boost\stage\lib\x64
 xcopy /E /I /Y boost ..\..\..\boost\boost\
 xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x86
 
-del stage /F /Q
-del bin.v2 /F /Q
+rmdir stage /S /Q
+rmdir bin.v2 /S /Q
 
 call bootstrap.bat
 call b2 -j8 --build-type=complete --toolset=msvc address-model=64
@@ -179,4 +177,4 @@ xcopy /E /I /Y install\lib ..\..\..\..\mongo\lib\x64
 cd ..
 cd ..
 cd ..
-del build /F /Q
+rmdir build /S /Q
