@@ -55,6 +55,7 @@ md ..\..\..\..\gtest\lib\x64
 md ..\..\..\..\gtest\lib\x86
 
 cmake .
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Debug /p:Platform=Win32 /t:Rebuild
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=Win32 /t:Rebuild
 
 if errorlevel 1 (
@@ -63,14 +64,18 @@ echo unable to build gtest libraries, please inspect console output for clues.
 echo *******************************************************************************************
 exit )
 
-xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x86
-xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x86
+echo f | xcopy /Y Debug\gtest.lib ..\..\..\..\gtest\lib\x86\gtestd.lib
+echo f | xcopy /Y Debug\gtest_main.lib ..\..\..\..\gtest\lib\x86\gtest_maind.lib
+xcopy /Y Release\gtest.lib ..\..\..\..\gtest\lib\x86
+xcopy /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x86
+
 xcopy /E /I /Y include ..\..\..\..\gtest\include
 
 del CMakeCache.txt
 rmdir CMakeFiles /S /Q
 
 cmake . -G"Visual Studio 14 Win64"
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Debug /p:Platform=x64 /t:Rebuild
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=x64 /t:Rebuild
 
 if errorlevel 1 (
@@ -79,8 +84,10 @@ echo unable to build gtest libraries, please inspect console output for clues.
 echo *******************************************************************************************
 exit )
 
-xcopy /E /I /Y Release\gtest.lib ..\..\..\..\gtest\lib\x64
-xcopy /E /I /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x64
+echo f | xcopy /Y Debug\gtest.lib ..\..\..\..\gtest\lib\x64\gtestd.lib
+echo f | xcopy /Y Debug\gtest_main.lib ..\..\..\..\gtest\lib\x64\gtest_maind.lib
+xcopy /Y Release\gtest.lib ..\..\..\..\gtest\lib\x64
+xcopy /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x64
 
 cd ..
 cd ..
