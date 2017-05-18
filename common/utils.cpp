@@ -196,11 +196,7 @@ std::string timezone_from_minutes_to_iso8601(int tz_minute_bias)
     int minutes = tz_minute_bias % 60;
 
     char str[25] = {0};
-
-    if (minutes != 0)
-        snprintf(str, sizeof(str) - 1, "%s%02d%02d", hours > 0 ? "+" : "-", abs(hours), abs(minutes));
-    else
-        snprintf(str, sizeof(str) - 1, "%s%02d", hours > 0 ? "+" : "-", abs(hours));
+    snprintf(str, sizeof(str) - 1, "%s%02d%02d", hours > 0 ? "+" : "-", abs(hours), abs(minutes));
 
     return str;
 }
