@@ -34,7 +34,15 @@
 
 #endif
 
+#ifdef _LINUX
+namespace fplog { std::string demangle_cpp_name(const char* mangled); };
+#define CLASSNAME fplog::demangle_cpp_name(typeid(*this).name()).c_str()
+#endif
+
+#ifdef _WIN32_WINNT
 #define CLASSNAME typeid(*this).name()
+#endif
+
 #define CLASSNAME_SHORT \
     (strrchr(CLASSNAME,' ') \
     ? strrchr(CLASSNAME,' ')+1 \
