@@ -233,7 +233,25 @@ std::string get_iso8601_timestamp()
 std::string get_iso8601_timestamp()
 {
     auto tp(std::chrono::system_clock::now());
-    return date::format("%FT%T%z", tp);
+
+    std::string tz_only(date::format("%z", tp));
+    std::string datetime(date::format("%FT%T", tp));
+
+    for (auto it(datetime.begin()); it != datetime.end(); it++)
+    {
+        if ((*it == '.') || (*it == ','))
+        {
+            it += 4;
+
+            std::string res;
+            res.append(datetime.begin(), it);
+            res += tz_only;
+            
+            return res;
+        }
+    }
+
+    return std::string("");
 }
 
 #endif

@@ -993,7 +993,7 @@ bool controller_apply_config_test()
         qc.pop();
     }
 
-    if (v.size() != 20)
+    if (v.size() != 19)
     {
         cout << "Incorrect size of queue detected! (" << v.size() << ")." << std::endl;
         return false;
@@ -1225,11 +1225,11 @@ int main()
 
     //fplog::testing::queue_controller_test();
     
-    //fplog::testing::run_all_tests();
+    fplog::testing::run_all_tests();
 
     //fplog::testing::manual_test();
-    while (true)
-        fplog::testing::performance_test();
+    //while (true)
+        //fplog::testing::performance_test();
     
     //fplog::testing::filter_perft_test_summary();
     //fplog::testing::spam_test();
