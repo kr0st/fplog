@@ -1098,11 +1098,11 @@ FPLOG_API void Fplog_Impl::change_config(const fplog::Transport_Interface::Param
 #ifdef _LINUX
 #include <cxxabi.h>
 
-FPLOG_API std::string demangle_cpp_name(const char* mangled)
+FPLOG_API ::std::string demangle_cpp_name(const char* mangled)
 {
     int     status;
     char   *realname = abi::__cxa_demangle(mangled, 0, 0, &status);
-    std::string res(realname);
+    ::std::string res(realname);
     free(realname);
     
     return res;
