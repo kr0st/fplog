@@ -67,6 +67,7 @@ void* recvdata(void*);
 DWORD WINAPI recvdata(LPVOID);
 #endif
 
+
 class Bar
 {
     public:
@@ -521,7 +522,15 @@ void spam_test()
     }
     closelog();
 }
-
+    
+static std::string strip_timestamp_and_sequence(std::string input)
+{
+    generic_util::remove_json_field(fplog::Message::Mandatory_Fields::timestamp, input);
+    generic_util::remove_json_field(fplog::Message::Optional_Fields::sequence, input);
+    
+    return input;
+}
+    
 bool batching_test()
 {
     Priority_Filter* filter = dynamic_cast<Priority_Filter*>(find_filter("prio_filter"));
@@ -541,9 +550,10 @@ bool batching_test()
     JSONNode json_msg(batch_msg.as_json());
     JSONNode::iterator it(json_msg.begin());
 
-    std::cout << json_msg.write() << std::endl << std::endl;
+    std::cout << strip_timestamp_and_sequence(json_msg.write()) << std::endl << std::endl;
     int counter = 0;
 
+    ++it;
     while (it != json_msg.end())
     {
         std::cout << counter << ": name=" << it->name().c_str() << ", value=" << it->as_string().c_str() << std::endl;
@@ -555,7 +565,7 @@ bool batching_test()
 
     fplog::Message batch_clone(batch_msg.as_string());
 
-    std::cout << "cloned msg: " << batch_clone.as_string() << std::endl << std::endl;
+    std::cout << "cloned msg: " << strip_timestamp_and_sequence(batch_clone.as_string()) << std::endl << std::endl;
     std::cout << "clone msg has batch? = " << batch_clone.has_batch() << std::endl;
 
     return true;

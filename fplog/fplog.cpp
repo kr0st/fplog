@@ -523,6 +523,14 @@ class FPLOG_API Fplog_Impl
                 thread_log_settings_table_.erase(it);
         }
 
+        static std::string strip_timestamp_and_sequence(std::string input)
+        {
+            generic_util::remove_json_field(fplog::Message::Mandatory_Fields::timestamp, input);
+            generic_util::remove_json_field(fplog::Message::Optional_Fields::sequence, input);
+
+            return input;
+        }
+
         void write(const Message& m)
         {
             Message msg(m);
@@ -540,7 +548,7 @@ class FPLOG_API Fplog_Impl
                 msg.set_sequence((long long int)sequence_.read());
 
                 if (test_mode_)
-                    g_test_results_vector.push_back(msg.as_string());
+                    g_test_results_vector.push_back(strip_timestamp_and_sequence(msg.as_string()));
                 else
                 {
                     if (async_logging_)

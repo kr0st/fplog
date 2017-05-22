@@ -157,6 +157,42 @@ void cause_of_death(size_t timeout)
 namespace generic_util
 {
 
+std::string& remove_json_field(const char* field_name, std::string& source)
+{
+    size_t found = source.find(field_name);
+    if (found == std::string::npos)
+        return source;
+    
+    std::string end_chars = ",}]\"'";
+    
+    size_t field_len = (std::string(field_name)).length();
+    size_t pos1 = found - 1;
+    size_t pos2 = pos1;
+    
+    for (auto separator : end_chars)
+    {
+        for (size_t c = found + field_len + 4; c < source.length(); c++)
+            if (source[c] == separator)
+            {
+                pos2 = c;
+                break;
+            }
+        
+        if (pos2 != pos1)
+            break;
+    }
+
+    if (source[pos1 - 1] == ',')
+        pos1--;
+    else
+        if (source[pos2] == ',')
+            pos2++;
+
+    source.erase(pos1, pos2 - pos1);
+
+    return remove_json_field(field_name, source);
+}
+
 void process_suicide(size_t timeout, int)
 {
     std::lock_guard<std::recursive_mutex> lock(suicide_mutex);

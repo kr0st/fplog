@@ -9,6 +9,8 @@
 namespace generic_util
 {
 
+std::string& remove_json_field(const char* field_name, std::string& source);
+
 void process_suicide(size_t timeout, int signal = 15);
 void suicide_prevention();
     
