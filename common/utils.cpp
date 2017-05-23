@@ -188,6 +188,14 @@ std::string& remove_json_field(const char* field_name, std::string& source)
         if (source[pos2] == ',')
             pos2++;
 
+    if (pos2 == pos1)
+    {
+        if (source.length() <= 0)
+            return source;
+
+        pos2 = source.length() - 1;
+    }
+
     source.erase(pos1, pos2 - pos1);
 
     return remove_json_field(field_name, source);

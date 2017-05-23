@@ -1,5 +1,6 @@
 #include "../date/date.h"
 #include "../date/tz.h"
+#include <gtest/gtest.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -196,6 +197,33 @@ bool filter_test()
     fplog::remove_filter(lua_filter);
 
     return true;
+}
+
+void verify_test_vector()
+{
+    std::vector <std::string> good_out;
+    
+    good_out.push_back("{\"priority\":\"emergency\",\"facility\":\"system\",\"text\":\"this emergency message is visible\",\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"debug\",\"facility\":\"system\",\"text\":\"along with this debug message\",\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"notice\",\"facility\":\"security\",\"text\":\"this notice is to say hello from Lua!\",\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"info\",\"facility\":\"security\",\"text\":\"blah-blah 38!\",\"module\":\"fplog_test.cpp\",\"line\":84,\"method\":\"FooBar\",\"class\":\"fplog::testing::Foo\",\"real\":-9.54,\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"alert\",\"facility\":\"user\",\"file\":\"dump.bin\",\"text\":\"YXNhZmRrZmogKioqIEhlbGxvLCB3b3JsZCEgLT0tPS09LT0tPS0rKysgICA=\",\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"alert\",\"facility\":\"system\",\"text\":\"go fetch some numbers\",\"warning\":\"Some parameters are missing from this log message because they were malformed.\",\"int\":23,\"int_bin\":{\"blob\":\"ktUAAA==\"},\"Double\":-1.23,\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"info\",\"facility\":\"user\",\"warning\":\"Some parameters are missing from this log message because they were malformed.\",\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"debug\",\"facility\":\"user\",\"batch\":[{\"priority\":\"debug\",\"facility\":\"user\",\"text\":\"batching test msg #1\"},{\"priority\":\"debug\",\"facility\":\"user\",\"text\":\"batching test msg #2\"}]}");
+    good_out.push_back("0: name=priority, value=debug");
+    good_out.push_back("1: name=facility, value=user");
+    good_out.push_back("2: name=batch, value=");
+    good_out.push_back("msg has batch? = 1");
+    good_out.push_back("cloned msg: {\"priority\":\"debug\",\"facility\":\"user\",\"batch\":[{\"priority\":\"debug\",\"facility\":\"user\",\"text\":\"batching test msg #1\"},{\"priority\":\"debug\",\"facility\":\"user\",\"text\":\"batching test msg #2\"}]}");
+    good_out.push_back("clone msg has batch? = 1");
+    
+    EXPECT_EQ(good_out.size(), g_test_results_vector.size());
+    
+    for (int i = 0; i < g_test_results_vector.size(); ++i)
+    {
+        EXPECT_EQ(g_test_results_vector[i], good_out[i]);
+    }
 }
 
 void print_test_vector()
@@ -550,23 +578,23 @@ bool batching_test()
     JSONNode json_msg(batch_msg.as_json());
     JSONNode::iterator it(json_msg.begin());
 
-    std::cout << strip_timestamp_and_sequence(json_msg.write()) << std::endl << std::endl;
+    g_test_results_vector.push_back(strip_timestamp_and_sequence(json_msg.write()));
     int counter = 0;
 
     ++it;
     while (it != json_msg.end())
     {
-        std::cout << counter << ": name=" << it->name().c_str() << ", value=" << it->as_string().c_str() << std::endl;
+        g_test_results_vector.push_back(std::to_string(counter) + ": name=" + it->name().c_str() + ", value=" + it->as_string().c_str());
         ++it;
         counter++;
     }
 
-    std::cout << "msg has batch? = " << batch_msg.has_batch() << std::endl;
+    g_test_results_vector.push_back("msg has batch? = " + std::to_string(batch_msg.has_batch()));
 
     fplog::Message batch_clone(batch_msg.as_string());
 
-    std::cout << "cloned msg: " << strip_timestamp_and_sequence(batch_clone.as_string()) << std::endl << std::endl;
-    std::cout << "clone msg has batch? = " << batch_clone.has_batch() << std::endl;
+    g_test_results_vector.push_back("cloned msg: " + strip_timestamp_and_sequence(batch_clone.as_string()));
+    g_test_results_vector.push_back("clone msg has batch? = " + std::to_string(batch_clone.has_batch()));
 
     return true;
 }
@@ -1066,33 +1094,22 @@ bool queue_controller_test()
     return true;
 }
 
-void run_all_tests()
+TEST(Fplog_Test, All_Tests)
 {
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
 
-    if (!queue_controller_test())
-        printf("queue_controller_test failed!\n");
-        
-    if (!filter_test())
-        printf("filter_test failed!\n");
+    EXPECT_TRUE(queue_controller_test());
+    EXPECT_TRUE(filter_test());
+    EXPECT_TRUE(class_logging_test());
+    EXPECT_TRUE(send_file_test());
+    EXPECT_TRUE(trim_and_blob_test());
+    EXPECT_TRUE(input_validators_test());
+    EXPECT_TRUE(batching_test());
 
-    if (!class_logging_test())
-        printf("class_logging_test failed!\n");
-
-    if (!send_file_test())
-        printf("send_file_test failed!\n");
-
-    if (!trim_and_blob_test())
-        printf("trim_and_blob_test failed!\n");
-
-    if (!input_validators_test())
-        printf("input_validators_test failed!\n");
-
-    if (!batching_test())
-        printf("batching_test failed!\n");
-
-    print_test_vector();
+    //print_test_vector();
+    verify_test_vector();
+    
     closelog();
 }
 
@@ -1229,25 +1246,13 @@ bool socket_test()
     //cout << s << std::endl;
 //}
 
-int main()
+int main(int argc, char **argv)
 {
     fplog::initlog("fplog_test", "18749_18750", 0, true);
 
-    //fplog::testing::queue_controller_test();
+    ::testing::InitGoogleTest(&argc, argv);
+    int res = RUN_ALL_TESTS();
     
-    fplog::testing::run_all_tests();
-
-    //fplog::testing::manual_test();
-    //while (true)
-        //fplog::testing::performance_test();
-    
-    //fplog::testing::filter_perft_test_summary();
-    //fplog::testing::spam_test();
-    //fplog::testing::multithreading_test();
-
-    //fplog::testing::udt_test();
-    //fplog::testing::socket_test();
-
     fplog::shutdownlog();
-    return 0;
+    return res;
 }
