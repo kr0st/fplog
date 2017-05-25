@@ -54,7 +54,7 @@ md ..\..\..\..\gtest\lib
 md ..\..\..\..\gtest\lib\x64
 md ..\..\..\..\gtest\lib\x86
 
-cmake .
+cmake . -Dgtest_force_shared_crt=ON
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Debug /p:Platform=Win32 /t:Rebuild
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=Win32 /t:Rebuild
 
@@ -74,7 +74,7 @@ xcopy /E /I /Y include ..\..\..\..\gtest\include
 del CMakeCache.txt
 rmdir CMakeFiles /S /Q
 
-cmake . -G"Visual Studio 14 Win64"
+cmake . -G"Visual Studio 14 Win64" -Dgtest_force_shared_crt=ON
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Debug /p:Platform=x64 /t:Rebuild
 "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" gtest.sln /p:Configuration=Release /p:Platform=x64 /t:Rebuild
 
