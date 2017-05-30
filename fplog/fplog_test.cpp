@@ -1,6 +1,8 @@
 #include "../date/date.h"
 #include "../date/tz.h"
 #include <gtest/gtest.h>
+#include <boost/interprocess/detail/shared_dir_helpers.hpp>
+#include <boost/filesystem.hpp>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -1248,6 +1250,15 @@ bool socket_test()
 
 int main(int argc, char **argv)
 {
+    std::string temp_path;
+
+    boost::interprocess::ipcdetail::get_shared_dir(temp_path);
+    if (temp_path.length() != 0)
+    {
+        std::cout << "temp folder for IPC: " << temp_path << std::endl;
+        boost::filesystem::remove_all(temp_path);
+    }
+
     fplog::initlog("fplog_test", "18749_18750", 0, true);
 
     ::testing::InitGoogleTest(&argc, argv);
