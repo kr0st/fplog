@@ -208,7 +208,7 @@ void verify_test_vector()
     good_out.push_back("{\"priority\":\"emergency\",\"facility\":\"system\",\"text\":\"this emergency message is visible\",\"appname\":\"fplog_test\"}");
     good_out.push_back("{\"priority\":\"debug\",\"facility\":\"system\",\"text\":\"along with this debug message\",\"appname\":\"fplog_test\"}");
     good_out.push_back("{\"priority\":\"notice\",\"facility\":\"security\",\"text\":\"this notice is to say hello from Lua!\",\"appname\":\"fplog_test\"}");
-    good_out.push_back("{\"priority\":\"info\",\"facility\":\"security\",\"text\":\"blah-blah 38!\",\"module\":\"fplog_test.cpp\",\"line\":84,\"method\":\"FooBar\",\"class\":\"fplog::testing::Foo\",\"real\":-9.54,\"appname\":\"fplog_test\"}");
+    good_out.push_back("{\"priority\":\"info\",\"facility\":\"security\",\"text\":\"blah-blah 38!\",\"module\":\"fplog_test.cpp\",\"line\":86,\"method\":\"FooBar\",\"class\":\"fplog::testing::Foo\",\"real\":-9.54,\"appname\":\"fplog_test\"}");
     good_out.push_back("{\"priority\":\"alert\",\"facility\":\"user\",\"file\":\"dump.bin\",\"text\":\"YXNhZmRrZmogKioqIEhlbGxvLCB3b3JsZCEgLT0tPS09LT0tPS0rKysgICA=\",\"appname\":\"fplog_test\"}");
     good_out.push_back("{\"priority\":\"alert\",\"facility\":\"system\",\"text\":\"go fetch some numbers\",\"warning\":\"Some parameters are missing from this log message because they were malformed.\",\"int\":23,\"int_bin\":{\"blob\":\"ktUAAA==\"},\"Double\":-1.23,\"appname\":\"fplog_test\"}");
     good_out.push_back("{\"priority\":\"info\",\"facility\":\"user\",\"warning\":\"Some parameters are missing from this log message because they were malformed.\",\"appname\":\"fplog_test\"}");
