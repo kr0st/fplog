@@ -1255,10 +1255,19 @@ int main(int argc, char **argv)
     boost::interprocess::ipcdetail::get_shared_dir(temp_path);
     if (temp_path.length() != 0)
     {
+        //This should clear IPC temp folder on Windows and macOS
         std::cout << "temp folder for IPC: " << temp_path << std::endl;
         boost::filesystem::remove_all(temp_path);
     }
 
+    //On Linux shared objects might be in common /dev/shm directory
+    //we cannot delete all content from there because it is not exclusive for fplog
+    //therefore deleting selectively only fplog-related files.
+    //Please note that temp files naming and placement is boost library implementation detail
+    //that might change in future releases of boost.
+    boost::filesystem::remove("/dev/shm/fplog_sequence_number");
+    boost::filesystem::remove("/dev/shm/sem.fplog_sequence_protector");
+    
     fplog::initlog("fplog_test", "18749_18750", 0, true);
 
     ::testing::InitGoogleTest(&argc, argv);

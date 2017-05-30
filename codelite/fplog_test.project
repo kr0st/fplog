@@ -67,6 +67,7 @@
         <Library Value="spipc"/>
         <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
+        <Library Value="boost_filesystem-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
@@ -84,6 +85,8 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_filesystem-mt.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -132,6 +135,7 @@
         <Library Value="spipc"/>
         <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
+        <Library Value="boost_filesystem-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
@@ -149,6 +153,8 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_filesystem-mt.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -197,6 +203,7 @@
         <Library Value="spipc"/>
         <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
+        <Library Value="boost_filesystem-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
@@ -214,6 +221,8 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x86/*libgt* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_system-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_filesystem-mt.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
@@ -262,6 +271,7 @@
         <Library Value="spipc"/>
         <Library Value="fplog"/>
         <Library Value="boost_system-mt"/>
+        <Library Value="boost_filesystem-mt"/>
         <Library Value="json"/>
         <Library Value="stdc++"/>
         <Library Value="gtest"/>
@@ -279,6 +289,8 @@
       <PreBuild>
         <Command Enabled="yes">rm -f ../Stage/*$(ProjectName)*</Command>
         <Command Enabled="yes">cp ../gtest/lib/x64/*libgt* ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_system-mt.so.1.63.0 ../Stage</Command>
+        <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_filesystem-mt.so.1.63.0 ../Stage</Command>
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cp $(IntermediateDirectory)/*$(ProjectName)* ../Stage</Command>
