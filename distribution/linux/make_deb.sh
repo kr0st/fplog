@@ -29,8 +29,19 @@ cp -r ../../Stage/fpcollect ../../Stage/fplog_1.0-1/usr/local/bin/
 cp -r ../../common/fplog_exceptions.h ../../Stage/fplog_1.0-1/usr/local/include/
 cp -r ../../common/fplog_transport.h ../../Stage/fplog_1.0-1/usr/local/include/
 cp -r ../../fplog/fplog.h ../../Stage/fplog_1.0-1/usr/local/include/
+
+find ../../libjson -type d -exec bash -c 'rm -rf {}/._*' \;
+
 mkdir ../../Stage/fplog_1.0-1/usr/local/include/libjson
+
 cp -r ../../libjson/* ../../Stage/fplog_1.0-1/usr/local/include/libjson
+find ../../Stage/fplog_1.0-1/usr/local/include/libjson/ -type d -exec bash -c 'rm -f {}/*[!.h]' \;
+
+cp ../../libjson/License.txt ../../Stage/fplog_1.0-1/usr/local/include/libjson
+rm -rf "../../Stage/fplog_1.0-1/usr/local/include/libjson/Getting Started"
+rm -rf ../../Stage/fplog_1.0-1/usr/local/include/libjson/libjson.xcodeproj
+rm -rf ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/TestSuite
+rm -rf ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/TestSuite2
 
 find ../../Stage/fplog_1.0-1 -exec chmod 644 {} +
 
@@ -38,14 +49,19 @@ chmod 0755 ../../Stage/fplog_1.0-1
 chmod 0755 ../../Stage/fplog_1.0-1/usr
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/bin
+chmod 0755 ../../Stage/fplog_1.0-1/usr/local/lib
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal
+chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/Dependencies
+chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/Dependencies/libbase64++
+chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/Dependencies/mempool++
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/Source
 chmod 0755 ../../Stage/fplog_1.0-1/usr/local/include/libjson/_internal/Source/JSONDefs
 chmod 0755 ../../Stage/fplog_1.0-1/DEBIAN
 
 find ../../Stage/fplog_1.0-1/usr/local/bin -exec chmod 0755 {} +
+chmod 644 ../../Stage/fplog_1.0-1/usr/local/bin/json.lua
 
 find ../../Stage/fplog_1.0-1 -exec chown "root:root" {} +
 
