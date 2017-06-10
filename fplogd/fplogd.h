@@ -52,8 +52,6 @@ struct Channel_Data
     std::string app_name;
 };
 
-std::vector<Channel_Data> get_registered_channels();
-
 void start();
 void stop();
 

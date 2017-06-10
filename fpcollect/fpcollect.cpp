@@ -102,78 +102,127 @@ using namespace boost::interprocess;
 
 namespace fpcollect {
 
-fplog::Transport_Interface::Params get_misc_config()
+class Configuration
 {
-    using boost::property_tree::ptree;
-    ptree pt;
-    fplog::Transport_Interface::Params res;
+    private:
 
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
+        static void make_default_configuration(const std::string& config_file_name)
         {
-            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
-            res.insert(param);
+            std::ofstream f(config_file_name);
+            
+            f << "[misc]" << std::endl;
+            f << "hostname=auto" << std::endl;
+            f << "batch_size=31" << std::endl;
+            f << "max_queue_size=21000000" << std::endl;
+            f << "emergency_timeout=30000" << std::endl;
+            f << "emergency_algo=remove_newest_below_prio" << std::endl;
+            f << "emergency_fallback_algo=remove_newest" << std::endl;
+            f << "emergency_prio=warning" << std::endl;
+
+            f << "[storage]" << std::endl;
+            f << "type=console" << std::endl;
+            f << "ip=127.0.0.1" << std::endl;
+            f << "collection=fplog.logs" << std::endl;
+            
+            f << "[connection_0]" << std::endl;
+            f << "type=ip" << std::endl;
+            f << "transport=udp" << std::endl;
+            f << "protocol=sprot" << std::endl;
+            f << "ip=127.0.0.1" << std::endl;
+            f << "uid=18751_18752" << std::endl;
         }
-    }
 
-    return res;
-}
 
-fplog::Transport_Interface::Params get_log_storage_config()
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-    fplog::Transport_Interface::Params res;
+    public:
 
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        if (section.first.find(g_config_file_storage_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
+        static Configuration& instance()
         {
-            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
-            res.insert(param);
+            static Configuration instance;
+            
+            std::string home(get_home_dir());
+            std::string config_file(home + g_config_file_name);
+            
+            std::ifstream file_exists_check(config_file);
+            if (!file_exists_check.good())
+                make_default_configuration(config_file);
+            
+            return instance;
         }
-    }
 
-    return res;
-}
+        fplog::Transport_Interface::Params get_misc_config()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            fplog::Transport_Interface::Params res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                {
+                    fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+                    res.insert(param);
+                }
+            }
+            
+            return res;
+        }
+        
+        fplog::Transport_Interface::Params get_log_storage_config()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            fplog::Transport_Interface::Params res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                if (section.first.find(g_config_file_storage_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                {
+                    fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+                    res.insert(param);
+                }
+            }
+            
+            return res;
+        }
+        
+        std::vector<fplog::Transport_Interface::Params> get_connections()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            std::vector<fplog::Transport_Interface::Params> res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                fplog::Transport_Interface::Params params;
+                
+                if (section.first.find(g_config_file_connection_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                    params[key.first] = key.second.get_value<std::string>();
+                
+                res.push_back(params);
+            }
+            
+            return res;
+        }
 
-std::vector<fplog::Transport_Interface::Params> get_connections()
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-    std::vector<fplog::Transport_Interface::Params> res;
-
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        fplog::Transport_Interface::Params params;
-
-        if (section.first.find(g_config_file_connection_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
-            params[key.first] = key.second.get_value<std::string>();
-
-        res.push_back(params);
-    }
-
-    return res;
-}
+};
 
 class Measure_Performance: public fplog::Transport_Interface
 {
@@ -249,10 +298,10 @@ class Impl
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             should_stop_ = false;
 
-            fplog::Transport_Interface::Params misc(get_misc_config());
+            fplog::Transport_Interface::Params misc(Configuration::instance().get_misc_config());
             mq_.apply_config(misc);
 
-            std::vector<fplog::Transport_Interface::Params> params(get_connections());
+            std::vector<fplog::Transport_Interface::Params> params(Configuration::instance().get_connections());
             for (auto param : params)
             {
                 Thread_Data* worker = new Thread_Data();
@@ -518,7 +567,7 @@ static fplog::Transport_Interface* g_storage = 0;
 void start()
 {
     //g_impl.set_log_storage(&g_storage);
-    fplog::Transport_Interface::Params params(fpcollect::get_log_storage_config());
+    fplog::Transport_Interface::Params params(fpcollect::Configuration::instance().get_log_storage_config());
     
     fpcollect::Transport_Factory factory;
     g_storage = factory.create(params);

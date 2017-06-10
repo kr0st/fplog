@@ -11,11 +11,11 @@
 		7879BA791DEB54640078C6F6 /* Mongo_Storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7879BA721DEB54640078C6F6 /* Mongo_Storage.cpp */; };
 		7879BA7A1DEB54640078C6F6 /* Mongo_Stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7879BA741DEB54640078C6F6 /* Mongo_Stub.cpp */; };
 		7879BA7B1DEB54640078C6F6 /* Transport_Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7879BA761DEB54640078C6F6 /* Transport_Factory.cpp */; };
-		7879BA7F1DEB55540078C6F6 /* libmongoclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA7E1DEB55540078C6F6 /* libmongoclient.a */; };
 		7879BA811DEB56F80078C6F6 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7879BA801DEB56F80078C6F6 /* utils.cpp */; };
 		7879BA831DEB57080078C6F6 /* libsprot.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA821DEB57080078C6F6 /* libsprot.dylib */; };
 		7879BA871DEB57590078C6F6 /* libfplog.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA861DEB57590078C6F6 /* libfplog.dylib */; };
 		7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA881DEB57850078C6F6 /* libspipc.dylib */; };
+		788213391EEC3AAC009367EA /* libmongoclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 788213371EEC3283009367EA /* libmongoclient.a */; };
 		789B13781E5F2EE300613A94 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B13771E5F2EE300613A94 /* libjson.a */; };
 		78F3F3DC1E3D121B00D8039A /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */; };
 		78F3F3DD1E3D121B00D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */; };
@@ -31,12 +31,12 @@
 		7879BA751DEB54640078C6F6 /* Mongo_Stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mongo_Stub.h; sourceTree = SOURCE_ROOT; };
 		7879BA761DEB54640078C6F6 /* Transport_Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transport_Factory.cpp; sourceTree = SOURCE_ROOT; };
 		7879BA771DEB54640078C6F6 /* Transport_Factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transport_Factory.h; sourceTree = SOURCE_ROOT; };
-		7879BA7E1DEB55540078C6F6 /* libmongoclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongoclient.a; path = ../mongo/lib/libmongoclient.a; sourceTree = "<group>"; };
 		7879BA801DEB56F80078C6F6 /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../../common/utils.cpp; sourceTree = "<group>"; };
 		7879BA821DEB57080078C6F6 /* libsprot.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsprot.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libsprot.dylib"; sourceTree = "<group>"; };
 		7879BA841DEB57520078C6F6 /* libjson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjson.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libjson.dylib"; sourceTree = "<group>"; };
 		7879BA861DEB57590078C6F6 /* libfplog.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfplog.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libfplog.dylib"; sourceTree = "<group>"; };
 		7879BA881DEB57850078C6F6 /* libspipc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libspipc.dylib; path = "../../../Library/Developer/Xcode/DerivedData/fplog-gxtezuokskwllucuzhkjtuzfawjw/Build/Products/Debug/libspipc.dylib"; sourceTree = "<group>"; };
+		788213371EEC3283009367EA /* libmongoclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongoclient.a; path = ../mongo/lib/x64/libmongoclient.a; sourceTree = "<group>"; };
 		789B13771E5F2EE300613A94 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = ../libjson/build/Release/libjson.a; sourceTree = "<group>"; };
 		78A5678B1DEB534800967937 /* fpcollect */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fpcollect; sourceTree = BUILT_PRODUCTS_DIR; };
 		78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "../Stage/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
@@ -53,10 +53,10 @@
 				7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */,
 				7879BA871DEB57590078C6F6 /* libfplog.dylib in Frameworks */,
 				7879BA831DEB57080078C6F6 /* libsprot.dylib in Frameworks */,
-				7879BA7F1DEB55540078C6F6 /* libmongoclient.a in Frameworks */,
 				78F3F3DE1E3D121B00D8039A /* libboost_thread-mt.dylib in Frameworks */,
 				78F3F3DC1E3D121B00D8039A /* libboost_regex-mt.dylib in Frameworks */,
 				78F3F3DD1E3D121B00D8039A /* libboost_system-mt.dylib in Frameworks */,
+				788213391EEC3AAC009367EA /* libmongoclient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +66,7 @@
 		7879BA7D1DEB55530078C6F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				788213371EEC3283009367EA /* libmongoclient.a */,
 				789B13771E5F2EE300613A94 /* libjson.a */,
 				78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */,
 				78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */,
@@ -74,7 +75,6 @@
 				7879BA861DEB57590078C6F6 /* libfplog.dylib */,
 				7879BA841DEB57520078C6F6 /* libjson.dylib */,
 				7879BA821DEB57080078C6F6 /* libsprot.dylib */,
-				7879BA7E1DEB55540078C6F6 /* libmongoclient.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -318,7 +318,6 @@
 					"$(inherited)",
 					../Stage/,
 					../mongo/lib/x64,
-					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -351,7 +350,6 @@
 					"$(inherited)",
 					../Stage/,
 					../mongo/lib/x64,
-					"$(PROJECT_DIR)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;

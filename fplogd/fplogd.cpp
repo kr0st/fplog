@@ -269,119 +269,169 @@ void notify_when_stopped(Start_Stop_Notification callback)
     notify_when_stopped<Notification_Helper>(&Notification_Helper::start_stop_notification, helper);
 }
 
-fplog::Transport_Interface::Params get_log_transort_config()
+class Configuration
 {
-    using boost::property_tree::ptree;
-    ptree pt;
-    fplog::Transport_Interface::Params res;
-
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        if (section.first.find(g_config_file_transport_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
+    private:
+        
+        static void make_default_configuration(const std::string& config_file_name)
         {
-            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
-            res.insert(param);
+            std::ofstream f(config_file_name);
+
+            f << "[misc]" << std::endl;
+            f << "hostname=auto" << std::endl;
+            f << "batch_size=31" << std::endl;
+            f << "max_queue_size=21000000" << std::endl;
+            f << "emergency_timeout=30000" << std::endl;
+            f << "emergency_algo=remove_newest_below_prio" << std::endl;
+            f << "emergency_fallback_algo=remove_newest" << std::endl;
+            f << "emergency_prio=warning" << std::endl;
+            
+            f << ";Setting the transport of log messages from fplogd to fpcollect." << std::endl;
+            f << "[transport]" << std::endl;
+            f << "type=ip" << std::endl;
+            f << "transport=udp" << std::endl;
+            f << "protocol=sprot" << std::endl;
+            f << "ip=127.0.0.1" << std::endl;
+            f << "uid=18751_18752" << std::endl;
+            
+            f << ";All subscribed apps, i.e. apps sending logs to fplogd." << std::endl;
+            f << "[channels]" << std::endl;
+            f << "fplog_test=18749_18750" << std::endl;
+            f << "fplog_testapp=18849_18850" << std::endl;
         }
-    }
-
-    return res;
-}
-
-fplog::Transport_Interface::Params get_misc_config()
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-    fplog::Transport_Interface::Params res;
-
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
-        {
-            fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
-            res.insert(param);
-        }
-    }
-
-    return res;
-}
-
-std::vector<Channel_Data> get_registered_channels()
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-    std::vector<Channel_Data> res;
-
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& section: pt)
-    {
-        Channel_Data data;
-
-        if (section.first.find(g_config_file_channels_section_name) == std::string::npos)
-            continue;
-
-        for (auto& key: section.second)
-        {
-            std::string str_uid(key.second.get_value<std::string>());
-            data.uid.from_string(str_uid);
-            data.app_name = key.first;
-            res.push_back(data);
-        }
-    }
-
-    return res;
-}
-
-std::string get_config_key_value(const std::string& section, const std::string& key)
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-    std::string res = "";
-
-    std::string home(get_home_dir());
-    read_ini(home + g_config_file_name, pt);
-
-    for (auto& ini_section : pt)
-    {
-        if (ini_section.first.find(section) == std::string::npos)
-            continue;
-
-        for (auto& ini_key : ini_section.second)
-        {
-            std::string trimmed_key = ini_key.first;
-            if (generic_util::find_str_no_case(generic_util::trim(trimmed_key), key))
-            {
-                res = ini_key.second.get_value<std::string>();
-                break;
-            }
-        }
-    }
-
-    return res;
-}
-
-std::string get_log_error_file_full_path()
-{
-    std::string emergency_log_path = get_config_key_value(g_config_file_misc_section_name, g_emergency_config_setting_name);
     
-    if (emergency_log_path.empty())
-        emergency_log_path = get_home_dir() + g_emergency_log_file_name;
+    
+    public:
+    
+        static Configuration& instance()
+        {
+            static Configuration instance;
 
-    return emergency_log_path;
-}
+            std::string home(get_home_dir());
+            std::string config_file(home + g_config_file_name);
+
+            std::ifstream file_exists_check(config_file);
+            if (!file_exists_check.good())
+                make_default_configuration(config_file);
+
+            return instance;
+        }
+
+        fplog::Transport_Interface::Params get_log_transort_config()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            fplog::Transport_Interface::Params res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                if (section.first.find(g_config_file_transport_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                {
+                    fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+                    res.insert(param);
+                }
+            }
+            
+            return res;
+        }
+        
+        fplog::Transport_Interface::Params get_misc_config()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            fplog::Transport_Interface::Params res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                if (section.first.find(g_config_file_misc_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                {
+                    fplog::Transport_Interface::Param param(key.first, key.second.get_value<std::string>());
+                    res.insert(param);
+                }
+            }
+            
+            return res;
+        }
+        
+        std::vector<Channel_Data> get_registered_channels()
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            std::vector<Channel_Data> res;
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& section: pt)
+            {
+                Channel_Data data;
+                
+                if (section.first.find(g_config_file_channels_section_name) == std::string::npos)
+                    continue;
+                
+                for (auto& key: section.second)
+                {
+                    std::string str_uid(key.second.get_value<std::string>());
+                    data.uid.from_string(str_uid);
+                    data.app_name = key.first;
+                    res.push_back(data);
+                }
+            }
+            
+            return res;
+        }
+        
+        std::string get_config_key_value(const std::string& section, const std::string& key)
+        {
+            using boost::property_tree::ptree;
+            ptree pt;
+            std::string res = "";
+            
+            std::string home(get_home_dir());
+            read_ini(home + g_config_file_name, pt);
+            
+            for (auto& ini_section : pt)
+            {
+                if (ini_section.first.find(section) == std::string::npos)
+                    continue;
+                
+                for (auto& ini_key : ini_section.second)
+                {
+                    std::string trimmed_key = ini_key.first;
+                    if (generic_util::find_str_no_case(generic_util::trim(trimmed_key), key))
+                    {
+                        res = ini_key.second.get_value<std::string>();
+                        break;
+                    }
+                }
+            }
+            
+            return res;
+        }
+        
+        std::string get_log_error_file_full_path()
+        {
+            std::string emergency_log_path = get_config_key_value(g_config_file_misc_section_name, g_emergency_config_setting_name);
+            
+            if (emergency_log_path.empty())
+                emergency_log_path = get_home_dir() + g_emergency_log_file_name;
+            
+            return emergency_log_path;
+        }
+};
+
 
 class Impl
 {
@@ -409,7 +459,7 @@ class Impl
             should_stop_ = false;
             batch_size_ = 30;
 
-            fplog::Transport_Interface::Params misc(get_misc_config());
+            fplog::Transport_Interface::Params misc(Configuration::instance().get_misc_config());
 
             mq_.apply_config(misc);
 
@@ -454,7 +504,7 @@ class Impl
                 }
             }
 
-            std::vector<Channel_Data> channels(get_registered_channels());
+            std::vector<Channel_Data> channels(Configuration::instance().get_registered_channels());
             for (auto channel : channels)
             {
                 Thread_Data* worker = new Thread_Data();
@@ -522,7 +572,7 @@ class Impl
 
             size_t buf_sz = 2048;
             char *buf = new char [buf_sz];
-            std::string emergency_log_file_path = get_log_error_file_full_path();
+            std::string emergency_log_file_path = Configuration::instance().get_log_error_file_full_path();
 
             while(true)
             {
@@ -652,7 +702,7 @@ class Impl
 
         void mq_reader()
         {
-            std::string emergency_log_file_path = get_log_error_file_full_path();
+            std::string emergency_log_file_path = Configuration::instance().get_log_error_file_full_path();
             std::vector<std::string*> batch;
 
             size_t batch_flush_counter = 0;
@@ -820,7 +870,7 @@ static Impl g_impl;
 void start()
 {    
     Transport_Factory factory;
-    fplog::Transport_Interface::Params params(get_log_transort_config());
+    fplog::Transport_Interface::Params params(Configuration::instance().get_log_transort_config());
     fplog::Transport_Interface* trans = factory.create(params);
 	
 	fplog::Transport_Interface* protocol = 0;
