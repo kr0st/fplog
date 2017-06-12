@@ -223,7 +223,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\n\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib\ninstall_name_tool -change libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\n\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*fplog* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib\ninstall_name_tool -change libboost_python3-mt.dylib @rpath/libboost_python3-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}3.dylib";
 		};
 		783A3F651E3F9899002DAD2E /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -250,7 +250,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change libboost_python-mt.dylib @rpath/libboost_python-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
+			shellScript = "rm -f ${SOURCE_ROOT}/../Stage/*${PROJECT_NAME}*\ncp -r ${TARGET_BUILD_DIR}/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*${PROJECT_NAME}* ${SOURCE_ROOT}/../Stage/\ncp -r ${SOURCE_ROOT}/${PROJECT_NAME}_test/*fplog* ${SOURCE_ROOT}/../Stage/\ninstall_name_tool -change libboost_system-mt.dylib @rpath/libboost_system-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\ninstall_name_tool -change libboost_python-mt.dylib @rpath/libboost_python-mt.dylib ${SOURCE_ROOT}/../Stage/lib${PROJECT_NAME}.dylib\n";
 		};
 		78E1FEA61E97EC8300FB305B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

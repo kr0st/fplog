@@ -20,6 +20,34 @@
                ReferencedContainer = "container:fpylog.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "78A5678A1DEB534800967937"
+               BuildableName = "fpcollect"
+               BlueprintName = "fpcollect"
+               ReferencedContainer = "container:../fpcollect/fpcollect.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "789AC93C1DE0C203000D62BD"
+               BuildableName = "fplogd"
+               BlueprintName = "fplogd"
+               ReferencedContainer = "container:../fplogd/fplogd.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -29,6 +57,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "783630481E2172960010B08D"
+            BuildableName = "libfpylog3.dylib"
+            BlueprintName = "fpylog3"
+            ReferencedContainer = "container:fpylog.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
