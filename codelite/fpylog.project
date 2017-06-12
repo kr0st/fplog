@@ -73,25 +73,33 @@
   <Dependencies Name="Debug">
     <Project Name="fplog"/>
   </Dependencies>
-  <Dependencies Name="Release-32bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-  </Dependencies>
   <Dependencies Name="Debug-64bit">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
     <Project Name="fplog"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fplogd"/>
   </Dependencies>
   <Dependencies Name="Debug-32bit">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
     <Project Name="fplog"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fplogd"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fplogd"/>
   </Dependencies>
   <Dependencies Name="Release-64bit">
     <Project Name="sprot"/>
     <Project Name="spipc"/>
     <Project Name="fplog"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fplogd"/>
   </Dependencies>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
@@ -144,6 +152,8 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fpylog_test.py ../Stage</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fplog_wrapper.py ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -210,6 +220,8 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fpylog_test.py ../Stage</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fplog_wrapper.py ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -273,6 +285,8 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python3-mt.so ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x86/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fpylog_test.py ../Stage</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fplog_wrapper.py ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -339,6 +353,8 @@
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python3-mt.so ../Stage</Command>
         <Command Enabled="yes">cp ../boost/stage/lib/x64/libboost_python-mt.so ../Stage</Command>
         <Command Enabled="yes">rm -f ../Stage/*cpp.*</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fpylog_test.py ../Stage</Command>
+        <Command Enabled="yes">cp ../fpylog/fpylog_test/fplog_wrapper.py ../Stage</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
