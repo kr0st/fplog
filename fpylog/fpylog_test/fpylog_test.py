@@ -6,6 +6,7 @@ import array
 import fplog_wrapper as fpylog
 import random
 import string
+import time
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
@@ -124,7 +125,7 @@ def pure_lib_test():
 
         filter = fpylog_lib.make_prio_filter("prio_filter")
         filter.add_all_above(fpylog_lib.Prio.debug, False)
-        fpylog_lib.initlog("fpylog_pure_lib_test", "fpylog_lib", "18749_18750", False, filter)
+        fpylog_lib.initlog("fpylog_pure_lib_test", "fpylog_lib", "18759_18760", False, filter)
 
         fpylog_lib.write(message2)
         fpylog_lib.write(file.as_message())
@@ -146,7 +147,7 @@ def main():
     prio_filter = fpylog.lib.make_prio_filter("prio_filter")
     prio_filter.add_all_above(fpylog.lib.Prio.debug, False)
 
-    fpylog.lib.initlog("fpylog_test", "fpylog", "18749_18750", True, prio_filter)
+    fpylog.lib.initlog("fpylog_test", "fpylog", "18759_18760", False, prio_filter)
 
     class_log_test = Fpylog_Test()
 
@@ -157,7 +158,7 @@ def main():
 
     fpylog.write_log('writing generic log message', fpylog.lib.Prio.info)
 
-    manual_test()
+    #manual_test()
     #spam_test()
 
     fpylog.lib.shutdownlog()

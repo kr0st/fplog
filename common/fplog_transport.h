@@ -66,10 +66,15 @@ struct SPROT_API UID
         return (std::to_string(uid.high) + "_" + std::to_string(uid.low));
     }
 
-    UID from_string(std::string& str);
+    UID from_string(const std::string& str);
 
     unsigned long long high;
     unsigned long long low;
+    
+    struct SPROT_API Helper
+    {
+        static UID from_string(const std::string& str);
+    };
 };
 
 };

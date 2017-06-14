@@ -6,7 +6,7 @@
 namespace fplog {
     
 #undef max
-UID UID::from_string(std::string& str)
+UID UID::from_string(const std::string& str)
 {
     unsigned long long limit = std::numeric_limits<unsigned long long>::max();
     high = limit;
@@ -40,5 +40,11 @@ UID UID::from_string(std::string& str)
     
     return *this;
 }
-    
+
+UID UID::Helper::from_string(const std::string &str)
+{
+    UID uid;
+    return uid.from_string(str);
+}
+
 };

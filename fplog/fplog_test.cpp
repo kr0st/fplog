@@ -1096,6 +1096,20 @@ bool queue_controller_test()
     return true;
 }
 
+TEST(Fpylog_Test, All_Tests)
+{
+    spipc::IPC ipc;
+    ipc.connect(UID::Helper::from_string("18759_18760"));
+    
+    char buf[1500];
+    while (true)
+    {
+        memset(buf, 0, sizeof(buf));
+        ipc.read(buf, sizeof(buf), 60000);
+        std::cout << std::string(buf) << std::endl;
+    }
+}
+
 TEST(Fplog_Test, All_Tests)
 {
     openlog(Facility::security, new Priority_Filter("prio_filter"));
