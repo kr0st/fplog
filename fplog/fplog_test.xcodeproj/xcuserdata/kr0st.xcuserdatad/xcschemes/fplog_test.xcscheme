@@ -14,6 +14,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "783630481E2172960010B08D"
+               BuildableName = "libfpylog3.dylib"
+               BlueprintName = "fpylog3"
+               ReferencedContainer = "container:../fpylog/fpylog.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "78C74DA61DDA475D001B3D38"
                BuildableName = "fplog_test"
                BlueprintName = "fplog_test"

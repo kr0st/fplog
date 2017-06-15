@@ -6,7 +6,7 @@ import array
 import fplog_wrapper as fpylog
 import random
 import string
-import time
+random.seed(13)
 
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
@@ -109,7 +109,7 @@ def pure_lib_test():
 
         print(str(message2.as_json_string()))
 
-        arr = bytearray(os.urandom(5))
+        arr = bytearray(random.sample(range(250), k=5))
         arr2 = array.array('i', [2]) * 5
 
         print(list(arr))

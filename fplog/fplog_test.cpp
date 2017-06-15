@@ -1096,19 +1096,58 @@ bool queue_controller_test()
     return true;
 }
 
+#ifndef _WIN32
 TEST(Fpylog_Test, All_Tests)
 {
     spipc::IPC ipc;
     ipc.connect(UID::Helper::from_string("18759_18760"));
+
+    char cmd[] = "python3 ./fpylog_test.py&";
     
+    char line[256];
+    memset(line, 0, sizeof(line));
+    
+    FILE *tz = popen(cmd, "r");
+    ASSERT_TRUE(tz != 0);
+
     char buf[1500];
-    while (true)
+    for (int i = 0; i < 6; ++i)
     {
         memset(buf, 0, sizeof(buf));
         ipc.read(buf, sizeof(buf), 60000);
-        std::cout << std::string(buf) << std::endl;
+
+        if (i == 0)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"warning\",\"facility\":\"user\",\"text\":\"new text\",\"short\":22,\"long\":42545,\"float\":2.42,\"str\":\"just a string\",\"class\":\"superclass\",\"module\":\".\\/fpylog_test.py\",\"line\":145,\"appname\":\"fpylog_pure_lib_test\"") != std::string::npos);
+        }
+
+        if (i == 1)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"warning\",\"facility\":\"user\",\"file\":\"some_file\",\"text\":\"Qkqv6M0=\",\"appname\":\"fpylog_pure_lib_test\"") != std::string::npos);
+        }
+        
+        if (i == 2)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"warning\",\"facility\":\"user\",\"file\":\"another_file\",\"text\":\"AgICAgI=\",\"appname\":\"fpylog_pure_lib_test\"") != std::string::npos);
+        }
+        
+        if (i == 3)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"critical\",\"facility\":\"fpylog\",\"text\":\"message from class\",\"module\":\"fpylog_test.py\",\"line\":17,\"class\":\"Fpylog_Test\",\"method\":\"__init__\",\"appname\":\"fpylog_test\"") != std::string::npos);
+        }
+        
+        if (i == 4)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"critical\",\"facility\":\"fpylog\",\"text\":\"raw msg test\",\"module\":\"fpylog_test.py\",\"line\":154,\"method\":\"main\",\"pointless_number\":-44.3,\"appname\":\"fpylog_test\"") != std::string::npos);
+        }
+        
+        if (i == 5)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"priority\":\"info\",\"facility\":\"fpylog\",\"text\":\"writing generic log message\",\"module\":\"fpylog_test.py\",\"line\":159,\"method\":\"main\",\"appname\":\"fpylog_test\"") != std::string::npos);
+        }
     }
 }
+#endif
 
 TEST(Fplog_Test, All_Tests)
 {
