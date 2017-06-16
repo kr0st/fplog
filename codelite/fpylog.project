@@ -118,7 +118,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../fpylog/"/>
-        <IncludePath Value="/usr/include/python3.4/"/>
+        <IncludePath Value="/usr/include/python3.5/"/>
         <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
@@ -183,7 +183,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../fpylog/"/>
-        <IncludePath Value="/usr/include/python3.4/"/>
+        <IncludePath Value="/usr/include/python3.5/"/>
         <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
@@ -251,7 +251,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../fpylog/"/>
-        <IncludePath Value="/usr/include/python3.4/"/>
+        <IncludePath Value="/usr/include/python3.5/"/>
         <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
@@ -316,7 +316,7 @@
         <IncludePath Value="../common/"/>
         <IncludePath Value="../"/>
         <IncludePath Value="../fpylog/"/>
-        <IncludePath Value="/usr/include/python3.4/"/>
+        <IncludePath Value="/usr/include/python3.5/"/>
         <IncludePath Value="../fplog/"/>
         <Preprocessor Value="_LINUX"/>
       </Compiler>
