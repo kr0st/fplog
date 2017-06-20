@@ -1096,6 +1096,7 @@ bool queue_controller_test()
     return true;
 }
 
+#ifdef _PYTEST
 #ifndef _WIN32
 TEST(Fpylog_Test, All_Tests)
 {
@@ -1147,6 +1148,7 @@ TEST(Fpylog_Test, All_Tests)
         }
     }
 }
+#endif
 #endif
 
 TEST(Fplog_Test, All_Tests)
