@@ -2,7 +2,7 @@
 <CodeLite_Project Name="fplog_test" InternalType="Executable" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00040001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0007Release0000000000000001N0013Release-64bit000000000000]]>
+      <![CDATA[00050001N0005Debug0000000000000001N0011Debug-32bit0000000000000001N0011Debug-64bit0000000000000001N0007Release0000000000000001N0013Release-64bit000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -35,6 +35,36 @@
   <VirtualDirectory Name="include">
     <File Name="../fplog/Queue_Controller.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fplogd"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fpylog"/>
+  </Dependencies>
+  <Dependencies Name="Release-64bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fplogd"/>
+    <Project Name="fpcollect"/>
+    <Project Name="fpylog"/>
+  </Dependencies>
+  <Dependencies Name="Release-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fplogd"/>
+    <Project Name="fpcollect"/>
+  </Dependencies>
+  <Dependencies Name="Debug-32bit">
+    <Project Name="sprot"/>
+    <Project Name="spipc"/>
+    <Project Name="fplog"/>
+    <Project Name="fplogd"/>
+    <Project Name="fpcollect"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -124,6 +154,7 @@
         <IncludePath Value="../chaiscript/include"/>
         <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
+        <Preprocessor Value="_PYTEST"/>
       </Compiler>
       <Linker Options="-Wl,-rpath '-Wl,$$ORIGIN';-Wl,-rpath '/usr/local/lib'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
@@ -262,6 +293,7 @@
         <IncludePath Value="../chaiscript/include"/>
         <IncludePath Value="../gtest/include"/>
         <Preprocessor Value="_LINUX"/>
+        <Preprocessor Value="_PYTEST"/>
       </Compiler>
       <Linker Options="-O2;-Wl,-rpath '-Wl,$$ORIGIN';-Wl,-rpath '/usr/local/lib'" Required="yes">
         <LibraryPath Value="../boost/stage/lib/x64/"/>
@@ -322,36 +354,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug-64bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-    <Project Name="fpylog"/>
-  </Dependencies>
-  <Dependencies Name="Debug-32bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-    <Project Name="fpylog"/>
-  </Dependencies>
-  <Dependencies Name="Release-32bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-    <Project Name="fpylog"/>
-  </Dependencies>
-  <Dependencies Name="Release-64bit">
-    <Project Name="sprot"/>
-    <Project Name="spipc"/>
-    <Project Name="fplog"/>
-    <Project Name="fplogd"/>
-    <Project Name="fpcollect"/>
-    <Project Name="fpylog"/>
-  </Dependencies>
 </CodeLite_Project>
