@@ -176,7 +176,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\n";
+			shellScript = "rm -f ${TARGET_BUILD_DIR}/*${PROJECT_NAME}*\ncp ${SOURCE_ROOT}/../gtest/lib/x64/libgtest.a ${SOURCE_ROOT}/../Stage/libgtest.a\n";
 		};
 		78C74DBB1DDA4AEE001B3D38 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
