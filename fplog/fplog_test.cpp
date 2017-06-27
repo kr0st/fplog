@@ -1312,13 +1312,20 @@ int main(int argc, char **argv)
     {
         try
         {
+            //Seems like naming of the files on macOS is the same as Linux,
+            //so these 2 lines of code below should purge shared memory files on macOS too.
+            //Windows is different story though, thereofre I am also doing a full directory sweep
+            //afterwards just in case to make sure shared memory was purged on all platforms.
+            boost::filesystem::remove(temp_path + "/fplog_sequence_number");
+            boost::filesystem::remove(temp_path + "/sem.fplog_sequence_protector");
+
             //This should clear IPC temp folder on Windows and macOS
             std::cout << "temp folder for IPC: " << temp_path << std::endl;
             boost::filesystem::remove_all(temp_path);
         }
         catch(const boost::filesystem::filesystem_error&)
         {
-            std::cout << "WARNING: Unable to purge temp shared mem files, filesystem exception." << std::endl;
+            std::cout << "WARNING: Unable to purge temp shared mem folder, filesystem exception." << std::endl;
         }
     }
 
