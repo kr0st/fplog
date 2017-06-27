@@ -1310,9 +1310,16 @@ int main(int argc, char **argv)
     boost::interprocess::ipcdetail::get_shared_dir(temp_path);
     if (temp_path.length() != 0)
     {
-        //This should clear IPC temp folder on Windows and macOS
-        std::cout << "temp folder for IPC: " << temp_path << std::endl;
-        boost::filesystem::remove_all(temp_path);
+        try
+        {
+            //This should clear IPC temp folder on Windows and macOS
+            std::cout << "temp folder for IPC: " << temp_path << std::endl;
+            boost::filesystem::remove_all(temp_path);
+        }
+        catch(const boost::filesystem::filesystem_error&)
+        {
+            std::cout << "WARNING: Unable to purge temp shared mem files, filesystem exception." << std::endl;
+        }
     }
 
     //On Linux shared objects might be in common /dev/shm directory
