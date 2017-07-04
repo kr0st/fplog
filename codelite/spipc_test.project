@@ -9,6 +9,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="../spipc/spipc_test.cpp"/>
+    <File Name="../common/utils.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include"/>
   <Dependencies Name="Debug-64bit">
