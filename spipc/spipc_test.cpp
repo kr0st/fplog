@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "spipc.h"
+#include "utils.h"
 
 namespace spipc { namespace testing {
 
@@ -362,12 +363,18 @@ TEST(Buffer_Overflow_IPC_Test, BufferOverflow)
 
 int main(int argc, char **argv)
 {
+    //tests should complete under 5 minutes or be aborted and considered a failure
+    generic_util::process_suicide(5 * 60000);
+    
     spipc::testing::g_written_items.clear();
     spipc::testing::g_read_items.clear();
     spipc::testing::g_ipc_written.clear();
     spipc::testing::g_ipc_read.clear();
     
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    int res = RUN_ALL_TESTS();
+    
+    generic_util::suicide_prevention();
+    
+    return res;
 }
-

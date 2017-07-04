@@ -1305,6 +1305,9 @@ bool socket_test()
 
 int main(int argc, char **argv)
 {
+    //tests should complete under 5 minutes or be aborted and considered a failure
+    generic_util::process_suicide(5 * 60000);
+    
     std::string temp_path;
 
     boost::interprocess::ipcdetail::get_shared_dir(temp_path);
@@ -1341,6 +1344,8 @@ int main(int argc, char **argv)
 
     ::testing::InitGoogleTest(&argc, argv);
     int res = RUN_ALL_TESTS();
+    
+    generic_util::suicide_prevention();
     
     fplog::shutdownlog();
     return res;
