@@ -23,6 +23,8 @@ echo "Maintainer: kr0st <kr0st@bioreactor.me>" >> ../../Stage/dist/fplog_1.0-1/D
 echo "Description: JSON-based logging solution for PC and embedded devices that uses NoSQL for logs storage." >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 
 cp -r ../../Stage/*.so* ../../Stage/dist/fplog_1.0-1/usr/local/lib/
+cp -r ../../Stage/fplog_wrapper.py ../../Stage/dist/fplog_1.0-1/usr/local/lib/
+
 cp -r ../../Stage/json.lua ../../Stage/dist/fplog_1.0-1/usr/local/bin/
 cp -r ../../Stage/fplogd ../../Stage/dist/fplog_1.0-1/usr/local/bin/
 cp -r ../../Stage/fpcollect ../../Stage/dist/fplog_1.0-1/usr/local/bin/
