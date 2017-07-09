@@ -1151,7 +1151,7 @@ TEST(Fpylog_Test, All_Tests)
 #endif
 #endif
 
-TEST(Fplog_Test, All_Tests)
+/*TEST(Fplog_Test, All_Tests)
 {
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
@@ -1168,6 +1168,13 @@ TEST(Fplog_Test, All_Tests)
     verify_test_vector();
     
     closelog();
+}*/
+
+TEST(Message_Test, Add_Json_From_String)
+{
+    fplog::Message msg(FPL_WARN(0));
+    msg.add("{\"invader\":\"Tim\",\"earth\":false}");
+    std::cout << msg.as_string() << std::endl;
 }
 
 void start_thread(const char *facility)

@@ -18,6 +18,7 @@ fplog::Message& (fplog::Message::*add_short)(const char*, int) = &fplog::Message
 fplog::Message& (fplog::Message::*add_long)(const char*, long long int) = &fplog::Message::add;
 fplog::Message& (fplog::Message::*add_float)(const char*, double) = &fplog::Message::add;
 fplog::Message& (fplog::Message::*add_string)(const char*, const char*) = &fplog::Message::add;
+fplog::Message& (fplog::Message::*add_json)(const std::string&) = &fplog::Message::add;
 
 fplog::Message& (fplog::Message::*set_text)(const char*) = &fplog::Message::set_text;
 fplog::Message& (fplog::Message::*set_class)(const char*) = &fplog::Message::set_class;
@@ -94,6 +95,7 @@ BOOST_PYTHON_MODULE(fpylog)
     .def("add_long", add_long, return_value_policy<reference_existing_object>())
     .def("add_float", add_float, return_value_policy<reference_existing_object>())
     .def("add_string", add_string, return_value_policy<reference_existing_object>())
+    .def("add_json", add_json, return_value_policy<reference_existing_object>())
     .def("set_text", set_text, return_value_policy<reference_existing_object>())
     .def("set_module", set_module, return_value_policy<reference_existing_object>())
     .def("set_class", set_class, return_value_policy<reference_existing_object>())

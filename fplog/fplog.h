@@ -161,6 +161,7 @@ class FPLOG_API Message
 
         //before adding JSON element make sure it has a name
         Message& add(JSONNode& param);
+        Message& add(const std::string& json); //here adding json object that is encoded in plaintext string
 
         Message& add_batch(JSONNode& batch);
         bool has_batch();

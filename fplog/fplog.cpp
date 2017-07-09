@@ -140,6 +140,13 @@ Message& Message::add(JSONNode& param)
     return *this;
 }
 
+Message& Message::add(const std::string& json)
+{
+    JSONNode json_object(json);
+    json_object.set_name("inserted_json");
+    return add(json_object);
+}
+
 Message& Message::add_batch(JSONNode& batch)
 {
     batch.set_name(Message::Optional_Fields::batch);
