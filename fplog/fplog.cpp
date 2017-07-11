@@ -142,7 +142,7 @@ Message& Message::add(JSONNode& param)
 
 Message& Message::add(const std::string& json)
 {
-    JSONNode json_object(json);
+    JSONNode json_object(libjson::parse(json));
     json_object.set_name("inserted_json");
     return add(json_object);
 }
@@ -240,7 +240,7 @@ Message::Message(const JSONNode& msg)
 
 Message::Message(const std::string& msg)
 {
-    JSONNode json(msg);
+    JSONNode json(libjson::parse(msg));
     msg_ = json;
 }
 

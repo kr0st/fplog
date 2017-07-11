@@ -1112,7 +1112,7 @@ TEST(Fpylog_Test, All_Tests)
     ASSERT_TRUE(tz != 0);
 
     char buf[1500];
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 7; ++i)
     {
         memset(buf, 0, sizeof(buf));
         ipc.read(buf, sizeof(buf), 60000);
@@ -1146,12 +1146,17 @@ TEST(Fpylog_Test, All_Tests)
         {
             EXPECT_TRUE(std::string(buf).find("\"priority\":\"info\",\"facility\":\"fpylog\",\"text\":\"writing generic log message\",\"module\":\"fpylog_test.py\",\"line\":159,\"method\":\"main\",\"appname\":\"fpylog_test\"") != std::string::npos);
         }
+        
+        if (i == 6)
+        {
+            EXPECT_TRUE(std::string(buf).find("\"inserted_json\":{\"name\":\"Lucius\",\"age\":6.66,\"father\":{\"name\":\"Satan\",\"unholy_random\":[[85,82,16,95,55],[35,33,-40,-3,23],[35,44,12,56,-18],[3,10,-14,-27,54],[24,-73,74,-31,5]]}}") != std::string::npos);
+        }
     }
 }
 #endif
 #endif
 
-/*TEST(Fplog_Test, All_Tests)
+TEST(Fplog_Test, All_Tests)
 {
     openlog(Facility::security, new Priority_Filter("prio_filter"));
     g_fplog_impl->set_test_mode(true);
@@ -1168,13 +1173,13 @@ TEST(Fpylog_Test, All_Tests)
     verify_test_vector();
     
     closelog();
-}*/
+}
 
 TEST(Message_Test, Add_Json_From_String)
 {
     fplog::Message msg(FPL_WARN(0));
     msg.add("{\"invader\":\"Tim\",\"earth\":false}");
-    std::cout << msg.as_string() << std::endl;
+    EXPECT_TRUE(msg.as_string().find("\"inserted_json\":{\"invader\":\"Tim\",\"earth\":false}") != std::string::npos);
 }
 
 void start_thread(const char *facility)

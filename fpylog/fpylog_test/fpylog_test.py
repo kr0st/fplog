@@ -6,8 +6,8 @@ import array
 import fplog_wrapper as fpylog
 import random
 import string
+import json
 random.seed(13)
-
 cur_path = os.path.dirname(__file__)
 sys.path.append(cur_path)
 
@@ -160,6 +160,31 @@ def main():
 
     #manual_test()
     #spam_test()
+
+    def randomize_lists(count, size, min=0, max=100):
+        s = 0
+        result = []
+
+        while s < count:
+            result.append([random.randint(min, max) * (-1 * random.randint(0, 1)) + random.randint(min, max) for r in range(size)])
+            s += 1
+
+        return result
+
+    class Object:
+        def to_json(self):
+            return json.dumps(self, default=lambda o: o.__dict__)
+
+    json_obj = Object()
+    json_obj.name = 'Lucius'
+    json_obj.age = 6.66
+    json_obj.father = Object()
+    json_obj.father.name = 'Satan'
+    json_obj.father.unholy_random = randomize_lists(5, 5)
+
+    print(json_obj.to_json())
+
+    fpylog.write_log("JSON string test", fpylog.lib.Prio.info, json_str=json_obj.to_json())
 
     fpylog.lib.shutdownlog()
 
