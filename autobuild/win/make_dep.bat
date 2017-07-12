@@ -181,3 +181,4 @@ cd ..
 cd ..
 cd ..
 rmdir build /S /Q
+cd win
