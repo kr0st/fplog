@@ -3,6 +3,8 @@
 rm -rf ../../Stage/dist
 rm -rf ../../Stage/fplog.framework
 
+./build_all_x86_64.sh
+
 mkdir ../../Stage/dist/
 mkdir ../../Stage/dist/fplog.framework
 mkdir ../../Stage/dist/fplog.framework/Versions
@@ -12,6 +14,7 @@ mkdir ../../Stage/dist/fplog.framework/Versions/A/Headers
 
 cp -r ../../Stage/*dylib ../../Stage/dist/fplog.framework/Versions/A/
 cp -r ../../Stage/json.lua ../../Stage/dist/fplog.framework/Versions/A/
+cp -r ../../Stage/fplog_wrapper.py ../../Stage/dist/fplog.framework/Versions/A/
 cp ../../fplog/Info.plist ../../Stage/dist/fplog.framework/Versions/A/Resources/
 
 cp -r ../../common/fplog_exceptions.h ../../Stage/dist/fplog.framework/Versions/A/Headers/
@@ -30,4 +33,3 @@ ln -s Versions/Current/Headers ../../Stage/dist/fplog.framework/Headers
 rm -rf ./build
 packagesbuild -v ./fplog.pkgproj
 productsign --sign "Developer ID Installer: Rostislav Kuratch" ./build/fplog.pkg ../../Stage/dist/fplog.pkg
-
