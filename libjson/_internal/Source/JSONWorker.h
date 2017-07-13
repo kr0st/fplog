@@ -4,7 +4,7 @@
 #include "JSONNode.h"
 #include "JSONSharedString.h"
 
-class JSONWorker {
+class JSON_API JSONWorker {
 public:
     static json_string RemoveWhiteSpaceAndComments(const json_string & value_t, bool escapeQuotes) json_nothrow json_read_priority;
 	static json_char * RemoveWhiteSpaceAndCommentsC(const json_string & value_t, bool escapeQuotes) json_nothrow json_read_priority;
