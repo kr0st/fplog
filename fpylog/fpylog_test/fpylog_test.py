@@ -173,7 +173,7 @@ def main():
 
     class Object:
         def to_json(self):
-            return json.dumps(self, default=lambda o: o.__dict__)
+            return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
     json_obj = Object()
     json_obj.name = 'Lucius'

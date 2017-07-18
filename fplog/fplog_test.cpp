@@ -1149,7 +1149,7 @@ TEST(Fpylog_Test, All_Tests)
         
         if (i == 6)
         {
-            EXPECT_TRUE(std::string(buf).find("\"inserted_json\":{\"name\":\"Lucius\",\"age\":6.66,\"father\":{\"name\":\"Satan\",\"unholy_random\":[[85,82,16,95,55],[35,33,-40,-3,23],[35,44,12,56,-18],[3,10,-14,-27,54],[24,-73,74,-31,5]]}}") != std::string::npos);
+            EXPECT_TRUE(std::string(buf).find("\"inserted_json\":{\"age\":6.66,\"father\":{\"name\":\"Satan\",\"unholy_random\":[[85,82,16,95,55],[35,33,-40,-3,23],[35,44,12,56,-18],[3,10,-14,-27,54],[24,-73,74,-31,5]]},\"name\":\"Lucius\"}") != std::string::npos);
         }
     }
 }
