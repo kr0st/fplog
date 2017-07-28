@@ -69,4 +69,4 @@ chmod 644 ../../Stage/dist/fplog_1.0-1/usr/local/bin/json.lua
 find ../../Stage/dist/fplog_1.0-1 -exec chown "root:root" {} +
 
 dpkg-deb --build ../../Stage/dist/fplog_1.0-1
-chown nobody:nobody ../../Stage/dist/fplog_1.0-1.deb
+chmod 666 ../../Stage/dist/fplog_1.0-1.deb
