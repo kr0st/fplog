@@ -70,3 +70,4 @@ find ../../Stage/dist/fplog_1.0-1 -exec chown "root:root" {} +
 
 dpkg-deb --build ../../Stage/dist/fplog_1.0-1
 chmod 666 ../../Stage/dist/fplog_1.0-1.deb
+chmod 777 ../../Stage/dist
