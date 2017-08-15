@@ -13,11 +13,13 @@ mkdir ../../Stage/dist/fplog_1.0-1/DEBIAN
 
 touch ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 
+DEB_ARCH="${DEB_ARCH:=amd64}"
+
 echo "Package: fplog" > ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Version: 1.0-1" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Section: base" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Priority: optional" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
-echo "Architecture: amd64" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
+echo "Architecture: "$DEB_ARCH >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Depends: libicu52 (>=52.0)" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Maintainer: kr0st <kr0st@bioreactor.me>" >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 echo "Description: JSON-based logging solution for PC and embedded devices that uses NoSQL for logs storage." >> ../../Stage/dist/fplog_1.0-1/DEBIAN/control

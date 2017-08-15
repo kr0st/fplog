@@ -57,6 +57,7 @@
     <Project Name="fplog"/>
     <Project Name="fplogd"/>
     <Project Name="fpcollect"/>
+    <Project Name="fpylog"/>
   </Dependencies>
   <Dependencies Name="Debug-32bit">
     <Project Name="sprot"/>
