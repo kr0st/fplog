@@ -13,6 +13,7 @@ mkdir ../../Stage/dist/fplog_1.0-1/DEBIAN
 
 touch ../../Stage/dist/fplog_1.0-1/DEBIAN/control
 
+DEB_ARCH=$1
 DEB_ARCH="${DEB_ARCH:=amd64}"
 
 echo "Package: fplog" > ../../Stage/dist/fplog_1.0-1/DEBIAN/control
