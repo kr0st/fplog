@@ -34,9 +34,6 @@ md ..\build
 curl --cacert ./cacert.crt -o ../build/mongo_driver.zip https://codeload.github.com/mongodb/mongo-cxx-driver/zip/legacy-1.1.2
 7za x -y -o"..\build\" ..\build\mongo_driver.zip
 
-curl -o ../build/boost.7z http://netcologne.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.7z
-7za x -y -o"..\build\" ..\build\boost.7z
-
 curl --cacert ./cacert.crt -o ../build/gtest.zip https://codeload.github.com/google/googletest/zip/release-1.8.0
 7za x -y -o"..\build\" ..\build\gtest.zip
 
@@ -92,43 +89,6 @@ xcopy /Y Release\gtest_main.lib ..\..\..\..\gtest\lib\x64
 cd ..
 cd ..
 
-cd boost_1_63_0
-
-call bootstrap.bat
-
-if errorlevel 1 (
-echo ******* ERROR *******
-echo unable to build boost libraries, please inspect the bootsrap.bat output for clues.
-echo *********************
-exit )
-
-call b2 -j8 --build-type=complete --toolset=msvc architecture=x86 address-model=32
-
-if errorlevel 1 (
-echo ******* ERROR *******
-echo unable to build boost libraries, please inspect the build log for clues.
-echo *********************
-exit )
-
-md ..\..\..\boost
-md ..\..\..\boost\boost
-md ..\..\..\boost\stage
-md ..\..\..\boost\stage\lib
-md ..\..\..\boost\stage\lib\x86
-md ..\..\..\boost\stage\lib\x64
-
-xcopy /E /I /Y boost ..\..\..\boost\boost\
-xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x86
-
-rmdir stage /S /Q
-rmdir bin.v2 /S /Q
-
-call bootstrap.bat
-call b2 -j8 --build-type=complete --toolset=msvc address-model=64
-
-xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x64
-
-cd ..
 cd mongo-cxx-driver-legacy-1.1.2
 
 md ..\..\..\mongo

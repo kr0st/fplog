@@ -18,3 +18,5 @@ copy ..\..\common\fplog_exceptions.h ..\..\Stage\fplog_distro\include
 copy ..\..\common\fplog_transport.h ..\..\Stage\fplog_distro\include
 copy ..\..\fplog\fplog.h ..\..\Stage\fplog_distro\include
 xcopy /E /I /Y ..\..\libjson ..\..\Stage\fplog_distro\include\libjson
+call ..\..\autobuild\win\7za.exe a -r fplog_1.0-1.7z ..\..\Stage\fplog_distro\*.*
+move /Y fplog_1.0-1.7z ..\..\Stage
