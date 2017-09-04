@@ -31,7 +31,7 @@ void Mongo_Storage::connect(const Params& params)
 {
     try
     {
-        static Mongo_Init init;
+        static std::auto_ptr<Mongo_Init> init(new Mongo_Init());
         std::string ip, port, collection;
 
         for (auto item : params)
