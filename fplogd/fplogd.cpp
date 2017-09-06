@@ -720,6 +720,19 @@ class Impl
                     while (!mq_.empty() && ((int)(batch.size()) < batch_size_) && !send_batch)
                     {
                         str = mq_.front();
+
+                        try
+                        {
+                            if (str != 0)
+                                JSONNode json_object(libjson::parse(*str));
+                        }
+                        catch (std::invalid_argument&)
+                        {
+                            delete str;
+                            mq_.pop();
+                            continue;
+                        }
+
                         append_hostname(str);
                         
                         //This is needed for sending larger messages - large messages are sent independently,

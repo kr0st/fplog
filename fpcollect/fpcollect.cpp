@@ -508,8 +508,18 @@ class Impl
                         mq_.pop();
                     }
                 }
-
+                
                 std::auto_ptr<std::string> str_ptr(str);
+
+                try
+                {
+                    if (str != 0)
+                        JSONNode json_object(libjson::parse(*str));
+                }
+                catch (std::invalid_argument&)
+                {
+                    continue;
+                }
 
             retry:
 
