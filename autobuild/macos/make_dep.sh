@@ -150,7 +150,7 @@ mkdir ../../../mongo/lib
 
 mydir="$(pwd)"
 
-scons -j 8 install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons -j 8 install --ssl --64 CPPPATH="$mydir/../../../boost /usr/local/Cellar/openssl/1.0.2n/include" LIBPATH="$mydir/../../../boost/stage/lib/x64 /usr/local/Cellar/openssl/1.0.2n/lib"
 #it seems Xcode still links app with .dylib file if file is  present,
 #despite specific instructions to link with .a file only thus not building shared mongo client at all
 #scons -j 8 install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64

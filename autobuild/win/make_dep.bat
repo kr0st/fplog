@@ -149,8 +149,8 @@ set ABS_PATH=%CD%
 rem // Restore original directory
 popd
 
-call scons install -j 8 --32 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
-call scons install -j 8 --32 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install -j 8 --ssl --32 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install -j 8 --ssl --32 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
 
 cd build
 
@@ -159,8 +159,8 @@ xcopy /E /I /Y install\lib ..\..\..\..\mongo\lib\x86
 
 cd ..
 
-call scons install -j 8 --64 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
-call scons install -j 8 --64 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install -j 8 --ssl --64 --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install -j 8 --ssl --64 --dynamic-windows --sharedclient --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
 
 if errorlevel 0 (
 echo *********************

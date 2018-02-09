@@ -210,8 +210,8 @@ mv ../../../../mongo/lib/lib ../../../../mongo/lib/x86
 
 cd ..
 
-scons install --64 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
-scons install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons install --64 --ssl --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
+scons install --64 --ssl --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
