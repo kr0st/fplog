@@ -32,7 +32,7 @@ void Mongo_Storage::connect(const Params& params)
     try
     {
         static std::auto_ptr<Mongo_Init> init(new Mongo_Init());
-        std::string ip, port, collection;
+        std::string ip, port, collection, auth_db, user, password;
 
         for (auto item : params)
         {
@@ -44,6 +44,15 @@ void Mongo_Storage::connect(const Params& params)
 
             if(generic_util::find_str_no_case(item.first, "collection"))
                 collection = item.second;
+            
+            if(generic_util::find_str_no_case(item.first, "auth_db"))
+                auth_db = item.second;
+            
+            if(generic_util::find_str_no_case(item.first, "user"))
+                user = item.second;
+            
+            if(generic_util::find_str_no_case(item.first, "password"))
+                password = item.second;
         }
 
         if (ip.empty())
@@ -61,6 +70,11 @@ void Mongo_Storage::connect(const Params& params)
             connection_ = new mongo::DBClientConnection();
 
         connection_->connect(ip + ":" + port);
+        if (!auth_db.empty() && !password.empty() && !user.empty())
+        {
+            std::string err;
+            connection_->auth(auth_db, user, password, err);
+        }
     }
     catch (mongo::DBException& e)
     {

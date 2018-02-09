@@ -17,6 +17,8 @@
 		7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879BA881DEB57850078C6F6 /* libspipc.dylib */; };
 		788213391EEC3AAC009367EA /* libmongoclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 788213371EEC3283009367EA /* libmongoclient.a */; };
 		789B13781E5F2EE300613A94 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789B13771E5F2EE300613A94 /* libjson.a */; };
+		78EA35A0202DE44200D6E590 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78EA359C202DE2CD00D6E590 /* libssl.a */; };
+		78EA35A2202DE44300D6E590 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78EA35A1202DE44300D6E590 /* libcrypto.a */; };
 		78F3F3DC1E3D121B00D8039A /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */; };
 		78F3F3DD1E3D121B00D8039A /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */; };
 		78F3F3DE1E3D121B00D8039A /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */; };
@@ -39,6 +41,10 @@
 		788213371EEC3283009367EA /* libmongoclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongoclient.a; path = ../mongo/lib/x64/libmongoclient.a; sourceTree = "<group>"; };
 		789B13771E5F2EE300613A94 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = ../libjson/build/Release/libjson.a; sourceTree = "<group>"; };
 		78A5678B1DEB534800967937 /* fpcollect */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fpcollect; sourceTree = BUILT_PRODUCTS_DIR; };
+		78EA359A202DE21200D6E590 /* libboringssl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libboringssl.tbd; path = usr/lib/libboringssl.tbd; sourceTree = SDKROOT; };
+		78EA359C202DE2CD00D6E590 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2n/lib/libssl.a; sourceTree = "<group>"; };
+		78EA359E202DE40400D6E590 /* openssl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = openssl; path = ../../../../../usr/local/Cellar/openssl; sourceTree = "<group>"; };
+		78EA35A1202DE44300D6E590 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2n/lib/libcrypto.a; sourceTree = "<group>"; };
 		78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "../Stage/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		78F3F3DA1E3D121B00D8039A /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../Stage/libboost_system-mt.dylib"; sourceTree = "<group>"; };
 		78F3F3DB1E3D121B00D8039A /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../Stage/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
@@ -49,6 +55,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78EA35A2202DE44300D6E590 /* libcrypto.a in Frameworks */,
+				78EA35A0202DE44200D6E590 /* libssl.a in Frameworks */,
 				789B13781E5F2EE300613A94 /* libjson.a in Frameworks */,
 				7879BA891DEB57850078C6F6 /* libspipc.dylib in Frameworks */,
 				7879BA871DEB57590078C6F6 /* libfplog.dylib in Frameworks */,
@@ -66,6 +74,10 @@
 		7879BA7D1DEB55530078C6F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				78EA35A1202DE44300D6E590 /* libcrypto.a */,
+				78EA359E202DE40400D6E590 /* openssl */,
+				78EA359C202DE2CD00D6E590 /* libssl.a */,
+				78EA359A202DE21200D6E590 /* libboringssl.tbd */,
 				788213371EEC3283009367EA /* libmongoclient.a */,
 				789B13771E5F2EE300613A94 /* libjson.a */,
 				78F3F3D91E3D121B00D8039A /* libboost_regex-mt.dylib */,
@@ -318,8 +330,9 @@
 					"$(inherited)",
 					../Stage/,
 					../mongo/lib/x64,
+					/usr/local/Cellar/openssl/1.0.2n/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_LINUX",
@@ -350,8 +363,9 @@
 					"$(inherited)",
 					../Stage/,
 					../mongo/lib/x64,
+					/usr/local/Cellar/openssl/1.0.2n/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
