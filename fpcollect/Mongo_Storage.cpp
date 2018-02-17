@@ -17,7 +17,9 @@ class Mongo_Init
 
         Mongo_Init()
         {
-            mongo::client::initialize();
+            static mongo::client::Options options;
+            options.setCallShutdownAtExit();
+            mongo::client::initialize(options);
         }
 };
 

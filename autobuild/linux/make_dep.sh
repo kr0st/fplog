@@ -191,8 +191,8 @@ mkdir ../../../mongo/lib
 
 mydir="$(pwd)"
 
-scons install --32 --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
-scons install --32 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
+scons install --32 --ssl --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
+scons install --32 --ssl --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x86
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
