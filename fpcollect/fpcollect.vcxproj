@@ -115,6 +115,7 @@
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>copy $(OutDir)..\mongo\lib\x86\*.dll ..\Stage\
+copy $(OutDir)..\openssl\lib\x86\*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_date*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_thread*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_system*.dll ..\Stage\
@@ -145,6 +146,7 @@ copy $(OutDir)..\boost\stage\lib\x86\boost_regex*.dll ..\Stage\</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>copy $(OutDir)..\..\mongo\lib\x64\*.dll ..\Stage\
+copy $(OutDir)..\..\openssl\lib\x64\*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_date*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_thread*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_system*.dll ..\Stage\
@@ -180,6 +182,7 @@ copy $(OutDir)..\..\boost\stage\lib\x64\boost_regex*.dll ..\Stage\</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>copy $(OutDir)..\mongo\lib\x86\*.dll ..\Stage\
+copy $(OutDir)..\openssl\lib\x86\*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_date*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_thread*.dll ..\Stage\
 copy $(OutDir)..\boost\stage\lib\x86\boost_system*.dll ..\Stage\
@@ -215,6 +218,7 @@ copy $(OutDir)..\boost\stage\lib\x86\boost_regex*.dll ..\Stage\</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>copy $(OutDir)..\..\mongo\lib\x64\*.dll ..\Stage\
+copy $(OutDir)..\..\openssl\lib\x64\*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_date*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_thread*.dll ..\Stage\
 copy $(OutDir)..\..\boost\stage\lib\x64\boost_system*.dll ..\Stage\
