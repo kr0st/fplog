@@ -102,7 +102,7 @@ echo unable to build boost libraries, please inspect the bootsrap.bat output for
 echo *********************
 exit )
 
-call b2 -j8 --build-type=complete --toolset=msvc architecture=x86 address-model=32
+call b2 -j2 --build-type=complete --toolset=msvc architecture=x86 address-model=32
 
 if errorlevel 1 (
 echo ******* ERROR *******
@@ -120,11 +120,17 @@ md ..\..\..\boost\stage\lib\x64
 xcopy /E /I /Y boost ..\..\..\boost\boost\
 xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x86
 
-rmdir stage /S /Q
-rmdir bin.v2 /S /Q
+cd ..
+rmdir boost_1_63_0 /S /Q
+cd ..
+cd win
+7za x -y -o"..\build\" ..\build\boost.7z
+cd ..
+cd build 
+cd boost_1_63_0
 
 call bootstrap.bat
-call b2 -j8 --build-type=complete --toolset=msvc address-model=64
+call b2 -j2 --build-type=complete --toolset=msvc architecture=x86 address-model=64
 
 xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x64
 
