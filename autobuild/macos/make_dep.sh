@@ -119,7 +119,7 @@ mkdir ../../../boost/stage/lib
 rm -rf ./stage
 rm -rf ./bin.v2
 
-./b2 -j8 --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
+./b2 -j2 --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -128,7 +128,7 @@ echo "**************************************************************************
 exit
 fi
 
-./b2 -j8 --with-python --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
+./b2 -j2 --with-python --variant=release --link=shared --layout=tagged --toolset=darwin address-model=64 > build.log
 
 if [ $? -ne 0 ]; then
 echo "****************************************** ERROR ******************************************"
@@ -150,7 +150,7 @@ mkdir ../../../mongo/lib
 
 mydir="$(pwd)"
 
-scons -j 8 install --ssl --64 CPPPATH="$mydir/../../../boost /usr/local/Cellar/openssl/1.0.2n/include" LIBPATH="$mydir/../../../boost/stage/lib/x64 /usr/local/Cellar/openssl/1.0.2n/lib"
+scons -j 2 install --ssl --64 CPPPATH="$mydir/../../../boost /usr/local/Cellar/openssl/1.0.2n/include" LIBPATH="$mydir/../../../boost/stage/lib/x64 /usr/local/Cellar/openssl/1.0.2n/lib"
 #it seems Xcode still links app with .dylib file if file is  present,
 #despite specific instructions to link with .a file only thus not building shared mongo client at all
 #scons -j 8 install --64 --sharedclient --cpppath=$mydir/../../../boost --libpath=$mydir/../../../boost/stage/lib/x64
