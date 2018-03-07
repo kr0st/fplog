@@ -102,7 +102,7 @@ echo unable to build boost libraries, please inspect the bootsrap.bat output for
 echo *********************
 exit )
 
-call b2 -j2 --build-type=complete --toolset=msvc architecture=x86 address-model=32
+call b2 -j2 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=32
 
 if errorlevel 1 (
 echo ******* ERROR *******
@@ -130,7 +130,7 @@ cd build
 cd boost_1_63_0
 
 call bootstrap.bat
-call b2 -j2 --build-type=complete --toolset=msvc architecture=x86 address-model=64
+call b2 -j2 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=64
 
 xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x64
 
