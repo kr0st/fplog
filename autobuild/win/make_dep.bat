@@ -102,7 +102,7 @@ echo unable to build boost libraries, please inspect the bootsrap.bat output for
 echo *********************
 exit )
 
-call b2 -j2 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=32
+call b2 -j8 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=32
 
 if errorlevel 1 (
 echo ******* ERROR *******
@@ -130,7 +130,7 @@ cd build
 cd boost_1_63_0
 
 call bootstrap.bat
-call b2 -j2 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=64
+call b2 -j8 --without-python --build-type=complete --toolset=msvc architecture=x86 address-model=64
 
 xcopy /E /I /Y stage\lib ..\..\..\boost\stage\lib\x64
 
@@ -171,9 +171,9 @@ echo %ABS_PATH%
 
 mklink /D ..\..\..\openssl\lib lib_ex\x86
 
-call scons install -j 2 --ssl --32 --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
-call scons install -j 2 --ssl --32 --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
-call scons install -j 2 --ssl --32 --dbg=on --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install -j 8 --ssl --32 --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install -j 8 --ssl --32 --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
+call scons install -j 8 --ssl --32 --dbg=on --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x86
 
 if errorlevel 1 (
 echo ******* ERROR *******
@@ -192,9 +192,9 @@ cd ..
 
 mklink /D ..\..\..\openssl\lib lib_ex\x64
 
-call scons install -j 2 --ssl --64 --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
-call scons install -j 2 --ssl --64 --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
-call scons install -j 2 --ssl --64 --dbg=on --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install -j 8 --ssl --64 --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install -j 8 --ssl --64 --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
+call scons install -j 8 --ssl --64 --dbg=on --dynamic-windows --sharedclient --extrapath=%ABS_PATH%\..\..\..\openssl\ --cpppath=%ABS_PATH%\..\..\..\boost\ --libpath=%ABS_PATH%\..\..\..\boost\stage\lib\x64
 
 if errorlevel 1 (
 echo ******* ERROR *******
